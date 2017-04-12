@@ -2,6 +2,7 @@ package fit;
 
 import java.util.Collection;
 
+import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 
@@ -43,7 +44,7 @@ public interface Function< P extends Point >
 	 * @param points - {@link Collection} of {@link Point}s
 	 * @throws NotEnoughDataPointsException - thrown if not enough {@link Point}s are in the {@link Collection}
 	 */
-	public void fitFunction( final Collection<P> points ) throws NotEnoughDataPointsException;
+	public void fitFunction( final Collection<P> points ) throws NotEnoughDataPointsException, IllDefinedDataPointsException;
 	
 	/**
 	 * Computes the minimal distance of a {@link Point} to this function

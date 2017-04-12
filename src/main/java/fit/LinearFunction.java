@@ -25,13 +25,13 @@ import mpicbg.models.Point;
  * 
  * @author Stephan Preibisch (stephan.preibisch@gmx.de) & Timothee Lionnet
  */
-public class Line extends AbstractFunction< Line >
+public class LinearFunction extends AbstractFunction< LinearFunction > implements Polynomial< Point >
 {
 	private static final long serialVersionUID = 5289346951323596267L;
 
 	final int minNumPoints = 2;
 	
-	double n, m;	
+	double m, n; // m*x + n
 
 	/**
 	 * @return - the center of the circle in x
@@ -42,41 +42,55 @@ public class Line extends AbstractFunction< Line >
 	 * @return - the center of the circle in y
 	 */
 	public double getM() { return m; }
-	
+
+	@Override
+	public int degree() { return 1; }
+
+	@Override
+	public double getCoefficient( final int j )
+	{
+		if ( j == 0 )
+			return n;
+		else if ( j == 1 )
+			return m;
+		else
+			return 0;
+	}
+
 	@Override
 	public int getMinNumPoints() { return minNumPoints; }
 
 	public void fitFunction( final Collection<Point> points ) throws NotEnoughDataPointsException
 	{
 		final int numPoints = points.size();
-		
+
 		if ( numPoints < minNumPoints )
-			throw new NotEnoughDataPointsException( "Not enough points, at least " + minNumPoints + " are necessary." );
-		
+			throw new NotEnoughDataPointsException( "Not enough points, at least " + minNumPoints + " are necessary and available are: " + numPoints );
+
 		// compute matrices
 		final double[] delta = new double[ 4 ];
 		final double[] tetha = new double[ 2 ];
-		
+
 		for ( final Point p : points )
 		{
 			final double x = p.getW()[ 0 ]; 
 			final double y = p.getW()[ 1 ]; 
-			
+
 			final double xx = x*x;
 			final double xy = x*y;
-			
+
 			delta[ 0 ] += xx;
 			delta[ 1 ] += x;
 			delta[ 2 ] += x;
 			delta[ 3 ] += 1;
-			
+
 			tetha[ 0 ] += xy;
 			tetha[ 1 ] += y;
 		}
-				
+
 		// invert matrix
 		MatrixFunctions.invert2x2( delta );
-		
+
 		this.m = delta[ 0 ] * tetha[ 0 ] + delta[ 1 ] * tetha[ 1 ];
 		this.n = delta[ 2 ] * tetha[ 0 ] + delta[ 3 ] * tetha[ 1 ];
 	}
@@ -86,15 +100,12 @@ public class Line extends AbstractFunction< Line >
 	{
 		final double x1 = point.getW()[ 0 ]; 
 		final double y1 = point.getW()[ 1 ];
-		
-		
+
 		return Math.abs( y1 - m*x1 - n ) / ( Math.sqrt( m*m + 1 ) );
 	}
-	
-	public static int i = 0;
-	
+
 	@Override
-	public void set( final Line m )
+	public void set( final LinearFunction m )
 	{
 		this.n = m.getN();
 		this.m = m.getM();
@@ -102,17 +113,17 @@ public class Line extends AbstractFunction< Line >
 	}
 
 	@Override
-	public Line copy()
+	public LinearFunction copy()
 	{
-		Line c = new Line();
-		
+		LinearFunction c = new LinearFunction();
+
 		c.n = getN();
 		c.m = getM();
 		c.setCost( getCost() );
-		
+
 		return c;
 	}
-	
+
 	public static void main( String[] args ) throws NotEnoughDataPointsException, IllDefinedDataPointsException
 	{
 		final ArrayList< Point > points = new ArrayList<Point>();
@@ -133,7 +144,7 @@ public class Line extends AbstractFunction< Line >
 		for ( final Point p : points )
 			candidates.add( new PointFunctionMatch( p ) );
 		
-		final Line l = new Line();
+		final LinearFunction l = new LinearFunction();
 		
 		l.ransac( candidates, inliers, 100, 0.1, 0.5 );
 		
