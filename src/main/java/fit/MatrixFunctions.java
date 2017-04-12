@@ -1,5 +1,7 @@
 package fit;
 
+import Jama.Matrix;
+import Jama.SingularValueDecomposition;
 import mpicbg.models.NoninvertibleModelException;
 
 /**
@@ -111,5 +113,43 @@ public class MatrixFunctions
 			a[ 5 ] * a[ 7 ] * a[ 0 ] -
 			a[ 8 ] * a[ 1 ] * a[ 3 ];
 	}
-	
+
+	/**
+	 * Computes the pseudo-inverse of a matrix using Singular Value Decomposition
+	 * 
+	 * @param M - the input {@link Matrix}
+	 * @param threshold - the threshold for inverting diagonal elements (suggested 0.001)
+	 * @return the inverted {@link Matrix} or an approximation with lowest possible squared error
+	 */
+	final public static Matrix computePseudoInverseMatrix( final Matrix M, final double threshold )
+	{
+		final SingularValueDecomposition svd = new SingularValueDecomposition( M );
+
+		Matrix U = svd.getU(); // U Left Matrix
+		final Matrix S = svd.getS(); // W
+		final Matrix V = svd.getV(); // VT Right Matrix
+
+		double temp;
+
+		// invert S
+		for ( int j = 0; j < S.getRowDimension(); ++j )
+		{
+			temp = S.get( j, j );
+
+			if ( temp < threshold ) // this is an inaccurate inverting of the matrix 
+				temp = 1.0 / threshold;
+			else 
+				temp = 1.0 / temp;
+			
+			S.set( j, j, temp );
+		}
+
+		// transponse U
+		U = U.transpose();
+
+		//
+		// compute result
+		//
+		return ((V.times(S)).times(U));
+	}
 }
