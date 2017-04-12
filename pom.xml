@@ -29,6 +29,10 @@
   		<groupId>mpicbg</groupId>
   		<artifactId>mpicbg</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>org.jfree</groupId>
+  		<artifactId>jfreechart</artifactId>
+  	</dependency>
   </dependencies>
 
 	<repositories>
