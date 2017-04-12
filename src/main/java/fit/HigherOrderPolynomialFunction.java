@@ -7,6 +7,7 @@ import java.util.Random;
 import Jama.Matrix;
 import Jama.QRDecomposition;
 import mpicbg.models.IllDefinedDataPointsException;
+import mpicbg.models.NoninvertibleModelException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 
@@ -15,7 +16,7 @@ import mpicbg.models.Point;
  * @author Varun Kapoor, Stephan Preibisch
  * 
  */
-public class PolynomialFunction extends AbstractFunction< PolynomialFunction > implements Polynomial< Point >
+public class HigherOrderPolynomialFunction extends AbstractFunction< HigherOrderPolynomialFunction > implements Polynomial< Point >
 {
 	private static final long serialVersionUID = 5010369758205651325L;
 
@@ -27,7 +28,7 @@ public class PolynomialFunction extends AbstractFunction< PolynomialFunction > i
 
 	public final double[] coeff;
 
-	public PolynomialFunction(final int degree)
+	public HigherOrderPolynomialFunction(final int degree)
 	{
 		this.degree = degree;
 		this.minNumPoints = degree + 1;
@@ -81,6 +82,57 @@ public class PolynomialFunction extends AbstractFunction< PolynomialFunction > i
 			this.coeff[ j ] = coefficients.get( j, 0 );
 	}
 
+	public void fitFunction2(final Collection< Point > points ) throws NotEnoughDataPointsException, IllDefinedDataPointsException
+	{
+		final int numPoints = points.size();
+
+		if ( numPoints < minNumPoints )
+			throw new NotEnoughDataPointsException( "Not enough points, at least " + minNumPoints + " are necessary and available are: " + numPoints );
+
+		// compute matrices
+		final double[][] delta = new double[ degree + 1 ][ degree + 1 ];
+		final double[] tetha = new double[ degree + 1 ];
+
+		final double[] powCache = new double[ degree * 2 + 1 ];
+		powCache[ powCache.length - 1 ] = 1;
+
+		for ( final Point p : points )
+		{
+			final double x = p.getW()[ 0 ];
+			final double y = p.getW()[ 1 ];
+
+			double power = 1;
+			for ( int d = 1; d < powCache.length; ++d )
+			{
+				power *= x;
+				powCache[ powCache.length - 1 - d ] = power;
+			}
+
+			for ( int r = 0; r <= degree; ++r )
+				for ( int c = 0; c <= degree; ++c )
+					delta[ r ][ c ] += powCache[ r + c ];
+
+			double mulY = y;
+
+			for ( int d = 0; d <= degree; ++d )
+			{
+				tetha[ degree - d ] += mulY;
+				mulY *= x;
+			}
+		}
+
+		// invert matrix
+		final Matrix deltaInv = MatrixFunctions.computePseudoInverseMatrix( new Matrix( delta ), 0.00001 );
+
+		for ( int d = degree; d >= 0; --d )
+		{
+			this.coeff[ d ] = 0;
+
+			for ( int i = 0; i <= degree; ++i )
+				this.coeff[ d ] += deltaInv.get( degree - d, i ) * tetha[ i ];
+		}
+	}
+
 	// Distance of a point from a polynomial
 	@Override
 	public double distanceTo( final Point point )
@@ -92,7 +144,7 @@ public class PolynomialFunction extends AbstractFunction< PolynomialFunction > i
 	}
 
 	@Override
-	public void set( final PolynomialFunction p )
+	public void set( final HigherOrderPolynomialFunction p )
 	{
 		for (int j = degree; j >= 0; j--)
 			this.coeff[j] = p.getCoefficient(j);
@@ -101,9 +153,9 @@ public class PolynomialFunction extends AbstractFunction< PolynomialFunction > i
 	}
 
 	@Override
-	public PolynomialFunction copy()
+	public HigherOrderPolynomialFunction copy()
 	{
-		final PolynomialFunction c = new PolynomialFunction( degree );
+		final HigherOrderPolynomialFunction c = new HigherOrderPolynomialFunction( degree );
 
 		for (int j = degree; j >= 0; j--)
 			c.coeff[j] = getCoefficient(j);
@@ -140,6 +192,9 @@ public class PolynomialFunction extends AbstractFunction< PolynomialFunction > i
 		points.add(new Point(new double[] { 8f, 76.48754f }));
 		points.add(new Point(new double[] { 9f, 89.00033f }));
 
+		//for ( int n = 0; n < 100000; ++n )
+		//	points.add(new Point(new double[] { 9f+n, 89.00033f }));
+		
 		final ArrayList<PointFunctionMatch> candidates = new ArrayList<PointFunctionMatch>();
 		final ArrayList<PointFunctionMatch> inliersPoly = new ArrayList<PointFunctionMatch>();
 		long startTime = System.nanoTime();
@@ -148,7 +203,7 @@ public class PolynomialFunction extends AbstractFunction< PolynomialFunction > i
 
 		final int degree = 2;
 		// Using the polynomial model to do the fitting
-		final PolynomialFunction regression = new PolynomialFunction(degree);
+		final HigherOrderPolynomialFunction regression = new HigherOrderPolynomialFunction(degree);
 
 		regression.ransac( candidates, inliersPoly, 100, 0.1, 0.5 );
 
