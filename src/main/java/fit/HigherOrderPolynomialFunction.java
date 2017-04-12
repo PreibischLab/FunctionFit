@@ -7,7 +7,6 @@ import java.util.Random;
 import Jama.Matrix;
 import Jama.QRDecomposition;
 import mpicbg.models.IllDefinedDataPointsException;
-import mpicbg.models.NoninvertibleModelException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 
@@ -169,6 +168,7 @@ public class HigherOrderPolynomialFunction extends AbstractFunction< HigherOrder
 	public int degree() { return degree; }
 
 	// Horner's method to get y values correspoing to x
+	@Override
 	public double predict( final double x )
 	{
 		// horner's method
@@ -178,6 +178,7 @@ public class HigherOrderPolynomialFunction extends AbstractFunction< HigherOrder
 		return y;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws NotEnoughDataPointsException, IllDefinedDataPointsException
 	{
 		final ArrayList<Point> points = new ArrayList<Point>();

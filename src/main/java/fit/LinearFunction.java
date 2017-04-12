@@ -113,6 +113,9 @@ public class LinearFunction extends AbstractFunction< LinearFunction > implement
 	}
 
 	@Override
+	public double predict( final double x ) { return m*x + n; }
+
+	@Override
 	public LinearFunction copy()
 	{
 		LinearFunction c = new LinearFunction();
@@ -124,6 +127,7 @@ public class LinearFunction extends AbstractFunction< LinearFunction > implement
 		return c;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void main( String[] args ) throws NotEnoughDataPointsException, IllDefinedDataPointsException
 	{
 		final ArrayList< Point > points = new ArrayList<Point>();

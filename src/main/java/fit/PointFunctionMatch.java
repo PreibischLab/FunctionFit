@@ -45,11 +45,13 @@ public class PointFunctionMatch extends PointMatch
 	@Override
 	public Point getP2() { return null; }
 	
+	@SuppressWarnings("unchecked")
 	public void apply( final CoordinateTransform t )
 	{
 		distance = (float)((Function<?,Point>)t).distanceTo( p1 );
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void apply( final CoordinateTransform t, final float amount )
 	{
 		distance = (float)((Function<?,Point>)t).distanceTo( p1 );

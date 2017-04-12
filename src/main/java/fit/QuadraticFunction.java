@@ -36,6 +36,9 @@ public class QuadraticFunction extends AbstractFunction< QuadraticFunction > imp
 	}
 
 	@Override
+	public double predict( final double x ) { return a*x*x + b*x + c; }
+
+	@Override
 	public int getMinNumPoints() { return minNumPoints; }
 
 	@Override
@@ -181,6 +184,7 @@ public class QuadraticFunction extends AbstractFunction< QuadraticFunction > imp
 		return c;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void main( String[] args ) throws NotEnoughDataPointsException, IllDefinedDataPointsException
 	{
 		final ArrayList<Point> points = new ArrayList<Point>();

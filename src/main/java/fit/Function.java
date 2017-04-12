@@ -3,7 +3,6 @@ package fit;
 import java.util.Collection;
 
 import mpicbg.models.IllDefinedDataPointsException;
-import mpicbg.models.Model;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 
@@ -55,5 +54,14 @@ public interface Function< F extends Function< F, P >, P extends Point >
 	 */
 	public double distanceTo( final P point );
 
+	/**
+	 * @param x
+	 * @return - the corresponding y value
+	 */
+	public double predict( final double x );
+
+	/**
+	 * @return - a copy of the function object
+	 */
 	public F copy();
 }
