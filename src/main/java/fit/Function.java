@@ -55,12 +55,6 @@ public interface Function< F extends Function< F, P >, P extends Point >
 	public double distanceTo( final P point );
 
 	/**
-	 * @param x
-	 * @return - the corresponding y value
-	 */
-	public double predict( final double x );
-
-	/**
 	 * @return - a copy of the function object
 	 */
 	public F copy();
