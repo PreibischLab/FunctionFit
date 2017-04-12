@@ -25,7 +25,7 @@ import mpicbg.models.Point;
  * 
  * @author Stephan Preibisch (stephan.preibisch@gmx.de) & Timothee Lionnet
  */
-public class LinearFunction extends AbstractFunction< LinearFunction > implements Polynomial< Point >
+public class LinearFunction extends AbstractFunction< LinearFunction > implements Polynomial< LinearFunction, Point >
 {
 	private static final long serialVersionUID = 5289346951323596267L;
 

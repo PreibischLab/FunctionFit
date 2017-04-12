@@ -27,7 +27,7 @@ import mpicbg.models.PointMatch;
  * 
  * @author Stephan Preibisch (stephan.preibisch@gmx.de) & Timothee Lionnet
  */
-public abstract class AbstractFunction< M extends AbstractFunction< M > > extends AbstractModel< M > implements Function< Point >
+public abstract class AbstractFunction< M extends AbstractFunction< M > > extends AbstractModel< M > implements Function< M, Point >
 {
 	private static final long serialVersionUID = 26767772990350414L;
 

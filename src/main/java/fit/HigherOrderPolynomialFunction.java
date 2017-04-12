@@ -16,7 +16,7 @@ import mpicbg.models.Point;
  * @author Varun Kapoor, Stephan Preibisch
  * 
  */
-public class HigherOrderPolynomialFunction extends AbstractFunction< HigherOrderPolynomialFunction > implements Polynomial< Point >
+public class HigherOrderPolynomialFunction extends AbstractFunction< HigherOrderPolynomialFunction > implements Polynomial< HigherOrderPolynomialFunction, Point >
 {
 	private static final long serialVersionUID = 5010369758205651325L;
 

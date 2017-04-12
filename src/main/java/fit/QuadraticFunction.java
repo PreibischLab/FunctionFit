@@ -8,7 +8,7 @@ import mpicbg.models.NoninvertibleModelException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 
-public class QuadraticFunction extends AbstractFunction< QuadraticFunction > implements Polynomial< Point >
+public class QuadraticFunction extends AbstractFunction< QuadraticFunction > implements Polynomial< QuadraticFunction, Point >
 {
 	private static final long serialVersionUID = 5289346951323596267L;
 

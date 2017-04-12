@@ -47,12 +47,12 @@ public class PointFunctionMatch extends PointMatch
 	
 	public void apply( final CoordinateTransform t )
 	{
-		distance = (float)((Function<Point>)t).distanceTo( p1 );
+		distance = (float)((Function<?,Point>)t).distanceTo( p1 );
 	}
 	
 	public void apply( final CoordinateTransform t, final float amount )
 	{
-		distance = (float)((Function<Point>)t).distanceTo( p1 );
+		distance = (float)((Function<?,Point>)t).distanceTo( p1 );
 	}
 	
 	@Override
