@@ -1,4 +1,4 @@
-package fit;
+package fit.polynomial;
 
 import java.util.Random;
 

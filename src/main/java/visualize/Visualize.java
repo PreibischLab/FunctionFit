@@ -23,14 +23,17 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import fit.HigherOrderPolynomialFunction;
-import fit.InterpolatedPolynomial;
 import fit.LinearFunction;
-import fit.QuadraticFunction;
+import fit.polynomial.HigherOrderPolynomialFunction;
+import fit.polynomial.InterpolatedPolynomial;
+import fit.polynomial.QuadraticFunction;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 
+/**
+ * @author Stephan Preibisch
+ */
 public class Visualize
 {
 	public static void main( String[] args ) throws NotEnoughDataPointsException, IllDefinedDataPointsException

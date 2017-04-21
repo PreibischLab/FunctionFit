@@ -1,13 +1,19 @@
-package fit;
+package fit.polynomial;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import fit.AbstractFunction;
+import fit.PointFunctionMatch;
+import fit.util.MatrixFunctions;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NoninvertibleModelException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 
+/**
+ * @author Stephan Preibisch and Varun Kapoor
+ */
 public class QuadraticFunction extends AbstractFunction< QuadraticFunction > implements Polynomial< QuadraticFunction, Point >
 {
 	private static final long serialVersionUID = 5289346951323596267L;

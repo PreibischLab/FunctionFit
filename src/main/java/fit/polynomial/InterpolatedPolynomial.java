@@ -1,11 +1,17 @@
-package fit;
+package fit.polynomial;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import fit.AbstractFunction;
+import fit.InterpolatedFunction;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
+
+/**
+ * @author Stephan Preibisch
+ */
 
 public class InterpolatedPolynomial<
 		A extends AbstractFunction< A > & Polynomial< A, Point >,

@@ -1,4 +1,4 @@
-package fit;
+package fit.polynomial;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,14 +6,15 @@ import java.util.Random;
 
 import Jama.Matrix;
 import Jama.QRDecomposition;
+import fit.AbstractFunction;
+import fit.PointFunctionMatch;
+import fit.util.MatrixFunctions;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 
 /**
- * 
  * @author Varun Kapoor, Stephan Preibisch
- * 
  */
 public class HigherOrderPolynomialFunction extends AbstractFunction< HigherOrderPolynomialFunction > implements Polynomial< HigherOrderPolynomialFunction, Point >
 {
