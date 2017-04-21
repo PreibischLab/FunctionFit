@@ -15,7 +15,7 @@ public class InterpolatedPolynomial<
 {
 	private static final long serialVersionUID = 6929934343495578299L;
 
-	Polynomial< ?, Point > interpolatedFunction;
+	public Polynomial< ?, Point > interpolatedFunction;
 
 	public InterpolatedPolynomial( final A a, final B b, double lambda )
 	{
@@ -38,7 +38,7 @@ public class InterpolatedPolynomial<
 			final double x = p.getW()[ 0 ];
 
 			final double y1 = a.predict( x );
-			final double y2 = a.predict( x );
+			final double y2 = b.predict( x );
 
 			interpolatedPoints.add( new Point( new double[]{ x, l1 * y1 + lambda * y2 } ) );
 		}
