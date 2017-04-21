@@ -184,6 +184,9 @@ public class QuadraticFunction extends AbstractFunction< QuadraticFunction > imp
 		return c;
 	}
 
+	@Override
+	public String toString() { return "f(x)=" + getA() + "*x*x + " + getB() + "*x + " + getC(); }
+
 	@SuppressWarnings("deprecation")
 	public static void main( String[] args ) throws NotEnoughDataPointsException, IllDefinedDataPointsException
 	{

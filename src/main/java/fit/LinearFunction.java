@@ -127,6 +127,9 @@ public class LinearFunction extends AbstractFunction< LinearFunction > implement
 		return c;
 	}
 
+	@Override
+	public String toString() { return "f(x)=" + getM() + "*x + " + getN(); }
+
 	@SuppressWarnings("deprecation")
 	public static void main( String[] args ) throws NotEnoughDataPointsException, IllDefinedDataPointsException
 	{
