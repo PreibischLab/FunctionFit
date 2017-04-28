@@ -23,9 +23,9 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import fit.LinearFunction;
 import fit.polynomial.HigherOrderPolynomialFunction;
 import fit.polynomial.InterpolatedPolynomial;
+import fit.polynomial.LinearFunction;
 import fit.polynomial.QuadraticFunction;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
@@ -38,7 +38,6 @@ public class Visualize
 {
 	public static void main( String[] args ) throws NotEnoughDataPointsException, IllDefinedDataPointsException
 	{
-		JPanel panel = new JPanel();
 		XYSeries seriesQ = new XYSeries("quadratic");
 		XYSeries seriesL = new XYSeries("linear");
 		XYSeries seriesI = new XYSeries("intepolated");
@@ -97,8 +96,9 @@ public class Visualize
 		renderer.setSeriesStroke( 2, new BasicStroke ( 1.5f ) );
 
 		//chart.getXYPlot().setRenderer(new XYSplineRenderer(100));
+
+		JPanel panel = new JPanel();
 		ChartPanel chartPanel = new ChartPanel(chart);
-		
 		panel.add(chartPanel);
 
 		JFrame frame = new JFrame();

@@ -33,6 +33,9 @@ import org.jfree.chart.JFreeChart;
 
 import ij.gui.GUI;
 
+/**
+ * @author Stephan Preibisch
+ */
 public class GraphFrame extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = 1L;
