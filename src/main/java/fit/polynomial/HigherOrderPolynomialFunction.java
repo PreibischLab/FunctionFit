@@ -6,7 +6,7 @@ import java.util.Random;
 
 import Jama.Matrix;
 import Jama.QRDecomposition;
-import fit.AbstractFunction;
+import fit.AbstractFunction2D;
 import fit.PointFunctionMatch;
 import fit.util.MatrixFunctions;
 import mpicbg.models.IllDefinedDataPointsException;
@@ -16,7 +16,7 @@ import mpicbg.models.Point;
 /**
  * @author Varun Kapoor, Stephan Preibisch
  */
-public class HigherOrderPolynomialFunction extends AbstractFunction< HigherOrderPolynomialFunction > implements Polynomial< HigherOrderPolynomialFunction, Point >
+public class HigherOrderPolynomialFunction extends AbstractFunction2D< HigherOrderPolynomialFunction > implements Polynomial< HigherOrderPolynomialFunction, Point >
 {
 	private static final long serialVersionUID = 5010369758205651325L;
 

@@ -1,9 +1,10 @@
-package fit;
+package fit.polynomial;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import fit.polynomial.Polynomial;
+import fit.AbstractFunction2D;
+import fit.PointFunctionMatch;
 import fit.util.MatrixFunctions;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
@@ -12,7 +13,7 @@ import mpicbg.models.Point;
 /**
  * @author Stephan Preibisch (stephan.preibisch@gmx.de) & Timothee Lionnet
  */
-public class LinearFunction extends AbstractFunction< LinearFunction > implements Polynomial< LinearFunction, Point >
+public class LinearFunction extends AbstractFunction2D< LinearFunction > implements Polynomial< LinearFunction, Point >
 {
 	private static final long serialVersionUID = 5289346951323596267L;
 
