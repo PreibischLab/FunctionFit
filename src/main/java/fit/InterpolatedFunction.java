@@ -11,7 +11,7 @@ import mpicbg.models.Point;
  * 
  * @author Stephan Preibisch
  */
-public abstract class InterpolatedFunction< A extends AbstractFunction< A >, B extends AbstractFunction< B >, M extends InterpolatedFunction< A, B, M > > extends AbstractFunction< M >
+public abstract class InterpolatedFunction< A extends AbstractFunction< A >, B extends AbstractFunction< B >, M extends InterpolatedFunction< A, B, M > > extends AbstractFunction2D< M >
 {
 	private static final long serialVersionUID = -8524786898599474286L;
 
