@@ -109,7 +109,7 @@ public class InteractiveRANSAC
 		/* JFreeChart */
 		this.dataset = new XYSeriesCollection();
 		this.dataset.addSeries( Tracking.drawPoints( mts ) );
-		this.chart = Tracking.makeChart( dataset );
+		this.chart = Tracking.makeChart( dataset, "Microtubule Length Plot", "Timepoint", "MT Length" );
 		this.jFreeChartFrame = Tracking.display( chart, new Dimension( 1000, 800 ) );
 		Tracking.setColor( chart, 0, new Color( 64, 64, 64 ) );
 		Tracking.setStroke( chart, 0, 0.75f );
