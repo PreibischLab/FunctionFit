@@ -282,10 +282,13 @@ public class InteractiveRANSAC
 			dataset.removeSeries( i );
 
 		final ArrayList< Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > > segments =
-				Tracking.fitAllFunctions( points, function, maxError, minInliers, maxDist );
+				Tracking.findAllFunctions( points, function, maxError, minInliers, maxDist );
 
 		if ( segments == null || segments.size() == 0 )
+		{
+			--updateCount;
 			return;
+		}
 
 		final LinearFunction linear = new LinearFunction();
 		int i = 1, segment = 1;
