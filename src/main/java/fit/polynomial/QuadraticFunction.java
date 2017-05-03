@@ -2,6 +2,7 @@ package fit.polynomial;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import fit.AbstractFunction2D;
 import fit.PointFunctionMatch;
@@ -17,6 +18,9 @@ import mpicbg.models.Point;
 public class QuadraticFunction extends AbstractFunction2D< QuadraticFunction > implements Polynomial< QuadraticFunction, Point >
 {
 	private static final long serialVersionUID = 5289346951323596267L;
+
+	// For initial guesses for Newton Raphson
+	final Random rndx = new Random( 43583458 );
 
 	final int minNumPoints = 3;
 	double a, b, c; // a*x*x + b*x + c
@@ -114,6 +118,8 @@ public class QuadraticFunction extends AbstractFunction2D< QuadraticFunction > i
 		final double x1 = point.getW()[0];
 		final double y1 = point.getW()[1];
 
+		return new NewtonRaphson( rndx, 2 ).run( x1, y1, new double[]{ c, b, a } );
+/*
 		final double a3 = 2 * this.a * this.a ;
 		final double a2 = 3 * this.b * this.a  / a3 ;
 		final double a1 = (2 * this.c * this.a - 2 * this.a * y1 + 1 + this.b * this.b ) / a3;
@@ -173,7 +179,7 @@ public class QuadraticFunction extends AbstractFunction2D< QuadraticFunction > i
 		final double returndistB = NewtonRaphson.distance( x1, y1, xc2, c + b*xc2 + a*xc2*xc2 );
 		final double returndistC = NewtonRaphson.distance( x1, y1, xc3, c + b*xc3 + a*xc3*xc3 );
 
-		return Math.min( returndistA, Math.min( returndistB, returndistC ) );
+		return Math.min( returndistA, Math.min( returndistB, returndistC ) );*/
 	}
 
 	@Override
