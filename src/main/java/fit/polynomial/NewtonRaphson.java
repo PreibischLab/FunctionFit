@@ -11,6 +11,9 @@ import java.util.Random;
  */
 public class NewtonRaphson
 {
+	public static int MAX_ITER = 1000000;
+	public static double MIN_CHANGE = 1.0E-3;
+
 	public double xc, xcNew, polyfunc, polyfuncdiff, delpolyfuncdiff, dmin, dMinDiff, secdelpolyfuncdiff, dminsecdiff;
 	final int degree;
 	final double[] powCache;
@@ -68,8 +71,11 @@ public class NewtonRaphson
 			// precompute the powers
 			updatePowCache( xcNew );
 			computeFunctions( coeff );
+
+			if ( iteration >= MAX_ITER )
+				break;
 		}
-		while ( Math.abs( ( xcNew - xc ) ) > 1.0E-3 );
+		while ( Math.abs( ( xcNew - xc ) ) > MIN_CHANGE );
 
 		// After the solution is found compute the y co-oordinate of the point
 		// on the curve
