@@ -14,10 +14,13 @@ public class NewtonRaphson
 	public double xc, xcNew, polyfunc, polyfuncdiff, delpolyfuncdiff, dmin, dMinDiff, secdelpolyfuncdiff, dminsecdiff;
 	final int degree;
 	final double[] powCache;
+	double damp = 1;
+	final Random rndx;
 
 	public NewtonRaphson( final Random rndx, final int degree )
 	{
 		// Initial guesses for Newton Raphson
+		this.rndx = rndx;
 		this.xc = rndx.nextFloat();
 		this.xcNew = rndx.nextFloat() * rndx.nextFloat();
 		this.degree = degree;
@@ -29,6 +32,8 @@ public class NewtonRaphson
 		updatePowCache( xc );
 		computeFunctions( coeff );
 
+		int iteration = 0;
+
 		do
 		{
 			xc = xcNew;
@@ -37,7 +42,19 @@ public class NewtonRaphson
 			dminsecdiff = (polyfunc - y)*secdelpolyfuncdiff + delpolyfuncdiff * polyfuncdiff + 2 * polyfuncdiff * delpolyfuncdiff ;
 
 			// Compute the first iteration of the new point
-			iterate();
+
+			++iteration;
+
+			if ( iteration % 1000 == 0 )
+			{
+				damp = rndx.nextDouble();
+				iterate();
+				damp = 1;
+			}
+			else
+			{
+				iterate();
+			}
 
 			if ( Double.isNaN( xcNew ) )
 				xcNew = xc;
@@ -97,9 +114,9 @@ public class NewtonRaphson
 		this.xcNew = iterate( xc, dmin, dMinDiff, dminsecdiff );
 	}
 
-	public static double iterate( final double oldpoint, final double function, final double functionderiv, final double functionsecderiv )
+	public double iterate( final double oldpoint, final double function, final double functionderiv, final double functionsecderiv )
 	{
-		return oldpoint -  (function / functionderiv) * (1 + 0.5 * function * functionsecderiv / (functionderiv * functionderiv) );
+		return oldpoint -  (function / functionderiv) * (1 + damp * 0.5 * function * functionsecderiv / (functionderiv * functionderiv) );
 	}
 
 	public static double distance( final double minX, final double minY, final double maxX, final double maxY )
