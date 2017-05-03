@@ -214,12 +214,12 @@ public class Tracking
 		return mts;
 	}
 
-	public static < P extends AbstractFunction2D< P > > Pair< P, ArrayList< PointFunctionMatch > > fitFunctions( final ArrayList< Point > mts, final P function )
+	public static < P extends AbstractFunction2D< P > > Pair< P, ArrayList< PointFunctionMatch > > findFunction( final ArrayList< Point > mts, final P function )
 	{
-		return fitFunctions( mts, function, 3.0, function.getMinNumPoints(), 6 );
+		return findFunction( mts, function, 3.0, function.getMinNumPoints(), 6 );
 	}
 
-	public static < P extends AbstractFunction2D< P > > Pair< P, ArrayList< PointFunctionMatch > > fitFunctions(
+	public static < P extends AbstractFunction2D< P > > Pair< P, ArrayList< PointFunctionMatch > > findFunction(
 			final ArrayList< Point > mts,
 			final P function,
 			final double maxError,
@@ -259,7 +259,10 @@ public class Tracking
 		return new ValuePair< P, ArrayList< PointFunctionMatch > >( function, inliers );
 	}
 
-	public static < P extends AbstractFunction2D< P > > ArrayList< Pair< P, ArrayList< PointFunctionMatch > > > fitAllFunctions(
+	/*
+	 * 			if ( LinearFunction.slopeFits( result.getB(), linear, minSlope, maxSlope ) )
+	 */
+	public static < P extends AbstractFunction2D< P > > ArrayList< Pair< P, ArrayList< PointFunctionMatch > > > findAllFunctions(
 			final ArrayList< Point > mts,
 			final P function,
 			final double maxError,
@@ -277,7 +280,7 @@ public class Tracking
 		{
 			fitted = false;
 
-			final Pair< P, ArrayList< PointFunctionMatch > > f = fitFunctions( remainingPoints, function.copy(), maxError, minNumInliers, maxDist );
+			final Pair< P, ArrayList< PointFunctionMatch > > f = findFunction( remainingPoints, function.copy(), maxError, minNumInliers, maxDist );
 
 			if ( f != null && f.getB().size() > 0 )
 			{
@@ -296,7 +299,8 @@ public class Tracking
 		return segments;
 	}
 
-	public static Pair< LinearFunction, ArrayList< PointFunctionMatch > > fitFunctions(
+	
+	public static Pair< LinearFunction, ArrayList< PointFunctionMatch > > findLinearFunction(
 			final ArrayList< Point > mts,
 			final double maxError,
 			final int minNumInliers,
@@ -358,7 +362,7 @@ public class Tracking
 	{
 		final ArrayList< Pair< Integer, Double > > mts = loadMT( new File( "track/TestR0.3KymoVarun-end0.txt" ) );
 
-		final Pair< LinearFunction, ArrayList< PointFunctionMatch > > result = fitFunctions( toPoints( mts ), new LinearFunction() );
+		final Pair< LinearFunction, ArrayList< PointFunctionMatch > > result = findFunction( toPoints( mts ), new LinearFunction() );
 		final Pair< Double, Double > minMax = fromTo( result.getB() );
 
 		final XYSeriesCollection dataset = new XYSeriesCollection();
