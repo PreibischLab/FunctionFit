@@ -21,6 +21,14 @@ public class QuadraticFunction extends AbstractFunction2D< QuadraticFunction > i
 	final int minNumPoints = 3;
 	double a, b, c; // a*x*x + b*x + c
 
+	public QuadraticFunction() { this( 0, 0, 0 ); }
+	public QuadraticFunction( final double a, final double b, final double c )
+	{
+		this.a = a;
+		this.b = b;
+		this.c = c;
+	}
+
 	public double getA(){ return a; }
 	public double getB(){ return b; }
 	public double getC(){ return c; }

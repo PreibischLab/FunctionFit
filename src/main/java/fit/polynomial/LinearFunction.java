@@ -27,6 +27,13 @@ public class LinearFunction extends AbstractFunction2D< LinearFunction > impleme
 	
 	double m, n; // m*x + n
 
+	public LinearFunction() { this( 0,0 ); }
+	public LinearFunction( final double m, final double n )
+	{
+		this.m = m;
+		this.n = n;
+	}
+
 	/**
 	 * @return - the center of the circle in x
 	 */
