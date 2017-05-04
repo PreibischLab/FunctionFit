@@ -395,18 +395,18 @@ public class InteractiveRANSAC
 		// f(x)=2.8771005804772987E-4*x*x + 0.7064559992901991*x + 
 		// 89.0, 24.461: ?
 
-		/*
+		
 		final Point p = new Point( new double[] { 89.0, 24.461 } );
 		final LinearFunction l = new LinearFunction( 0.8016159267471901, -50.06414413893526 );
 		final QuadraticFunction q = new QuadraticFunction( 2.8771005804772987E-4, 0.7064559992901991, -42.770472596275795 );
 		System.out.println( p.getW()[ 0 ] + ", " + p.getW()[ 1 ] + ": " +  l.distanceTo( p ) );
 		System.out.println( p.getW()[ 0 ] + ", " + p.getW()[ 1 ] + ": " +  q.distanceTo( p ) );
-		*/
+		
 
 		//fail? 245.0, 140.653 f: f(x)=0.0014502283282575579*x*x + 0.340561913488294*x + -15.539662618320108
-		final QuadraticFunction q = new QuadraticFunction( 0.0014502283282575579, 0.340561913488294, -15.539662618320108 );
-		System.out.println( q.distanceTo( new Point( new double[]{ 245.0, 140.653 } ) ) );
+	//	final QuadraticFunction q = new QuadraticFunction( 0.0014502283282575579, 0.340561913488294, -15.539662618320108 );
+	//	System.out.println( q.distanceTo( new Point( new double[]{ 245.0, 140.653 } ) ) );
 
-		new InteractiveRANSAC( Tracking.loadMT( new File( "track/TestR0.3KymoVarun-end0.txt" ) ) );
+		//new InteractiveRANSAC( Tracking.loadMT( new File( "track/TestR0.3KymoVarun-end0.txt" ) ) );
 	}
 }

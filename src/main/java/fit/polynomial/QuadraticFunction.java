@@ -118,8 +118,8 @@ public class QuadraticFunction extends AbstractFunction2D< QuadraticFunction > i
 		final double x1 = point.getW()[0];
 		final double y1 = point.getW()[1];
 
-		return new NewtonRaphson( rndx, 2 ).run( x1, y1, new double[]{ c, b, a } );
-/*
+	//	return new NewtonRaphson( rndx, 2 ).run( x1, y1, new double[]{ c, b, a } );
+
 		final double a3 = 2 * this.a * this.a ;
 		final double a2 = 3 * this.b * this.a  / a3 ;
 		final double a1 = (2 * this.c * this.a - 2 * this.a * y1 + 1 + this.b * this.b ) / a3;
@@ -133,12 +133,13 @@ public class QuadraticFunction extends AbstractFunction2D< QuadraticFunction > i
 
 		final double xc1, xc2, xc3;
 
+		
 		if ( tmp2 > 0 )
 		{
-			final double aBar = Math.pow(-q/2 + Math.sqrt( q * q / 4 + p * p * p / 27), 1.0/3.0);
-			final double bBar = Math.pow(-q/2 - Math.sqrt( q * q / 4 + p * p * p / 27), 1.0/3.0);
+			final double aBar = Math.cbrt(-q/2 + Math.sqrt( q * q / 4 + p * p * p / 27));
+			final double bBar = Math.cbrt(-q/2 - Math.sqrt( q * q / 4 + p * p * p / 27));
 
-			xc1 = xc2 = xc3 = aBar + bBar;
+			xc1 = xc2 = xc3 = aBar + bBar -  a2 / 3;
 		}
 		else if ( tmp2 == 0 )
 		{
@@ -179,7 +180,8 @@ public class QuadraticFunction extends AbstractFunction2D< QuadraticFunction > i
 		final double returndistB = NewtonRaphson.distance( x1, y1, xc2, c + b*xc2 + a*xc2*xc2 );
 		final double returndistC = NewtonRaphson.distance( x1, y1, xc3, c + b*xc3 + a*xc3*xc3 );
 
-		return Math.min( returndistA, Math.min( returndistB, returndistC ) );*/
+		return Math.min( returndistA, Math.min( returndistB, returndistC ) );
+		
 	}
 
 	@Override
