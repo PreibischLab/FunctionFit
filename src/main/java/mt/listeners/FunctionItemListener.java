@@ -5,9 +5,9 @@ import java.awt.event.ItemListener;
 
 public class FunctionItemListener implements ItemListener
 {
-	final InteractiveRANSAC parent;
+	final InteractiveRANSAC_ parent;
 
-	public FunctionItemListener( final InteractiveRANSAC parent )
+	public FunctionItemListener( final InteractiveRANSAC_ parent )
 	{
 		this.parent = parent;
 	}

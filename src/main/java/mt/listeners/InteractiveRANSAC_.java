@@ -13,6 +13,8 @@ import java.awt.Scrollbar;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
+
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -23,11 +25,14 @@ import fit.polynomial.InterpolatedPolynomial;
 import fit.polynomial.LinearFunction;
 import fit.polynomial.Polynomial;
 import fit.polynomial.QuadraticFunction;
+import ij.ImageJ;
+import ij.plugin.PlugIn;
 import mpicbg.models.Point;
+import mt.RansacFileChooser_;
 import mt.Tracking;
 import net.imglib2.util.Pair;
 
-public class InteractiveRANSAC
+public class InteractiveRANSAC_ implements PlugIn
 {
 	public static int MIN_SLIDER = 0;
 	public static int MAX_SLIDER = 500;
@@ -62,13 +67,13 @@ public class InteractiveRANSAC
 	int minInliers = 50;
 
 	protected boolean wasCanceled = false;
-
-	public InteractiveRANSAC( final ArrayList< Pair< Integer, Double > > mts )
+	
+	public InteractiveRANSAC_( final ArrayList< Pair< Integer, Double > > mts )
 	{
 		this( mts, 0, 300, 3.0, 0.1, 10.0, 10, 50, 1, 0.1 );
 	}
 
-	public InteractiveRANSAC(
+	public InteractiveRANSAC_(
 			final ArrayList< Pair< Integer, Double > > mts,
 			final int minTP,
 			final int maxTP,
@@ -105,17 +110,30 @@ public class InteractiveRANSAC
 		this.maxError = computeValueFromScrollbarPosition( this.maxErrorInt, MAX_SLIDER, MIN_ERROR, MAX_ERROR );
 		this.minSlope = computeValueFromDoubleExpScrollbarPosition( this.minSlopeInt, MAX_SLIDER, MAX_ABS_SLOPE );
 		this.maxSlope = computeValueFromDoubleExpScrollbarPosition( this.maxSlopeInt, MAX_SLIDER, MAX_ABS_SLOPE );
-
-		/* JFreeChart */
 		this.dataset = new XYSeriesCollection();
-		this.dataset.addSeries( Tracking.drawPoints( mts ) );
 		this.chart = Tracking.makeChart( dataset, "Microtubule Length Plot", "Timepoint", "MT Length" );
 		this.jFreeChartFrame = Tracking.display( chart, new Dimension( 1000, 800 ) );
+		this.frame = new Frame( "Interactive MicroTubule Finder" );
+
+
+	};
+	@Override
+	public void run(String arg){
+		/* JFreeChart */
+		
+		this.dataset.addSeries( Tracking.drawPoints( mts ) );
 		Tracking.setColor( chart, 0, new Color( 64, 64, 64 ) );
 		Tracking.setStroke( chart, 0, 0.75f );
+		Card();
+		updateRANSAC();
+		
+	}
+	
+	public void Card(){
+	
+		
 
 		/* GUI */
-		this.frame = new Frame( "Interactive MicroTubule Finder" );
 		this.frame.setSize( 400, 450 );
 
 		/* Instantiation */
@@ -388,25 +406,18 @@ public class InteractiveRANSAC
 		return (int)Math.round( ( ( value - minValue ) / ( maxValue - minValue ) ) * scrollbarMax );
 	}
 
+	
 	public static void main( String[] args )
 	{
-		// f(x)=0.8016159267471901*x + -50.06414413893526
-		// 89.0, 24.461: 2.4822409125690723
-		// f(x)=2.8771005804772987E-4*x*x + 0.7064559992901991*x + 
-		// 89.0, 24.461: ?
 
-		
-		final Point p = new Point( new double[] { 89.0, 24.461 } );
-		final LinearFunction l = new LinearFunction( 0.8016159267471901, -50.06414413893526 );
-		final QuadraticFunction q = new QuadraticFunction( 2.8771005804772987E-4, 0.7064559992901991, -42.770472596275795 );
-		System.out.println( p.getW()[ 0 ] + ", " + p.getW()[ 1 ] + ": " +  l.distanceTo( p ) );
-		System.out.println( p.getW()[ 0 ] + ", " + p.getW()[ 1 ] + ": " +  q.distanceTo( p ) );
-		
+		JFrame frame = new JFrame("");
+		RansacFileChooser_ panel = new RansacFileChooser_();
 
-		//fail? 245.0, 140.653 f: f(x)=0.0014502283282575579*x*x + 0.340561913488294*x + -15.539662618320108
-	//	final QuadraticFunction q = new QuadraticFunction( 0.0014502283282575579, 0.340561913488294, -15.539662618320108 );
-	//	System.out.println( q.distanceTo( new Point( new double[]{ 245.0, 140.653 } ) ) );
+		frame.getContentPane().add(panel, "Center");
+		frame.setSize(panel.getPreferredSize());
 
-		//new InteractiveRANSAC( Tracking.loadMT( new File( "track/TestR0.3KymoVarun-end0.txt" ) ) );
+	//	new InteractiveRANSAC( Tracking.loadMT( new File( "/Users/varunkapoor/Documents/MTAnalysisRansac/TestRanSacSeedLabel3-endA.txt" ) ) );
 	}
+	
+	
 }

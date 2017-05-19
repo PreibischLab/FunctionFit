@@ -360,7 +360,7 @@ public class Tracking
 
 	public static void main( String[] args ) throws IOException
 	{
-		final ArrayList< Pair< Integer, Double > > mts = loadMT( new File( "track/TestR0.3KymoVarun-end0.txt" ) );
+		final ArrayList< Pair< Integer, Double > > mts = loadMT( new File( "/Users/varunkapoor/Documents/MTAnalysisRansac/TestRanSacSeedLabel3-endA.txt" ) );
 
 		final Pair< LinearFunction, ArrayList< PointFunctionMatch > > result = findFunction( toPoints( mts ), new LinearFunction() );
 		final Pair< Double, Double > minMax = fromTo( result.getB() );

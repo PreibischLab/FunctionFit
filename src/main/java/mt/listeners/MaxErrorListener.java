@@ -7,10 +7,10 @@ import java.awt.event.AdjustmentListener;
 
 public class MaxErrorListener implements AdjustmentListener
 {
-	final InteractiveRANSAC parent;
+	final InteractiveRANSAC_ parent;
 	final Label label;
 
-	public MaxErrorListener( final InteractiveRANSAC parent, final Label label, final Scrollbar bar )
+	public MaxErrorListener( final InteractiveRANSAC_ parent, final Label label, final Scrollbar bar )
 	{
 		this.parent = parent;
 		this.label = label;
@@ -20,11 +20,11 @@ public class MaxErrorListener implements AdjustmentListener
 	@Override
 	public void adjustmentValueChanged( final AdjustmentEvent event )
 	{
-		parent.maxError = InteractiveRANSAC.computeValueFromScrollbarPosition(
+		parent.maxError = InteractiveRANSAC_.computeValueFromScrollbarPosition(
 				event.getValue(),
-				InteractiveRANSAC.MAX_SLIDER,
-				InteractiveRANSAC.MIN_ERROR,
-				InteractiveRANSAC.MAX_ERROR );
+				InteractiveRANSAC_.MAX_SLIDER,
+				InteractiveRANSAC_.MIN_ERROR,
+				InteractiveRANSAC_.MAX_ERROR );
 
 		label.setText( "Max. Error (px) = " + parent.maxError );
 	}
