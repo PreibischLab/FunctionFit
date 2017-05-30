@@ -27,6 +27,7 @@ import fit.polynomial.InterpolatedPolynomial;
 import fit.polynomial.LinearFunction;
 import fit.polynomial.Polynomial;
 import fit.polynomial.QuadraticFunction;
+import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 import mt.listeners.CatastrophyCheckBoxListener;
 import mt.listeners.FinishButtonListener;
@@ -147,7 +148,7 @@ public class InteractiveRANSAC
 
 		final Scrollbar maxErrorSB = new Scrollbar( Scrollbar.HORIZONTAL, this.maxErrorInt, 1, MIN_SLIDER, MAX_SLIDER + 1 );
 		final Scrollbar minInliersSB = new Scrollbar( Scrollbar.HORIZONTAL, this.minInliers, 1, 2, numTimepoints + 1 );
-		final Scrollbar maxDistSB = new Scrollbar( Scrollbar.HORIZONTAL, this.maxDist, 1, 0, numTimepoints + 1 );
+		final Scrollbar maxDistSB = new Scrollbar( Scrollbar.HORIZONTAL, this.maxDist, 1, 1, numTimepoints + 1 );
 		final Scrollbar minSlopeSB = new Scrollbar( Scrollbar.HORIZONTAL, this.minSlopeInt, 1, MIN_SLIDER, MAX_SLIDER + 1 );
 		final Scrollbar maxSlopeSB = new Scrollbar( Scrollbar.HORIZONTAL, this.maxSlopeInt, 1, MIN_SLIDER, MAX_SLIDER + 1 );
 
@@ -333,6 +334,7 @@ public class InteractiveRANSAC
 			return;
 		}
 
+		// sort the segments according to time relative to each other and the PointFunctionMatches internally
 		sort( segments );
 
 		final LinearFunction linear = new LinearFunction();
@@ -384,6 +386,48 @@ public class InteractiveRANSAC
 			}
 		}
 
+		if ( this.detectCatastrophe )
+		{
+			if ( segments.size() <= 2 )
+			{
+				System.out.println( "We have only " + segments.size() + " segments, need at least two to detect catastrophies." );
+			}
+			else
+			{
+				for ( int catastrophy = 0; catastrophy < segments.size() - 1; ++catastrophy )
+				{
+					final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > start = segments.get( catastrophy );
+					final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > end = segments.get( catastrophy + 1 );
+
+					final double tStart = start.getB().get( start.getB().size() -1 ).getP1().getL()[ 0 ];
+					final double tEnd = end.getB().get( 0 ).getP1().getL()[ 0 ];
+
+					final ArrayList< Point > catastropyPoints = new ArrayList< Point >();
+
+					for ( final Point p : points )
+						if ( p.getL()[ 0 ] >= tStart && p.getL()[ 0 ] <= tEnd )
+							catastropyPoints.add( p );
+
+					System.out.println( "\ncatastropy" );
+					for ( final Point p : catastropyPoints)
+						System.out.println( p.getL()[ 0 ] + ", " + p.getL()[ 1 ] );
+
+					if ( catastropyPoints.size() > 2 )
+					{
+						// maximally 1.1 timepoints between points on a line
+						final Pair< LinearFunction, ArrayList< PointFunctionMatch > > fit = Tracking.findFunction( catastropyPoints, new LinearFunction(), 0.75, 3, 1.1 );
+
+						if ( fit != null )
+							System.out.println( fit.getA() );
+					}
+					else
+					{
+						System.out.println( "We have only " + catastropyPoints.size() + " points, need at least three to detect this catastrophy." );
+					}
+				}
+			}
+		}
+
 		--updateCount;
 	}
 
@@ -429,12 +473,14 @@ public class InteractiveRANSAC
 			}
 		} );
 
+		/*
 		for ( final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > segment : segments )
 		{
 			System.out.println( "\nSEGMENT" );
 			for ( final PointFunctionMatch pm : segment.getB() )
 				System.out.println( pm.getP1().getL()[ 0 ] + ", " + pm.getP1().getL()[ 1 ] );
 		}
+		*/
 	}
 
 	public void close()
@@ -485,6 +531,37 @@ public class InteractiveRANSAC
 
 	public static void main( String[] args )
 	{
+		/*
+		final Point p0 = new Point( new double[]{ 279.0, 71.008 } );
+		final Point p1 = new Point( new double[]{ 280.0, 42.292 } );
+		final Point p2 = new Point( new double[]{ 281.0, 24.248 } );
+		final Point p3 = new Point( new double[]{ 282.0, 9.681 } );
+
+		final ArrayList< Point > points = new ArrayList< Point >();
+		points.add( p0 );
+		points.add( p1 );
+		points.add( p2 );
+		points.add( p3 );
+
+		LinearFunction f = new LinearFunction();
+		try
+		{
+			f.fitFunction( points );
+			System.out.println( f );
+			
+			for ( final Point p : points )
+				System.out.println( f.distanceTo( p ) );
+
+		} catch ( NotEnoughDataPointsException e )
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		final Pair< LinearFunction, ArrayList< PointFunctionMatch > > fit = Tracking.findFunction( points, new LinearFunction(), 0.5, 3, 1.5 );
+		
+		System.exit( 0 );
+		*/
 		// f(x)=0.8016159267471901*x + -50.06414413893526
 		// 89.0, 24.461: 2.4822409125690723
 		// f(x)=2.8771005804772987E-4*x*x + 0.7064559992901991*x + 
