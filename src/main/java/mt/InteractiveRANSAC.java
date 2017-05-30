@@ -352,11 +352,13 @@ public class InteractiveRANSAC
 				if ( functionChoice > 0 )
 				{
 					Tracking.setColor( chart, i, new Color( 255, 0, 0 ) );
+					Tracking.setDisplayType( chart, i, true, false );
 					Tracking.setStroke( chart, i, 0.5f );
 				}
 				else
 				{
 					Tracking.setColor( chart, i, new Color( 0, 128, 0 ) );
+					Tracking.setDisplayType( chart, i, true, false );
 					Tracking.setStroke( chart, i, 2f );
 				}
 
@@ -367,6 +369,7 @@ public class InteractiveRANSAC
 					dataset.addSeries( Tracking.drawFunction( linear, minMax.getA(), minMax.getB(), 0.5, "Linear Segment " + segment ) );
 	
 					Tracking.setColor( chart, i, new Color( 0, 128, 0 ) );
+					Tracking.setDisplayType( chart, i, true, false );
 					Tracking.setStroke( chart, i, 2f );
 	
 					++i;
@@ -439,6 +442,7 @@ public class InteractiveRANSAC
 									dataset.addSeries( Tracking.drawFunction( (Polynomial)fit.getA(), minMax.getA()-1, minMax.getB()+1, 0.1, minY - 2.5, maxY + 2.5, "C " + catastrophy ) );
 
 									Tracking.setColor( chart, i, new Color( 0, 0, 255 ) );
+									Tracking.setDisplayType( chart, i, true, false );
 									Tracking.setStroke( chart, i, 2f );
 
 									++i;
