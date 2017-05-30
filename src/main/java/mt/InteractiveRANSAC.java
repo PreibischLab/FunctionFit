@@ -1,8 +1,10 @@
-package mt.listeners;
+package mt;
 
 import java.awt.Button;
+import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -12,6 +14,8 @@ import java.awt.Label;
 import java.awt.Scrollbar;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -24,7 +28,17 @@ import fit.polynomial.LinearFunction;
 import fit.polynomial.Polynomial;
 import fit.polynomial.QuadraticFunction;
 import mpicbg.models.Point;
-import mt.Tracking;
+import mt.listeners.CatastrophyCheckBoxListener;
+import mt.listeners.FinishButtonListener;
+import mt.listeners.FrameListener;
+import mt.listeners.FunctionItemListener;
+import mt.listeners.LambdaListener;
+import mt.listeners.MaxDistListener;
+import mt.listeners.MaxErrorListener;
+import mt.listeners.MaxSlopeListener;
+import mt.listeners.MinCatastrophyDistanceListener;
+import mt.listeners.MinInliersListener;
+import mt.listeners.MinSlopeListener;
 import net.imglib2.util.Pair;
 
 public class InteractiveRANSAC
@@ -37,10 +51,13 @@ public class InteractiveRANSAC
 
 	public static double MAX_ABS_SLOPE = 100.0;
 
+	public static double MIN_CAT = 0.0;
+	public static double MAX_CAT = 100.0;
+
 	final Frame frame, jFreeChartFrame;
-	int functionChoice; // 0 == Linear, 1 == Quadratic interpolated, 2 == cubic interpolated
+	public int functionChoice; // 0 == Linear, 1 == Quadratic interpolated, 2 == cubic interpolated
 	AbstractFunction2D function;
-	double lambda;
+	public double lambda;
 	final ArrayList< Pair< Integer, Double > > mts;
 	final ArrayList< Point > points;
 	final int numTimepoints, minTP, maxTP;
@@ -50,22 +67,24 @@ public class InteractiveRANSAC
 
 	final XYSeriesCollection dataset;
 	final JFreeChart chart;
-	int updateCount = 0;
+	public int updateCount = 0;
 
 	// for scrollbars
-	int maxErrorInt, lambdaInt, minSlopeInt, maxSlopeInt;
+	int maxErrorInt, lambdaInt, minSlopeInt, maxSlopeInt, minDistCatInt;
 
-	double maxError = 3.0;
-	double minSlope = 0.1;
-	double maxSlope = 100;
-	int maxDist = 300;
-	int minInliers = 50;
+	public double maxError = 3.0;
+	public double minSlope = 0.1;
+	public double maxSlope = 100;
+	public int maxDist = 300;
+	public int minInliers = 50;
+	public boolean detectCatastrophe = false;
+	public double minDistanceCatastrophe = 20;
 
-	protected boolean wasCanceled = false;
+	public boolean wasCanceled = false;
 
 	public InteractiveRANSAC( final ArrayList< Pair< Integer, Double > > mts )
 	{
-		this( mts, 0, 300, 3.0, 0.1, 10.0, 10, 50, 1, 0.1 );
+		this( mts, 0, 300, 3.0, 0.1, 10.0, 7, 8, 20.0, 1, 0.1 );
 	}
 
 	public InteractiveRANSAC(
@@ -77,6 +96,7 @@ public class InteractiveRANSAC
 			final double maxSlope,
 			final int maxDist,
 			final int minInliers,
+			final double minDistanceCatastrophe,
 			final int functionChoice,
 			final double lambda )
 	{
@@ -93,6 +113,7 @@ public class InteractiveRANSAC
 		this.maxSlope = maxSlope;
 		this.maxDist = Math.min( maxDist, numTimepoints );
 		this.minInliers = Math.min( minInliers, numTimepoints );
+		this.minDistanceCatastrophe = minDistanceCatastrophe;
 
 		if ( this.minSlope >= this.maxSlope )
 			this.minSlope = this.maxSlope - 0.1;
@@ -101,10 +122,12 @@ public class InteractiveRANSAC
 		this.lambdaInt = computeScrollbarPositionFromValue( MAX_SLIDER, this.lambda, 0.0, 1.0 );
 		this.minSlopeInt = computeScrollbarPositionValueFromDoubleExp( MAX_SLIDER, this.minSlope, MAX_ABS_SLOPE );
 		this.maxSlopeInt = computeScrollbarPositionValueFromDoubleExp( MAX_SLIDER, this.maxSlope, MAX_ABS_SLOPE );
+		this.minDistCatInt = computeScrollbarPositionFromValue( MAX_SLIDER, this.minDistanceCatastrophe, MIN_CAT, MAX_CAT );
 
 		this.maxError = computeValueFromScrollbarPosition( this.maxErrorInt, MAX_SLIDER, MIN_ERROR, MAX_ERROR );
 		this.minSlope = computeValueFromDoubleExpScrollbarPosition( this.minSlopeInt, MAX_SLIDER, MAX_ABS_SLOPE );
 		this.maxSlope = computeValueFromDoubleExpScrollbarPosition( this.maxSlopeInt, MAX_SLIDER, MAX_ABS_SLOPE );
+		this.minDistanceCatastrophe = computeValueFromScrollbarPosition( this.minDistCatInt, MAX_SLIDER, MIN_CAT, MAX_CAT );
 
 		/* JFreeChart */
 		this.dataset = new XYSeriesCollection();
@@ -116,7 +139,7 @@ public class InteractiveRANSAC
 
 		/* GUI */
 		this.frame = new Frame( "Interactive MicroTubule Finder" );
-		this.frame.setSize( 400, 450 );
+		this.frame.setSize( 400, 500 );
 
 		/* Instantiation */
 		final GridBagLayout layout = new GridBagLayout();
@@ -142,9 +165,14 @@ public class InteractiveRANSAC
 		final Label minSlopeLabel = new Label( "Min. Segment Slope (px/tp) = " + this.minSlope, Label.CENTER );
 		final Label maxSlopeLabel = new Label( "Max. Segment Slope (px/tp) = " + this.maxSlope, Label.CENTER );
 
+		final Checkbox findCatastrophe = new Checkbox( "Detect Catastrophies", this.detectCatastrophe );
+		final Scrollbar minCatDist = new Scrollbar( Scrollbar.HORIZONTAL, this.minDistCatInt, 1, MIN_SLIDER, MAX_SLIDER + 1 );
+		final Label minCatDistLabel = new Label( "Min. Catatastrophy height (tp) = " + this.minDistanceCatastrophe, Label.CENTER );
+
 		final Button done = new Button( "Done" );
 		final Button cancel = new Button( "Cancel" );
 
+		findCatastrophe.setState( this.detectCatastrophe );
 		choice.select( functionChoice );
 		setFunction();
 
@@ -206,11 +234,24 @@ public class InteractiveRANSAC
 		frame.add( maxSlopeLabel, c );
 
 		++c.gridy;
-		c.insets = new Insets( 30, 150, 0, 150 );
+		c.insets = new Insets( 20, 120, 0, 120 );
+		frame.add( findCatastrophe, c );
+		c.insets = new Insets( 0, 0, 0, 0 );
+
+		++c.gridy;
+		c.insets = new Insets( 10, 0, 0, 0 );
+		frame.add ( minCatDist, c );
+		c.insets = new Insets( 0, 0, 0, 0 );
+
+		++c.gridy;
+		frame.add( minCatDistLabel, c );
+
+		++c.gridy;
+		c.insets = new Insets( 20, 150, 0, 150 );
 		frame.add( done, c );
 		
 		++c.gridy;
-		c.insets = new Insets( 10, 150, 0, 150 );
+		c.insets = new Insets( 0, 150, 0, 150 );
 		frame.add( cancel, c );
 
 		maxErrorSB.addAdjustmentListener( new MaxErrorListener( this, maxErrorLabel, maxErrorSB ) );
@@ -220,6 +261,8 @@ public class InteractiveRANSAC
 		lambdaSB.addAdjustmentListener( new LambdaListener( this, lambdaLabel, lambdaSB ) );
 		minSlopeSB.addAdjustmentListener( new MinSlopeListener( this, minSlopeSB, minSlopeLabel ) );
 		maxSlopeSB.addAdjustmentListener( new MaxSlopeListener( this, maxSlopeSB, maxSlopeLabel ) );
+		findCatastrophe.addItemListener( new CatastrophyCheckBoxListener( this, findCatastrophe, minCatDistLabel, minCatDist ) );
+		minCatDist.addAdjustmentListener( new MinCatastrophyDistanceListener( this, minCatDistLabel, minCatDist ) );
 		done.addActionListener( new FinishButtonListener( this, false ) );
 		cancel.addActionListener( new FinishButtonListener( this, true ) );
 
@@ -290,6 +333,8 @@ public class InteractiveRANSAC
 			return;
 		}
 
+		sort( segments );
+
 		final LinearFunction linear = new LinearFunction();
 		int i = 1, segment = 1;
 
@@ -342,6 +387,56 @@ public class InteractiveRANSAC
 		--updateCount;
 	}
 
+	protected void sort( final ArrayList< Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > > segments )
+	{
+		for ( final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > segment : segments )
+		{
+			Collections.sort( segment.getB(), new Comparator< PointFunctionMatch >()
+			{
+
+				@Override
+				public int compare( final PointFunctionMatch o1, final PointFunctionMatch o2 )
+				{
+					final double t1 = o1.getP1().getL()[ 0 ];
+					final double t2 = o2.getP1().getL()[ 0 ];
+
+					if ( t1 < t2 )
+						return -1;
+					else if ( t1 == t2 )
+						return 0;
+					else
+						return 1;
+				}
+			} );
+		}
+
+		Collections.sort( segments, new Comparator< Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > >()
+		{
+			@Override
+			public int compare(
+					Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > o1,
+					Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > o2 )
+			{
+				final double t1 = o1.getB().get( 0 ).getP1().getL()[ 0 ];
+				final double t2 = o2.getB().get( 0 ).getP1().getL()[ 0 ];
+
+				if ( t1 < t2 )
+					return -1;
+				else if ( t1 == t2 )
+					return 0;
+				else
+					return 1;
+			}
+		} );
+
+		for ( final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > segment : segments )
+		{
+			System.out.println( "\nSEGMENT" );
+			for ( final PointFunctionMatch pm : segment.getB() )
+				System.out.println( pm.getP1().getL()[ 0 ] + ", " + pm.getP1().getL()[ 1 ] );
+		}
+	}
+
 	public void close()
 	{
 		frame.setVisible( false );
@@ -350,7 +445,7 @@ public class InteractiveRANSAC
 		jFreeChartFrame.dispose();
 	}
 
-	protected static double computeValueFromDoubleExpScrollbarPosition( final int scrollbarPosition, final int scrollbarMax, final double maxValue )
+	public static double computeValueFromDoubleExpScrollbarPosition( final int scrollbarPosition, final int scrollbarMax, final double maxValue )
 	{
 		final int maxScrollHalf = scrollbarMax/2;
 		final int scrollPos = scrollbarPosition - maxScrollHalf;
@@ -365,7 +460,7 @@ public class InteractiveRANSAC
 			return value;
 	}
 
-	protected static int computeScrollbarPositionValueFromDoubleExp( final int scrollbarMax, final double value, final double maxValue )
+	public static int computeScrollbarPositionValueFromDoubleExp( final int scrollbarMax, final double value, final double maxValue )
 	{
 		final int maxScrollHalf = scrollbarMax/2;
 		final double logMax = Math.log10( maxScrollHalf + 1 );
@@ -378,12 +473,12 @@ public class InteractiveRANSAC
 		return scrollPos + maxScrollHalf;
 	}
 
-	protected static double computeValueFromScrollbarPosition( final int scrollbarPosition, final int scrollbarMax, final double minValue, final double maxValue )
+	public static double computeValueFromScrollbarPosition( final int scrollbarPosition, final int scrollbarMax, final double minValue, final double maxValue )
 	{
 		return minValue + ( scrollbarPosition/(double)scrollbarMax ) * ( maxValue - minValue );
 	}
 
-	protected static int computeScrollbarPositionFromValue( final int scrollbarMax, final double value, final double minValue, final double maxValue )
+	public static int computeScrollbarPositionFromValue( final int scrollbarMax, final double value, final double minValue, final double maxValue )
 	{
 		return (int)Math.round( ( ( value - minValue ) / ( maxValue - minValue ) ) * scrollbarMax );
 	}
@@ -407,6 +502,6 @@ public class InteractiveRANSAC
 		final QuadraticFunction q = new QuadraticFunction( 0.0014502283282575579, 0.340561913488294, -15.539662618320108 );
 		System.out.println( q.distanceTo( new Point( new double[]{ 245.0, 140.653 } ) ) );
 
-		new InteractiveRANSAC( Tracking.loadMT( new File( "track/TestR0.3KymoVarun-end0.txt" ) ) );
+		new InteractiveRANSAC( Tracking.loadMT( new File( "track/2017-02-01_porcine_cy5seeds_cy3_12uM002_concatenatedSeedLabel2-endA.txt" ) ) );
 	}
 }

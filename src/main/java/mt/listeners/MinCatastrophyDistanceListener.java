@@ -7,12 +7,12 @@ import java.awt.event.AdjustmentListener;
 
 import mt.InteractiveRANSAC;
 
-public class MaxErrorListener implements AdjustmentListener
+public class MinCatastrophyDistanceListener implements AdjustmentListener
 {
 	final InteractiveRANSAC parent;
 	final Label label;
 
-	public MaxErrorListener( final InteractiveRANSAC parent, final Label label, final Scrollbar bar )
+	public MinCatastrophyDistanceListener( final InteractiveRANSAC parent, final Label label, final Scrollbar bar )
 	{
 		this.parent = parent;
 		this.label = label;
@@ -22,12 +22,12 @@ public class MaxErrorListener implements AdjustmentListener
 	@Override
 	public void adjustmentValueChanged( final AdjustmentEvent event )
 	{
-		parent.maxError = InteractiveRANSAC.computeValueFromScrollbarPosition(
+		parent.minDistanceCatastrophe = InteractiveRANSAC.computeValueFromScrollbarPosition(
 				event.getValue(),
 				InteractiveRANSAC.MAX_SLIDER,
-				InteractiveRANSAC.MIN_ERROR,
-				InteractiveRANSAC.MAX_ERROR );
+				InteractiveRANSAC.MIN_CAT,
+				InteractiveRANSAC.MAX_CAT );
 
-		label.setText( "Max. Error (px) = " + parent.maxError );
+		label.setText( "Min. Catatastrophy height (tp) = " + parent.minDistanceCatastrophe );
 	}
 }

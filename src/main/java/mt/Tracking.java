@@ -234,7 +234,7 @@ public class Tracking
 
 		try
 		{
-			function.ransac( candidates, inliers, 100, maxError, 0, minNumInliers, maxDist );
+			function.ransac( candidates, inliers, 200, maxError, 0, minNumInliers, maxDist );
 
 			if ( inliers.size() >= function.getMinNumPoints() )
 			{

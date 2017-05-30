@@ -3,6 +3,8 @@ package mt.listeners;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import mt.InteractiveRANSAC;
+
 public class FinishButtonListener implements ActionListener
 {
 	final InteractiveRANSAC parent;

@@ -5,6 +5,8 @@ import java.awt.Scrollbar;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
+import mt.InteractiveRANSAC;
+
 public class MaxSlopeListener implements AdjustmentListener
 {
 	final InteractiveRANSAC parent;

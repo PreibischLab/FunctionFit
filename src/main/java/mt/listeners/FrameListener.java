@@ -3,6 +3,8 @@ package mt.listeners;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import mt.InteractiveRANSAC;
+
 public class FrameListener extends WindowAdapter
 {
 	final InteractiveRANSAC parent;

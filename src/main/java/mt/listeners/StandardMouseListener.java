@@ -3,6 +3,8 @@ package mt.listeners;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import mt.InteractiveRANSAC;
+
 /**
  * Updates when mouse is released
  * 
