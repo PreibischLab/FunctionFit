@@ -4,7 +4,6 @@ import java.awt.Button;
 import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Color;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -28,7 +27,6 @@ import fit.polynomial.InterpolatedPolynomial;
 import fit.polynomial.LinearFunction;
 import fit.polynomial.Polynomial;
 import fit.polynomial.QuadraticFunction;
-import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 import mt.listeners.CatastrophyCheckBoxListener;
 import mt.listeners.FinishButtonListener;
@@ -86,7 +84,7 @@ public class InteractiveRANSAC
 
 	public InteractiveRANSAC( final ArrayList< Pair< Integer, Double > > mts )
 	{
-		this( mts, 0, 300, 3.0, 0.1, 10.0, 7, 8, 20.0, 1, 0.1 );
+		this( mts, 0, 300, 3.0, 0.1, 10.0, 7, 8, 20.0, 1, 0.3 );
 	}
 
 	public InteractiveRANSAC(
@@ -343,7 +341,7 @@ public class InteractiveRANSAC
 
 		for ( final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > result : segments )
 		{
-			if ( LinearFunction.slopeFits( result.getB(), linear, minSlope, maxSlope ) )
+			if ( LinearFunction.slopeFits( result.getB(), linear, minSlope, maxSlope ) || i > 0 )
 			{
 				final Pair< Double, Double > minMax = Tracking.fromTo( result.getB() );
 		
@@ -621,7 +619,7 @@ public class InteractiveRANSAC
 
 		//final Pair< LinearFunction, ArrayList< PointFunctionMatch > > fit = Tracking.findFunction( points, new LinearFunction(), 0.5, 3, 1.5 );
 		
-		System.exit( 0 );
+		//System.exit( 0 );
 		// f(x)=0.8016159267471901*x + -50.06414413893526
 		// 89.0, 24.461: 2.4822409125690723
 		// f(x)=2.8771005804772987E-4*x*x + 0.7064559992901991*x + 
