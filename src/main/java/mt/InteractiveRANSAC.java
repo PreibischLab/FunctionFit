@@ -528,14 +528,13 @@ public class InteractiveRANSAC
 			}
 		} );
 
-		/*
+
 		for ( final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > segment : segments )
 		{
 			System.out.println( "\nSEGMENT" );
 			for ( final PointFunctionMatch pm : segment.getB() )
 				System.out.println( pm.getP1().getL()[ 0 ] + ", " + pm.getP1().getL()[ 1 ] );
 		}
-		*/
 	}
 
 	public void close()
@@ -586,19 +585,26 @@ public class InteractiveRANSAC
 
 	public static void main( String[] args )
 	{
-		/*
-		final Point p0 = new Point( new double[]{ 279.0, 71.008 } );
-		final Point p1 = new Point( new double[]{ 280.0, 42.292 } );
-		final Point p2 = new Point( new double[]{ 281.0, 24.248 } );
-		final Point p3 = new Point( new double[]{ 282.0, 9.681 } );
-
 		final ArrayList< Point > points = new ArrayList< Point >();
-		points.add( p0 );
-		points.add( p1 );
-		points.add( p2 );
-		points.add( p3 );
+		
+		points.add( new Point( new double[]{ 2.0, 30.352 } ) );
+		points.add( new Point( new double[]{ 3.0, 30.676 } ) );
+		points.add( new Point( new double[]{ 4.0, 31.292 } ) );
+		points.add( new Point( new double[]{ 5.0, 32.15 } ) );
+		points.add( new Point( new double[]{ 6.0, 32.966 } ) );
+		points.add( new Point( new double[]{ 7.0, 33.34 } ) );
+		points.add( new Point( new double[]{ 8.0, 33.383 } ) );
+		points.add( new Point( new double[]{ 9.0, 33.445 } ) );
+		points.add( new Point( new double[]{ 10.0, 33.653 } ) );
+		points.add( new Point( new double[]{ 11.0, 34.206 } ) );
+		points.add( new Point( new double[]{ 12.0, 34.941 } ) );
+		points.add( new Point( new double[]{ 13.0, 35.216 } ) );
+		points.add( new Point( new double[]{ 14.0, 35.5 } ) );
+		points.add( new Point( new double[]{ 15.0, 36.105 } ) );
+		points.add( new Point( new double[]{ 16.0, 35.848 } ) );
+		points.add( new Point( new double[]{ 17.0, 35.268 } ) );
 
-		LinearFunction f = new LinearFunction();
+		QuadraticFunction f = new QuadraticFunction();
 		try
 		{
 			f.fitFunction( points );
@@ -607,16 +613,15 @@ public class InteractiveRANSAC
 			for ( final Point p : points )
 				System.out.println( f.distanceTo( p ) );
 
-		} catch ( NotEnoughDataPointsException e )
+		} catch ( Exception e )
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		final Pair< LinearFunction, ArrayList< PointFunctionMatch > > fit = Tracking.findFunction( points, new LinearFunction(), 0.5, 3, 1.5 );
+		//final Pair< LinearFunction, ArrayList< PointFunctionMatch > > fit = Tracking.findFunction( points, new LinearFunction(), 0.5, 3, 1.5 );
 		
 		System.exit( 0 );
-		*/
 		// f(x)=0.8016159267471901*x + -50.06414413893526
 		// 89.0, 24.461: 2.4822409125690723
 		// f(x)=2.8771005804772987E-4*x*x + 0.7064559992901991*x + 
