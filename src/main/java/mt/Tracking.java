@@ -201,6 +201,23 @@ public class Tracking
 		for ( final Pair< Integer, Double > mt : mts )
 			points.add( new Point( new double[]{ mt.getA(), mt.getB() } ) );
 
+		Collections.sort( points, new Comparator< Point >()
+		{
+
+			@Override
+			public int compare( final Point o1, final Point o2 )
+			{
+				final double t1 = o1.getL()[ 0 ];
+				final double t2 = o2.getL()[ 0 ];
+
+				if ( t1 < t2 )
+					return -1;
+				else if ( t1 == t2 )
+					return 0;
+				else
+					return 1;
+			}
+		} );
 		return points;
 	}
 
@@ -224,7 +241,7 @@ public class Tracking
 			final P function,
 			final double maxError,
 			final int minNumInliers,
-			final int maxDist )
+			final double maxDist )
 	{
 		final ArrayList< PointFunctionMatch > candidates = new ArrayList<PointFunctionMatch>();
 		final ArrayList< PointFunctionMatch > inliers = new ArrayList<PointFunctionMatch>();
@@ -234,7 +251,7 @@ public class Tracking
 
 		try
 		{
-			function.ransac( candidates, inliers, 200, maxError, 0, minNumInliers, maxDist );
+			function.ransac( candidates, inliers, 100, maxError, 0.01, minNumInliers, maxDist );
 
 			if ( inliers.size() >= function.getMinNumPoints() )
 			{
@@ -251,8 +268,9 @@ public class Tracking
 		}
 		catch ( Exception e )
 		{
+			System.out.println( "Couldn't fit function: " + e );
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 		}
 
