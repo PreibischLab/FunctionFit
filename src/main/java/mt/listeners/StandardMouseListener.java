@@ -23,6 +23,14 @@ public class StandardMouseListener implements MouseListener
 	@Override
 	public void mouseReleased( MouseEvent arg0 )
 	{
+		/*
+		System.out.println( parent.maxError );
+		System.out.println( parent.minSlope );
+		System.out.println( parent.maxSlope );
+		System.out.println( parent.maxDist );
+		System.out.println( parent.minInliers );
+		*/
+
 		while ( parent.updateCount > 0 )
 		{
 			try { Thread.sleep( 10 ); } catch ( InterruptedException e ) {}

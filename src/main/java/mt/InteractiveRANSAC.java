@@ -415,9 +415,11 @@ public class InteractiveRANSAC
 						if ( p.getL()[ 0 ] >= tStart && p.getL()[ 0 ] <= tEnd )
 							catastropyPoints.add( p );
 
+					/*
 					System.out.println( "\ncatastropy" );
 					for ( final Point p : catastropyPoints)
 						System.out.println( p.getL()[ 0 ] + ", " + p.getL()[ 1 ] );
+					*/
 
 					if ( catastropyPoints.size() > 2 )
 					{
