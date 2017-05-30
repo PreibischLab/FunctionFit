@@ -33,7 +33,18 @@ public class CatastrophyCheckBoxListener implements ItemListener
 	@Override
 	public void itemStateChanged( final ItemEvent e )
 	{
+		boolean state = parent.detectCatastrophe;
 		enableDisable( checkbox.getState() );
+
+		if ( checkbox.getState() != state )
+		{
+			while ( parent.updateCount > 0 )
+			{
+				try { Thread.sleep( 10 ); } catch ( InterruptedException ex ) {}
+			}
+
+			parent.updateRANSAC();
+		}
 	}
 
 	protected void enableDisable( final boolean state )
