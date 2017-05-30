@@ -113,6 +113,21 @@ public class Tracking
 		return series;
 	}
 
+	public static XYSeries drawFunction( final Polynomial< ?, Point > polynomial, final double from, final double to, final double step, final double minY, final double maxY, final String name )
+	{
+		XYSeries series = new XYSeries( name );
+
+		for ( double x = from; x <= to; x = x + step )
+		{
+			final double v = polynomial.predict( x );
+
+			if ( v >= minY && v <= maxY )
+				series.add( x, v );
+		}
+
+		return series;
+	}
+
 	public static JFreeChart makeChart( final XYSeriesCollection dataset ) { return makeChart( dataset, "XY Chart", "x-axis", "y-axis" ); }
 	public static JFreeChart makeChart( final XYSeriesCollection dataset, final String title, final String x, final String y )
 	{

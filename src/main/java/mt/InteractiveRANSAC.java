@@ -19,6 +19,7 @@ import java.util.Comparator;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.util.ShapeUtilities;
 
 import fit.AbstractFunction2D;
 import fit.PointFunctionMatch;
@@ -402,6 +403,9 @@ public class InteractiveRANSAC
 					final double tStart = start.getB().get( start.getB().size() -1 ).getP1().getL()[ 0 ];
 					final double tEnd = end.getB().get( 0 ).getP1().getL()[ 0 ];
 
+					final double lStart = start.getB().get( start.getB().size() -1 ).getP1().getL()[ 1 ];
+					final double lEnd = end.getB().get( 0 ).getP1().getL()[ 1 ];
+
 					final ArrayList< Point > catastropyPoints = new ArrayList< Point >();
 
 					for ( final Point p : points )
@@ -414,11 +418,53 @@ public class InteractiveRANSAC
 
 					if ( catastropyPoints.size() > 2 )
 					{
-						// maximally 1.1 timepoints between points on a line
-						final Pair< LinearFunction, ArrayList< PointFunctionMatch > > fit = Tracking.findFunction( catastropyPoints, new LinearFunction(), 0.75, 3, 1.1 );
+						if ( Math.abs( lStart - lEnd ) >= this.minDistanceCatastrophe )
+						{
+							// maximally 1.1 timepoints between points on a line
+							final Pair< LinearFunction, ArrayList< PointFunctionMatch > > fit = Tracking.findFunction( catastropyPoints, new LinearFunction(), 0.75, 3, 1.1 );
+	
+							if ( fit != null )
+							{
+								if ( fit.getA().getM() < 0 )
+								{
+									sort( fit );
 
-						if ( fit != null )
-							System.out.println( fit.getA() );
+									System.out.println( fit.getA() );
+
+									double minY = Math.min( fit.getB().get( 0 ).getP1().getL()[ 1 ], fit.getB().get( fit.getB().size() -1 ).getP1().getL()[ 1 ] );
+									double maxY = Math.max( fit.getB().get( 0 ).getP1().getL()[ 1 ], fit.getB().get( fit.getB().size() -1 ).getP1().getL()[ 1 ] );
+
+									final Pair< Double, Double > minMax = Tracking.fromTo( fit.getB() );
+
+									dataset.addSeries( Tracking.drawFunction( (Polynomial)fit.getA(), minMax.getA()-1, minMax.getB()+1, 0.1, minY - 2.5, maxY + 2.5, "C " + catastrophy ) );
+
+									Tracking.setColor( chart, i, new Color( 0, 0, 255 ) );
+									Tracking.setStroke( chart, i, 2f );
+
+									++i;
+
+									dataset.addSeries( Tracking.drawPoints( Tracking.toPairList( fit.getB() ), "C(inl) " + catastrophy ) );
+
+									Tracking.setColor( chart, i, new Color( 0, 0, 255 ) );
+									Tracking.setDisplayType( chart, i, false, true );
+									Tracking.setShape( chart, i, ShapeUtilities.createDownTriangle( 4f ) );
+
+									++i;
+								}
+								else
+								{
+									System.out.println( "Slope not negative: " + fit.getA() );
+								}
+							}
+							else
+							{
+								System.out.println( "No function found." );
+							}
+						}
+						else
+						{
+							System.out.println( "Catastrophy height not sufficient " + Math.abs( lStart - lEnd ) + " < " + this.minDistanceCatastrophe );
+						}
 					}
 					else
 					{
@@ -431,28 +477,31 @@ public class InteractiveRANSAC
 		--updateCount;
 	}
 
+	protected void sort( final Pair< ? extends AbstractFunction2D, ArrayList< PointFunctionMatch > > segment )
+	{
+		Collections.sort( segment.getB(), new Comparator< PointFunctionMatch >()
+		{
+
+			@Override
+			public int compare( final PointFunctionMatch o1, final PointFunctionMatch o2 )
+			{
+				final double t1 = o1.getP1().getL()[ 0 ];
+				final double t2 = o2.getP1().getL()[ 0 ];
+
+				if ( t1 < t2 )
+					return -1;
+				else if ( t1 == t2 )
+					return 0;
+				else
+					return 1;
+			}
+		} );
+	}
+
 	protected void sort( final ArrayList< Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > > segments )
 	{
 		for ( final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > segment : segments )
-		{
-			Collections.sort( segment.getB(), new Comparator< PointFunctionMatch >()
-			{
-
-				@Override
-				public int compare( final PointFunctionMatch o1, final PointFunctionMatch o2 )
-				{
-					final double t1 = o1.getP1().getL()[ 0 ];
-					final double t2 = o2.getP1().getL()[ 0 ];
-
-					if ( t1 < t2 )
-						return -1;
-					else if ( t1 == t2 )
-						return 0;
-					else
-						return 1;
-				}
-			} );
-		}
+			sort( segment );
 
 		Collections.sort( segments, new Comparator< Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > >()
 		{
