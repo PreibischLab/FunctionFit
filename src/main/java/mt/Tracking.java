@@ -48,8 +48,16 @@ import net.imglib2.util.ValuePair;
 
 public class Tracking
 {
+	
+	
+	
+	
+	
+	
 	public static ArrayList< Pair< Integer, Double > > loadMT( final File file )
 	{
+		
+		
 		final ArrayList< Pair< Integer, Double > > points = new ArrayList< Pair< Integer, Double > >();
 
 		try
@@ -416,6 +424,6 @@ public class Tracking
 		setDisplayType( chart, 2, false, true );
 		setSmallUpTriangleShape( chart, 2 );
 
-		display( chart, new Dimension( 1000, 800 ) );
+		display( chart, new Dimension( 500, 400 ) );
 	}
 }
