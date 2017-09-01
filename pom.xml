@@ -33,6 +33,11 @@
   		<groupId>org.jfree</groupId>
   		<artifactId>jfreechart</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>org.sourceforge.jlibeps</groupId>
+  		<artifactId>jlibeps</artifactId>
+  		<version>0.1</version>
+  	</dependency>
   </dependencies>
 
 	<repositories>
