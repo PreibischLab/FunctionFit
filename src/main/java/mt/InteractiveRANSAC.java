@@ -62,6 +62,7 @@ public class InteractiveRANSAC
 	final ArrayList< Point > points;
 	final int numTimepoints, minTP, maxTP;
 
+	
 	Scrollbar lambdaSB;
 	Label lambdaLabel;
 
@@ -82,7 +83,7 @@ public class InteractiveRANSAC
 
 	public boolean wasCanceled = false;
 
-	public InteractiveRANSAC( final ArrayList< Pair< Integer, Double > > mts )
+	public InteractiveRANSAC( final ArrayList< Pair< Integer, Double > > mts)
 	{
 		this( mts, 0, 300, 3.0, 0.1, 10.0, 7, 8, 20.0, 1, 0.3 );
 	}
@@ -98,7 +99,7 @@ public class InteractiveRANSAC
 			final int minInliers,
 			final double minDistanceCatastrophe,
 			final int functionChoice,
-			final double lambda )
+			final double lambda)
 	{
 		this.minTP = minTP;
 		this.maxTP = maxTP;
@@ -108,6 +109,7 @@ public class InteractiveRANSAC
 		this.mts = mts;
 		this.points = Tracking.toPoints( mts );
 
+		
 		this.maxError = maxError;
 		this.minSlope = minSlope;
 		this.maxSlope = maxSlope;
@@ -168,7 +170,7 @@ public class InteractiveRANSAC
 		final Checkbox findCatastrophe = new Checkbox( "Detect Catastrophies", this.detectCatastrophe );
 		final Scrollbar minCatDist = new Scrollbar( Scrollbar.HORIZONTAL, this.minDistCatInt, 1, MIN_SLIDER, MAX_SLIDER + 1 );
 		final Label minCatDistLabel = new Label( "Min. Catatastrophy height (tp) = " + this.minDistanceCatastrophe, Label.CENTER );
-
+		
 		final Button done = new Button( "Done" );
 		final Button cancel = new Button( "Cancel" );
 
@@ -246,6 +248,9 @@ public class InteractiveRANSAC
 		++c.gridy;
 		frame.add( minCatDistLabel, c );
 
+	
+		
+		
 		++c.gridy;
 		c.insets = new Insets( 20, 150, 0, 150 );
 		frame.add( done, c );
@@ -263,6 +268,7 @@ public class InteractiveRANSAC
 		maxSlopeSB.addAdjustmentListener( new MaxSlopeListener( this, maxSlopeSB, maxSlopeLabel ) );
 		findCatastrophe.addItemListener( new CatastrophyCheckBoxListener( this, findCatastrophe, minCatDistLabel, minCatDist ) );
 		minCatDist.addAdjustmentListener( new MinCatastrophyDistanceListener( this, minCatDistLabel, minCatDist ) );
+		
 		done.addActionListener( new FinishButtonListener( this, false ) );
 		cancel.addActionListener( new FinishButtonListener( this, true ) );
 
@@ -345,6 +351,7 @@ public class InteractiveRANSAC
 			{
 				final Pair< Double, Double > minMax = Tracking.fromTo( result.getB() );
 		
+				
 				dataset.addSeries( Tracking.drawFunction( (Polynomial)result.getA(), minMax.getA(), minMax.getB(), 0.5, "Segment " + segment ) );
 
 				if ( functionChoice > 0 )
@@ -581,62 +588,5 @@ public class InteractiveRANSAC
 		return (int)Math.round( ( ( value - minValue ) / ( maxValue - minValue ) ) * scrollbarMax );
 	}
 
-	public static void main( String[] args )
-	{
-		final ArrayList< Point > points = new ArrayList< Point >();
-		
-		points.add( new Point( new double[]{ 2.0, 30.352 } ) );
-		points.add( new Point( new double[]{ 3.0, 30.676 } ) );
-		points.add( new Point( new double[]{ 4.0, 31.292 } ) );
-		points.add( new Point( new double[]{ 5.0, 32.15 } ) );
-		points.add( new Point( new double[]{ 6.0, 32.966 } ) );
-		points.add( new Point( new double[]{ 7.0, 33.34 } ) );
-		points.add( new Point( new double[]{ 8.0, 33.383 } ) );
-		points.add( new Point( new double[]{ 9.0, 33.445 } ) );
-		points.add( new Point( new double[]{ 10.0, 33.653 } ) );
-		points.add( new Point( new double[]{ 11.0, 34.206 } ) );
-		points.add( new Point( new double[]{ 12.0, 34.941 } ) );
-		points.add( new Point( new double[]{ 13.0, 35.216 } ) );
-		points.add( new Point( new double[]{ 14.0, 35.5 } ) );
-		points.add( new Point( new double[]{ 15.0, 36.105 } ) );
-		points.add( new Point( new double[]{ 16.0, 35.848 } ) );
-		points.add( new Point( new double[]{ 17.0, 35.268 } ) );
-
-		QuadraticFunction f = new QuadraticFunction();
-		try
-		{
-			f.fitFunction( points );
-			System.out.println( f );
-			
-			for ( final Point p : points )
-				System.out.println( f.distanceTo( p ) );
-
-		} catch ( Exception e )
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		//final Pair< LinearFunction, ArrayList< PointFunctionMatch > > fit = Tracking.findFunction( points, new LinearFunction(), 0.5, 3, 1.5 );
-		
-		//System.exit( 0 );
-		// f(x)=0.8016159267471901*x + -50.06414413893526
-		// 89.0, 24.461: 2.4822409125690723
-		// f(x)=2.8771005804772987E-4*x*x + 0.7064559992901991*x + 
-		// 89.0, 24.461: ?
-
-		/*
-		final Point p = new Point( new double[] { 89.0, 24.461 } );
-		final LinearFunction l = new LinearFunction( 0.8016159267471901, -50.06414413893526 );
-		final QuadraticFunction q = new QuadraticFunction( 2.8771005804772987E-4, 0.7064559992901991, -42.770472596275795 );
-		System.out.println( p.getW()[ 0 ] + ", " + p.getW()[ 1 ] + ": " +  l.distanceTo( p ) );
-		System.out.println( p.getW()[ 0 ] + ", " + p.getW()[ 1 ] + ": " +  q.distanceTo( p ) );
-		*/
-
-		//fail? 245.0, 140.653 f: f(x)=0.0014502283282575579*x*x + 0.340561913488294*x + -15.539662618320108
-		final QuadraticFunction q = new QuadraticFunction( 0.0014502283282575579, 0.340561913488294, -15.539662618320108 );
-		System.out.println( q.distanceTo( new Point( new double[]{ 245.0, 140.653 } ) ) );
-
-		new InteractiveRANSAC( Tracking.loadMT( new File( "track/2017-02-01_porcine_cy5seeds_cy3_12uM002_concatenatedSeedLabel2-endA.txt" ) ) );
-	}
+	
 }
