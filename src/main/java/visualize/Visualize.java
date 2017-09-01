@@ -23,10 +23,10 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import export.EPSExporter;
 import fit.polynomial.HigherOrderPolynomialFunction;
 import fit.polynomial.InterpolatedPolynomial;
 import fit.polynomial.LinearFunction;
-import fit.polynomial.QuadraticFunction;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
@@ -100,7 +100,7 @@ public class Visualize
 		JPanel panel = new JPanel();
 		ChartPanel chartPanel = new ChartPanel(chart);
 		panel.add(chartPanel);
-
+ 
 		JFrame frame = new JFrame();
 		frame.setContentPane( panel );
 		frame.validate();
@@ -109,7 +109,15 @@ public class Visualize
 
 		frame.setVisible( true );
 
+		try { Thread.sleep( 1000 ); } catch ( InterruptedException e ) { e.printStackTrace(); }
+
+		if ( EPSExporter.write( chart, new File("helloworld.eps"), "Title", 800, 500 ) )
+			System.out.println( "Saved EPS." );
+		else
+			System.out.println( "Failed to save EPS." );
+
 		try { Thread.sleep( 3000 ); } catch ( InterruptedException e ) { e.printStackTrace(); }
+
 		System.out.println( "starting" );
 
 		for ( int lambda = 0; lambda <= 100; ++lambda )
