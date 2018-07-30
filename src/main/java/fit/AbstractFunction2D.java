@@ -17,7 +17,7 @@ import mpicbg.models.PointMatch;
  * 
  * @author Stephan Saalfeld and Stephan Preibisch
  *
- * @param <M>
+ * @param <M> the model
  */
 public abstract class AbstractFunction2D< M extends AbstractFunction2D< M > > extends AbstractFunction< M >
 {
@@ -29,7 +29,6 @@ public abstract class AbstractFunction2D< M extends AbstractFunction2D< M > > ex
 	 * {@link #ransac(List, Collection, int, double, double, int) RANSAC}
 	 * \citet[{FischlerB81}.
 	 *
-	 * @param modelClass class of the model to be estimated
 	 * @param candidates candidate data points inluding (many) outliers
 	 * @param inliers remaining candidates after RANSAC
 	 * @param iterations number of iterations
@@ -38,7 +37,10 @@ public abstract class AbstractFunction2D< M extends AbstractFunction2D< M > > ex
 	 *   candidates
 	 * @param minNumInliers minimally required absolute number of inliers
 	 * @param maxGapDim0 max distance between points on the x-axis (will keep the larger set of points)
-	 *
+	 * @param <P> some PointFunctionMatch
+	 * 
+	 * @throws NotEnoughDataPointsException if there are not enough points
+	 * 
 	 * @return true if {@link AbstractModel} could be estimated and inliers is not
 	 *   empty, false otherwise.  If false, {@link AbstractModel} remains unchanged.
 	 */
@@ -132,8 +134,11 @@ A:		while ( i < iterations )
 	 * @param candidates set of point correspondence candidates
 	 * @param inliers set of point correspondences that fit the model
 	 * @param epsilon maximal allowed transfer error
-	 * @param minInlierRatio minimal ratio |inliers| / |candidates| (0.0 => 0%, 1.0 => 100%)
+	 * @param minInlierRatio minimal ratio |inliers| / |candidates| (0.0 is 0%, 1.0 is 100%)
 	 * @param minNumInliers minimally required absolute number of inliers
+	 * @param maxGapDim0 maximum gap in x
+	 * @param <P> some PointFunctionMatch
+	 * @return if successful
 	 */
 	public < P extends PointFunctionMatch > boolean test(
 			final Collection< P > candidates,

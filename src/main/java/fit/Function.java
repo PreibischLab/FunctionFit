@@ -23,6 +23,7 @@ public interface Function< F extends Function< F, P >, P extends Point >
 
 	 * @param points - {@link Collection} of {@link Point}s
 	 * @throws NotEnoughDataPointsException - thrown if not enough {@link Point}s are in the {@link Collection}
+	 * @throws IllDefinedDataPointsException - thrown if points are e.g. coplanar or in any way ill-defined
 	 */
 	public void fitFunction( final Collection<P> points ) throws NotEnoughDataPointsException, IllDefinedDataPointsException;
 	

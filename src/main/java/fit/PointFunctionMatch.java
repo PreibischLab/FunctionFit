@@ -7,7 +7,7 @@ import mpicbg.models.PointMatch;
 /**
  * Replaces the PointMatch fitting a function to a set of Point instead of a set of point to a set of point
  * 
- * @author Stephan Preibisch (stephan.preibisch@gmx.de) & Timothee Lionnet
+ * @author Stephan Preibisch (stephan.preibisch@gmx.de) and Timothee Lionnet
  */
 public class PointFunctionMatch extends PointMatch
 {

@@ -15,12 +15,12 @@ public interface Polynomial < F extends Polynomial< F, P >, P extends Point > ex
 
 	/**
 	 * @param j - the j'th coefficient of the polynomial ( c_0 + c_1*x + c_2*x*x + ... + c_N*x^N)
-	 * @return
+	 * @return ther coeffient
 	 */
 	public double getCoefficient( final int j );
 
 	/**
-	 * @param x
+	 * @param x - predict for x
 	 * @return - the corresponding y value
 	 */
 	public double predict( final double x );
