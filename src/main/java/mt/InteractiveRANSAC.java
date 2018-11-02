@@ -588,5 +588,8 @@ public class InteractiveRANSAC
 		return (int)Math.round( ( ( value - minValue ) / ( maxValue - minValue ) ) * scrollbarMax );
 	}
 
-	
+	public static void main( String[] args )
+	{
+		new InteractiveRANSAC( Tracking.loadMT( new File( "track/2017-02-01_porcine_cy5seeds_cy3_12uM002_concatenatedSeedLabel2-endA.txt" ) ) );
+	}
 }
