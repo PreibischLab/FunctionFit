@@ -163,6 +163,11 @@ public class Ellipse extends AbstractFunction2D< Ellipse > implements ClosedCont
 	public void fitFunction( final Collection< Point > points )
 			throws NotEnoughDataPointsException, IllDefinedDataPointsException
 	{
+		final int numPoints = points.size();
+
+		if ( numPoints < minNumPoints )
+			throw new NotEnoughDataPointsException( "Not enough points, at least " + minNumPoints + " are necessary and available are: " + numPoints );
+
 		// fitting code taken from: https://www.javatips.net/api/GeoRegression-master/main/src/georegression/fitting/ellipse/FitEllipseAlgebraic.java
 		// @author Peter Abeles (released under http://www.apache.org/licenses/LICENSE-2.0)
 
