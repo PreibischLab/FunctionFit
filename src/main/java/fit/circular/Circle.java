@@ -3,7 +3,6 @@ package fit.circular;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import fit.AbstractFunction;
 import fit.util.TransformUtil;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -15,7 +14,7 @@ import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 
-public class Circle extends AbstractFunction< Circle > implements ClosedContinousShape2D
+public class Circle extends AbstractShape2D< Circle >
 {
 	private static final long serialVersionUID = 583246361064913748L;
 
@@ -196,6 +195,12 @@ public class Circle extends AbstractFunction< Circle > implements ClosedContinou
 		c.setCost( getCost() );
 
 		return c;
+	}
+
+	@Override
+	public double area()
+	{
+		return Math.PI * r * r;
 	}
 
 	@Override

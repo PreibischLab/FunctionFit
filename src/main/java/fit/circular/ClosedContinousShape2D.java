@@ -10,9 +10,15 @@ public interface ClosedContinousShape2D
 	 * @param i - intersection point
 	 */
 	public void intersectsAt( final double[] p, final double[] i );
+
 	public double getPointXAt( final double t );
+
 	public double getPointYAt( final double t );
+
+	public double area();
+
 	public void drawCenter( final Overlay overlay );
+
 	public void draw( final Overlay overlay, final double step );
 
 	/**

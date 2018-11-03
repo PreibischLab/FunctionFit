@@ -11,7 +11,6 @@ import org.ejml.interfaces.decomposition.EigenDecomposition;
 import org.ejml.interfaces.linsol.LinearSolver;
 import org.ejml.ops.CommonOps;
 
-import fit.AbstractFunction;
 import fit.util.TransformUtil;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -29,7 +28,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
  * @author Stephan Preibisch, Peter Abeles, 
  *
  */
-public class Ellipse extends AbstractFunction< Ellipse > implements ClosedContinousShape2D
+public class Ellipse extends AbstractShape2D< Ellipse >
 {
 	/**
 	 * 
@@ -386,30 +385,30 @@ public class Ellipse extends AbstractFunction< Ellipse > implements ClosedContin
 
 		this.xc = (b*e-c*d)/(c*a-b*b);
 		this.yc = (-d-a*xc)/b;
-		final double yc2 = (-e-b*xc)/c;
+		//final double yc2 = (-e-b*xc)/c;
 
-		System.out.println( "xc: " + xc );
-		System.out.println( "yc: " + yc + " && " + yc2 );
+		//System.out.println( "xc: " + xc );
+		//System.out.println( "yc: " + yc + " && " + yc2 );
 
 		// compute g
 		// Ax2c+2Bxcyc+Cy2c−F=G
 		this.g = a*xc*xc + 2*b*xc*yc + c*yc*yc - f;
 
-		System.out.println( "g: " + g );
+		//System.out.println( "g: " + g );
 
 		// compute major axes
 		this.axis0 = 0.5 * Math.atan( 2*b / (a - c ) ) + 0 * (Math.PI / 2.0);
 		this.axis1 = 0.5 * Math.atan( 2*b / (a - c ) ) + 1 * (Math.PI / 2.0);
 
-		System.out.println( "axis 0: " + axis0 + " " + Math.toDegrees( axis0 ) );
-		System.out.println( "axis 1: " + axis1 + " " + Math.toDegrees( axis1 ) );
+		//System.out.println( "axis 0: " + axis0 + " " + Math.toDegrees( axis0 ) );
+		//System.out.println( "axis 1: " + axis1 + " " + Math.toDegrees( axis1 ) );
 
 		// compute max radii
 		this.rAxis0 = getRadiusAt( axis0 );
 		this.rAxis1 = getRadiusAt( axis1 );
 
-		System.out.println( "r(axis 0): " + rAxis0 );
-		System.out.println( "r(axis 1): " + rAxis1 );
+		//System.out.println( "r(axis 0): " + rAxis0 );
+		//System.out.println( "r(axis 1): " + rAxis1 );
 
 		this.ellipseToUnitCircle = transformEllipseToCircle();
 	}
@@ -468,6 +467,12 @@ public class Ellipse extends AbstractFunction< Ellipse > implements ClosedContin
 		x0 = getPointXAt( axis1 + Math.PI );//rAxis1 * Math.cos( axis1 );
 		y0 = getPointYAt( axis1 + Math.PI );//rAxis1 * Math.sin( axis1 );
 		overlay.add( new Line( x0, y0, xc, yc ) );
+	}
+
+	@Override
+	public double area()
+	{
+		return Math.PI * rAxis0 * rAxis1;
 	}
 
 	@Override
