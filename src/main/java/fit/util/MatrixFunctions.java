@@ -5,7 +5,7 @@ import Jama.SingularValueDecomposition;
 import mpicbg.models.NoninvertibleModelException;
 
 /**
- * @author Stephan Preibisch (stephan.preibisch@gmx.de) & Timothee Lionnet
+ * @author Stephan Preibisch (stephan.preibisch@gmx.de) and Timothee Lionnet
  */
 public class MatrixFunctions
 {

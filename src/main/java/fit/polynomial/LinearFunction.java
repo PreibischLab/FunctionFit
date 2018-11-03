@@ -17,7 +17,7 @@ import mpicbg.models.Point;
 import mpicbg.models.PointMatch;
 
 /**
- * @author Stephan Preibisch (stephan.preibisch@gmx.de) & Timothee Lionnet
+ * @author Stephan Preibisch (stephan.preibisch@gmx.de) and Timothee Lionnet
  */
 public class LinearFunction extends AbstractFunction2D< LinearFunction > implements Polynomial< LinearFunction, Point >
 {
@@ -131,7 +131,7 @@ public class LinearFunction extends AbstractFunction2D< LinearFunction > impleme
 	@Override
 	public String toString() { return "f(x)=" + getM() + "*x + " + getN(); }
 
-	/**
+	/*
 	 * Find the {@link AbstractModel} of a set of {@link PointMatch} candidates
 	 * containing a high number of outliers using
 	 * {@link #ransac(List, Collection, int, double, double, int) RANSAC}
@@ -230,7 +230,7 @@ A:		while ( i < iterations )
 		return true;
 	}
 
-	/**
+	/*
 	 * Test the {@link AbstractModel} for a set of {@link PointMatch} candidates.
 	 * Return true if the number of inliers / number of candidates is larger
 	 * than or equal to min_inlier_ratio, otherwise false.

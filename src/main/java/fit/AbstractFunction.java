@@ -10,7 +10,7 @@ import mpicbg.models.Point;
 import mpicbg.models.PointMatch;
 
 /**
- * @author Stephan Preibisch (stephan.preibisch@gmx.de) & Timothee Lionnet
+ * @author Stephan Preibisch (stephan.preibisch@gmx.de) and Timothee Lionnet
  */
 public abstract class AbstractFunction< M extends AbstractFunction< M > > extends AbstractModel< M > implements Function< M, Point >
 {

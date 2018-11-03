@@ -347,7 +347,7 @@ public class InteractiveRANSAC
 
 		for ( final Pair< AbstractFunction2D, ArrayList< PointFunctionMatch > > result : segments )
 		{
-			if ( LinearFunction.slopeFits( result.getB(), linear, minSlope, maxSlope ) || i > 0 )
+			if ( LinearFunction.slopeFits( result.getB(), linear, minSlope, maxSlope ))
 			{
 				final Pair< Double, Double > minMax = Tracking.fromTo( result.getB() );
 		
@@ -397,7 +397,7 @@ public class InteractiveRANSAC
 
 		if ( this.detectCatastrophe )
 		{
-			if ( segments.size() <= 2 )
+			if ( segments.size() < 2 )
 			{
 				System.out.println( "We have only " + segments.size() + " segments, need at least two to detect catastrophies." );
 			}
@@ -591,5 +591,6 @@ public class InteractiveRANSAC
 	public static void main( String[] args )
 	{
 		new InteractiveRANSAC( Tracking.loadMT( new File( "track/2017-02-01_porcine_cy5seeds_cy3_12uM002_concatenatedSeedLabel2-endA.txt" ) ) );
+		//new InteractiveRANSAC( Tracking.loadMT( new File( "/Users/varunkapoor/Documents/DebugCases/MTTrackSeedLabel7-endB.txt" ) ) );
 	}
 }
