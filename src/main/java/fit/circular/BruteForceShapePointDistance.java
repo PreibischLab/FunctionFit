@@ -9,7 +9,7 @@ public class BruteForceShapePointDistance< S extends ClosedContinousShape2D > im
 
 	public BruteForceShapePointDistance()
 	{
-		this( 0.001 );
+		this( 0.01 );
 	}
 
 	public BruteForceShapePointDistance( final double step )

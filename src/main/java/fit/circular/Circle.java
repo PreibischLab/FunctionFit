@@ -3,7 +3,7 @@ package fit.circular;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import fit.AbstractFunction2D;
+import fit.AbstractFunction;
 import fit.util.TransformUtil;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -15,7 +15,7 @@ import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 
-public class Circle extends AbstractFunction2D< Circle > implements ClosedContinousShape2D
+public class Circle extends AbstractFunction< Circle > implements ClosedContinousShape2D
 {
 	private static final long serialVersionUID = 583246361064913748L;
 
@@ -216,7 +216,7 @@ public class Circle extends AbstractFunction2D< Circle > implements ClosedContin
 		System.out.println( "Distance = " + circ.distanceTo( new Point( new double[]{ 500, 100 } ) ) );
 
 		new ImageJ();
-		final ImagePlus imp = ImageJFunctions.show( TransformUtil.drawBruteForce( circ, 1024, 1024, Double.NaN ) );
+		final ImagePlus imp = ImageJFunctions.show( TransformUtil.drawDistanceBruteForce( circ, 1024, 1024 ) );
 		imp.setDisplayRange( 0, imp.getDisplayRangeMax() );
 
 		Overlay o = imp.getOverlay();
