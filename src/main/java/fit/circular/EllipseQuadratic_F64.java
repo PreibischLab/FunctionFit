@@ -121,7 +121,7 @@ public class EllipseQuadratic_F64 implements Serializable
 
 		// unit circle
 		//final Circle2D circ = Circle2D.unitcircle();
-		final Circle2D circ = new Circle2D( 500, 500, 100 );
+		final Circle circ = new Circle( 500, 500, 100 );
 
 		final AffineModel2D model = new AffineModel2D();
 		AffineTransform at;

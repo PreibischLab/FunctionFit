@@ -4,34 +4,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import fit.AbstractFunction2D;
+import fit.util.TransformUtil;
+import ij.ImageJ;
+import ij.ImagePlus;
 import ij.gui.Line;
 import ij.gui.OvalRoi;
 import ij.gui.Overlay;
-import ij.gui.PolygonRoi;
-import ij.gui.Roi;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.Point;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 
-public class Circle2D extends AbstractFunction2D< Circle2D >
+public class Circle extends AbstractFunction2D< Circle > implements ClosedContinousShape2D
 {
 	private static final long serialVersionUID = 583246361064913748L;
 
 	final static int minNumPoints = 3;
 
-	double u, v, r; // ( x − u )^2 + ( y − v )^2= r
+	double u, v, r; // ( x − u )^2 + ( y − v )^2= r^2
 
-	public Circle2D() { this( 0, 0, 0 ); }
-	public Circle2D( final double x, final double y, final double r )
+	public Circle() { this( 0, 0, 0 ); }
+	public Circle( final double x, final double y, final double r )
 	{
 		this.u = x;
 		this.v = y;
 		this.r = r;
 	}
 
-	public static Circle2D unitcircle()
+	public static Circle unitcircle()
 	{
-		return new Circle2D( 0, 0, 1 );
+		return new Circle( 0, 0, 1 );
 	}
 
 	public void drawAxes( final Overlay overlay )
@@ -43,48 +45,34 @@ public class Circle2D extends AbstractFunction2D< Circle2D >
 		overlay.add( new Line( u, v, u, v - r ) );
 	}
 
+	@Override
+	public double getRadiusAt( final double t )
+	{
+		return r;
+	}
+
+	@Override
 	public double getPointXAt( final double t )
 	{
 		return u + r * Math.cos( t );
 	}
 
+	@Override
 	public double getPointYAt( final double t )
 	{
 		return v + r * Math.sin( t );
 	}
 
+	@Override
 	public void drawCenter( final Overlay overlay )
 	{
-		overlay.add( new Line( u, v - 5, u, v + 5 ) );
-		overlay.add( new Line( u - 5, v, u + 5, v ) );
-
-		overlay.add( new Line( u, v - 5, u + 5, v ) );
-		overlay.add( new Line( u + 5, v, u, v + 5 ) );
-		overlay.add( new Line( u, v + 5, u - 5, v ) );
-		overlay.add( new Line( u - 5, v, u, v - 5 ) );
+		TransformUtil.drawDiamond( overlay, u, v );
 	}
 
+	@Override
 	public void draw( final Overlay overlay, final double step )
 	{
-		final ArrayList< Double > xPoints = new ArrayList< Double >();
-		final ArrayList< Double > yPoints = new ArrayList< Double >();
-
-		for ( double t = 0; t < 2*Math.PI; t += step )
-		{
-			xPoints.add( getPointXAt( t ) );
-			yPoints.add( getPointYAt( t ) );
-		}
-
-		final float[] xP = new float[ xPoints.size() ];
-		final float[] yP = new float[ yPoints.size() ];
-
-		for ( int i = 0; i < xP.length; ++i )
-		{
-			xP[ i ] = xPoints.get( i ).floatValue();
-			yP[ i ] = yPoints.get( i ).floatValue();
-		}
-
-		overlay.add( new PolygonRoi( xP, yP, Roi.POLYGON ) );
+		TransformUtil.drawOutline( overlay, this, step );
 	}
 
 	/**
@@ -104,6 +92,20 @@ public class Circle2D extends AbstractFunction2D< Circle2D >
 
 	@Override
 	public int getMinNumPoints() { return minNumPoints; }
+
+	@Override
+	public void intersectsAt( final double[] p, final double[] i )
+	{
+		// intersection point on the circle
+		final double x0 = p[ 0 ] - u;
+		final double y0 = p[ 1 ] - v;
+
+		final double len = Math.sqrt( x0*x0 + y0*y0 );
+
+		// intersection point on the circle
+		i[ 0 ] = (x0 / len)*r + u;
+		i[ 1 ] = (y0 / len)*r + v;
+	}
 
 	public void fitFunction( final Collection<Point> points ) throws NotEnoughDataPointsException
 	{
@@ -157,6 +159,15 @@ public class Circle2D extends AbstractFunction2D< Circle2D >
 	}
 
 	@Override
+	public double eval( final double x, final double y )
+	{
+		final double x0 = x - u;
+		final double y0 = y - v;
+
+		return r * r - x0 * x0 - y0 * y0;
+	}
+
+	@Override
 	public double distanceTo( final Point point )
 	{
 		final double x1 = point.getW()[ 0 ] - getU(); 
@@ -166,7 +177,7 @@ public class Circle2D extends AbstractFunction2D< Circle2D >
 	}
 
 	@Override
-	public void set( final Circle2D m )
+	public void set( final Circle m )
 	{
 		this.u = m.getU();
 		this.v = m.getV();
@@ -175,9 +186,9 @@ public class Circle2D extends AbstractFunction2D< Circle2D >
 	}
 
 	@Override
-	public Circle2D copy()
+	public Circle copy()
 	{
-		Circle2D c = new Circle2D();
+		final Circle c = new Circle();
 
 		c.u = getU();
 		c.v = getV();
@@ -194,14 +205,42 @@ public class Circle2D extends AbstractFunction2D< Circle2D >
 	{
 		final ArrayList< Point > points = new ArrayList<Point>();
 
-		points.add( new Point( new double[]{ -1.0 + 5, 0.0 + 10 } ) );
-		points.add( new Point( new double[]{ 1 + 5, 0 + 10 } ) );
-		points.add( new Point( new double[]{ 0 + 5, 1 + 10 } ) );
-		points.add( new Point( new double[]{ 0 + 5, -1 + 10 } ) );
+		points.add( new Point( new double[]{ -50.0 + 500, 0.0 + 400 } ) );
+		points.add( new Point( new double[]{ 50 + 500, 0 + 400 } ) );
+		points.add( new Point( new double[]{ 0 + 500, 50 + 400 } ) );
+		points.add( new Point( new double[]{ 0 + 500, -50 + 400 } ) );
 
-		Circle2D c = new Circle2D();
-		c.fitFunction( points );
-		System.out.println( c );
-		System.out.println( "Distance = " + c.distanceTo( new Point( new double[]{ 5, 10.5 } ) ) );
+		final Circle circ = new Circle();
+		circ.fitFunction( points );
+		System.out.println( circ );
+		System.out.println( "Distance = " + circ.distanceTo( new Point( new double[]{ 500, 100 } ) ) );
+
+		new ImageJ();
+		final ImagePlus imp = ImageJFunctions.show( TransformUtil.drawBruteForce( circ, 1024, 1024, Double.NaN ) );
+		imp.setDisplayRange( 0, imp.getDisplayRangeMax() );
+
+		Overlay o = imp.getOverlay();
+		if ( o == null )
+			o = new Overlay();
+
+		circ.drawCenter( o );
+		circ.draw( o, 0.01 );
+
+		final double[] p = new double[] { 650, 430 };
+		final double[] i = new double[ 2 ];
+		circ.intersectsAt( p, i );
+
+		TransformUtil.drawCross( o, p[ 0 ], p[ 1 ] );
+		TransformUtil.drawCross( o, i[ 0 ], i[ 1 ] );
+
+		final double[] dp = new double[ 2 ];
+		final double dist = new BruteForceShapePointDistance< Circle >().minDistanceAt( new Point( p ), dp, circ );
+
+		TransformUtil.drawCross( o, dp[ 0 ], dp[ 1 ] );
+		System.out.println( "dist (brute force) = " + dist );
+		System.out.println( "dist (circle) = " + circ.distanceTo( new Point( p ) ) );
+
+		imp.setOverlay( o );
+		imp.updateAndDraw();
 	}
 }
