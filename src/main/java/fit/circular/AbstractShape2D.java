@@ -52,6 +52,7 @@ public abstract class AbstractShape2D< M extends AbstractShape2D< M > > extends 
 			final double epsilon,
 			final double minInlierRatio,
 			final int minNumInliers,
+			final double minArea,
 			final double maxArea )
 		throws NotEnoughDataPointsException
 	{
@@ -92,7 +93,7 @@ A:		while ( i < iterations )
 			final ArrayList< P > tempInliers = new ArrayList< P >();
 
 			int numInliers = 0;
-			boolean isGood = m.test( candidates, tempInliers, epsilon, minInlierRatio, minNumInliers );
+			boolean isGood = m.test( candidates, tempInliers, epsilon, minInlierRatio, minNumInliers, minArea, maxArea );
 			while ( isGood && numInliers < tempInliers.size() )
 			{
 				numInliers = tempInliers.size();
@@ -102,7 +103,7 @@ A:		while ( i < iterations )
 					++i;
 					continue A;
 				}
-				isGood = m.test( candidates, tempInliers, epsilon, minInlierRatio, minNumInliers );
+				isGood = m.test( candidates, tempInliers, epsilon, minInlierRatio, minNumInliers, minArea, maxArea );
 			}
 			if (
 					isGood &&
@@ -146,9 +147,12 @@ A:		while ( i < iterations )
 			final double epsilon,
 			final double minInlierRatio,
 			final int minNumInliers,
+			final double minArea,
 			final double maxArea )
 	{
-		if ( this.area() <= maxArea && this.test( candidates, inliers, epsilon, minInlierRatio, minNumInliers ) )
+		final double a = this.area();
+
+		if ( a >= minArea && a <= maxArea && this.test( candidates, inliers, epsilon, minInlierRatio, minNumInliers ) )
 			return true;
 		else
 			return false;
