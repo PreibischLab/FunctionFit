@@ -3,12 +3,16 @@ package fit.util;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
+import fit.AbstractFunction;
+import fit.AbstractFunction2D;
 import fit.circular.ClosedContinousShape2D;
+import ij.IJ;
 import ij.gui.Line;
 import ij.gui.Overlay;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import mpicbg.models.AffineModel2D;
+import mpicbg.models.Point;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
@@ -41,6 +45,35 @@ public class TransformUtil
 			else if ( Math.abs( distance ) < 50 )
 				c.get().setOne();
 		}
+
+		return img;
+	}
+
+	public static Img< FloatType > drawDistanceBruteForce( final AbstractFunction< ? > shape, final int sizeX, final int sizeY )
+	{
+		IJ.showProgress( 0.0 );
+
+		final Img< FloatType > img = ArrayImgs.floats( sizeX, sizeY );
+		final Cursor< FloatType > c = img.localizingCursor();
+
+		final Point p = new Point( new double[ 2 ] );
+
+		int i = 0;
+
+		while ( c.hasNext() )
+		{
+			c.fwd();
+
+			p.getL()[ 0 ] = p.getW()[ 0 ] = c.getDoublePosition( 0 );
+			p.getL()[ 1 ] = p.getW()[ 1 ] = c.getDoublePosition( 1 );
+
+			c.get().set( (float)shape.distanceTo( p ) );
+			
+			if ( ++i % 1000 == 0 )
+				IJ.showProgress( i, (int)img.size() );
+		}
+
+		IJ.showProgress( 1.0 );
 
 		return img;
 	}
