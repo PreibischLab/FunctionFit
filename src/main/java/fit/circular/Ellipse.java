@@ -52,7 +52,15 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 	 */
 	protected AffineModel2D ellipseToUnitCircle;
 
-	protected ShapePointDistance< Ellipse > distF = new BruteForceShapePointDistance< Ellipse >();
+	/**
+	 * the function that computes the distance between a point and an ellipse
+	 */
+	final protected ShapePointDistance< Ellipse > distF;
+
+	public static ShapePointDistance< Ellipse > defaultDistanceFunction( final Ellipse e )
+	{
+		return new BruteForceShapePointDistance< Ellipse >( e );
+	}
 
 	public Ellipse() { this( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, new AffineModel2D() ); }
 
@@ -66,6 +74,9 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		this.f = f;
 
 		computeEllipseParameters();
+
+		// has to be initialized after ellipse parameters are computed
+		this.distF = defaultDistanceFunction( this );
 	}
 
 	protected Ellipse(
@@ -100,6 +111,9 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		this.rAxis1 = rAxis1;
 
 		this.ellipseToUnitCircle = ellipseToCircle;
+
+		// has to be initialized after ellipse parameters are computed
+		this.distF = defaultDistanceFunction( this );
 	}
 
 	@Override
@@ -273,7 +287,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 	@Override
 	public double distanceTo( final Point point )
 	{
-		return distF.distanceTo( point, this );
+		return distF.distanceTo( point );
 	}
 
 	@Override
@@ -410,27 +424,34 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		//System.out.println( "r(axis 0): " + rAxis0 );
 		//System.out.println( "r(axis 1): " + rAxis1 );
 
-		this.ellipseToUnitCircle = transformEllipseToCircle();
+		this.ellipseToUnitCircle = transformEllipseToCircle( this );
 	}
 
-	public AffineModel2D transformEllipseToCircle()
+	public static AffineModel2D axisAlignEllipse( final Ellipse e )
 	{
 		final AffineModel2D model = new AffineModel2D();
 		AffineTransform at;
 
 		// center at 0,0
 		at = new AffineTransform();
-		at.translate( -xc, -yc );
+		at.translate( -e.xc, -e.yc );
 		model.preConcatenate( TransformUtil.getModel( at ) );
 
 		// rotate major axis onto the x axis
 		at = new AffineTransform();
-		at.rotate( -this.axis0 );
+		at.rotate( -e.axis0 );
 		model.preConcatenate( TransformUtil.getModel( at ) );
 
+		return model;
+	}
+
+	public static AffineModel2D transformEllipseToCircle( final Ellipse e )
+	{
+		final AffineModel2D model = axisAlignEllipse( e );
+
 		// scale in x and y to radius 1
-		at = new AffineTransform();
-		at.scale( 1.0 / rAxis0, 1.0 / rAxis1 );
+		AffineTransform at = new AffineTransform();
+		at.scale( 1.0 / e.rAxis0, 1.0 / e.rAxis1 );
 		model.preConcatenate( TransformUtil.getModel( at ) );
 
 		return model;
@@ -528,7 +549,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		System.out.println( ellipse + " " + ellipse.isEllipse() );
 
 		new ImageJ();
-		final ImagePlus imp = ImageJFunctions.show( TransformUtil.drawBruteForce( ellipse, 1024, 1024, Double.NaN ) );
+		final ImagePlus imp = ImageJFunctions.show( TransformUtil.drawDistanceBruteForce( ellipse, 1024, 1024 ) );
 		imp.setDisplayRange( 0, imp.getDisplayRangeMax() );
 
 		Overlay o = imp.getOverlay();
@@ -547,7 +568,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		TransformUtil.drawCross( o, i[ 0 ], i[ 1 ] );
 
 		final double[] dp = new double[ 2 ];
-		final double dist = new BruteForceShapePointDistance< Ellipse >( 0.001 ).minDistanceAt( new Point( p ), dp, ellipse );
+		final double dist = new BruteForceShapePointDistance< Ellipse >( ellipse, 0.001 ).minDistanceAt( new Point( p ), dp );
 
 		TransformUtil.drawCross( o, dp[ 0 ], dp[ 1 ] );
 		System.out.println( "dist (brute force) = " + dist );

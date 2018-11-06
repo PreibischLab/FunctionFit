@@ -6,19 +6,24 @@ import mpicbg.models.Point;
 public class BruteForceShapePointDistance< S extends ClosedContinousShape2D > implements ShapePointDistance< S >
 {
 	final double step;
+	final S shape;
 
-	public BruteForceShapePointDistance()
+	public BruteForceShapePointDistance( final S shape )
 	{
-		this( 0.01 );
+		this( shape, 0.01 );
 	}
 
-	public BruteForceShapePointDistance( final double step )
+	public BruteForceShapePointDistance( final S shape, final double step )
 	{
 		this.step = step;
+		this.shape = shape;
 	}
 
 	@Override
-	public double distanceTo( final Point point, final S shape )
+	public S getShape() { return shape; }
+
+	@Override
+	public double distanceTo( final Point point )
 	{
 		final double x0 = point.getW()[ 0 ];
 		final double y0 = point.getW()[ 1 ];
@@ -41,8 +46,7 @@ public class BruteForceShapePointDistance< S extends ClosedContinousShape2D > im
 
 	public double minDistanceAt(
 			final Point point,
-			final double[] minDistPoint,
-			final S shape )
+			final double[] minDistPoint )
 	{
 		final double x0 = point.getW()[ 0 ];
 		final double y0 = point.getW()[ 1 ];
