@@ -239,7 +239,7 @@ public class Circle extends AbstractShape2D< Circle >
 		TransformUtil.drawCross( o, i[ 0 ], i[ 1 ] );
 
 		final double[] dp = new double[ 2 ];
-		final double dist = new BruteForceShapePointDistance< Circle >( circ ).minDistanceAt( new Point( p ), dp );
+		final double dist = new BruteForceShapePointDistanceFactory< Circle >().create( circ ).minDistanceAt( new Point( p ), dp );
 
 		TransformUtil.drawCross( o, dp[ 0 ], dp[ 1 ] );
 		System.out.println( "dist (brute force) = " + dist );

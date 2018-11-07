@@ -3,21 +3,21 @@ package fit.circular;
 import fit.util.TransformUtil;
 import mpicbg.models.Point;
 
-public class BruteForceShapePointDistance< S extends ClosedContinousShape2D > implements ShapePointDistance< S >
+public class BruteForceShapePointDistance< S extends ClosedContinousShape2D > implements ShapePointDistance< S, BruteForceShapePointDistance< S >, BruteForceShapePointDistanceFactory< S > >
 {
 	final double step;
 	final S shape;
+	final BruteForceShapePointDistanceFactory< S > factory;
 
-	public BruteForceShapePointDistance( final S shape )
-	{
-		this( shape, 0.01 );
-	}
-
-	public BruteForceShapePointDistance( final S shape, final double step )
+	protected BruteForceShapePointDistance( final S shape, final double step, final BruteForceShapePointDistanceFactory< S > factory )
 	{
 		this.step = step;
 		this.shape = shape;
+		this.factory = factory;
 	}
+
+	@Override
+	public BruteForceShapePointDistanceFactory< S > factory() { return factory; }
 
 	@Override
 	public S getShape() { return shape; }
@@ -42,6 +42,12 @@ public class BruteForceShapePointDistance< S extends ClosedContinousShape2D > im
 		}
 
 		return Math.sqrt( minSqDist );
+	}
+
+	@Override
+	public void notifyParameterChange()
+	{
+		// nothing to do in this case ...
 	}
 
 	public double minDistanceAt(

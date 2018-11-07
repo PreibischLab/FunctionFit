@@ -55,16 +55,11 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 	/**
 	 * the function that computes the distance between a point and an ellipse
 	 */
-	final protected ShapePointDistance< Ellipse > distF;
+	final protected ShapePointDistance< Ellipse, ?, ? > distF;
 
-	public static ShapePointDistance< Ellipse > defaultDistanceFunction( final Ellipse e )
-	{
-		return new BruteForceShapePointDistance< Ellipse >( e );
-	}
+	public Ellipse( final ShapePointDistanceFactory< Ellipse, ?, ? > factory ) { this( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, new AffineModel2D(), factory ); }
 
-	public Ellipse() { this( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, new AffineModel2D() ); }
-
-	public Ellipse( final double a, final double b, final double c, final double d, final double e, final double f )
+	public Ellipse( final double a, final double b, final double c, final double d, final double e, final double f, final ShapePointDistanceFactory< Ellipse, ?, ? > factory )
 	{
 		this.a = a;
 		this.b = b;
@@ -76,7 +71,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		computeEllipseParameters();
 
 		// has to be initialized after ellipse parameters are computed
-		this.distF = defaultDistanceFunction( this );
+		this.distF = factory.create( this );
 	}
 
 	protected Ellipse(
@@ -93,7 +88,8 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 			final double axis1,
 			final double rAxis0,
 			final double rAxis1,
-			final AffineModel2D ellipseToCircle )
+			final AffineModel2D ellipseToCircle,
+			final ShapePointDistanceFactory< Ellipse, ?, ? > factory )
 	{
 		this.a = a;
 		this.b = b;
@@ -113,7 +109,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		this.ellipseToUnitCircle = ellipseToCircle;
 
 		// has to be initialized after ellipse parameters are computed
-		this.distF = defaultDistanceFunction( this );
+		this.distF = factory.create( this );
 	}
 
 	@Override
@@ -293,7 +289,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 	@Override
 	public Ellipse copy()
 	{
-		final Ellipse ellipse = new Ellipse( a, b, c, d, e, f, xc, yc, g, axis0, axis1, rAxis0, rAxis1, ellipseToUnitCircle );
+		final Ellipse ellipse = new Ellipse( a, b, c, d, e, f, xc, yc, g, axis0, axis1, rAxis0, rAxis1, ellipseToUnitCircle, distF.factory() );
 		ellipse.setCost( getCost() );
 
 		return ellipse;
@@ -316,8 +312,11 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		this.axis1 = e.axis1;
 		this.rAxis0 = e.rAxis0;
 		this.rAxis1 = e.rAxis1;
+		this.ellipseToUnitCircle = e.ellipseToUnitCircle.copy();
 
 		this.setCost( e.getCost() );
+
+		this.distF.notifyParameterChange();
 	}
 
 	@Override
@@ -425,6 +424,10 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		//System.out.println( "r(axis 1): " + rAxis1 );
 
 		this.ellipseToUnitCircle = transformEllipseToCircle( this );
+
+		// maybe the distance function needs to update itself (it is null during object initialization)
+		if ( distF != null )
+			this.distF.notifyParameterChange();
 	}
 
 	public static AffineModel2D axisAlignEllipse( final Ellipse e )
@@ -543,7 +546,10 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		points[ 7 ][ 0 ] = 376;
 		points[ 7 ][ 1 ] = 511;
 
-		final Ellipse ellipse = new Ellipse();
+		//final ShapePointDistanceFactory< Ellipse, ?, ? > factory = new BruteForceShapePointDistanceFactory< Ellipse >( 0.001 );
+		final ShapePointDistanceFactory< Ellipse, ?, ? > factory = new EllipsePointDistanceFactory( 10 );
+
+		final Ellipse ellipse = new Ellipse( factory );
 		ellipse.fitFunction( toPoints( points ) );
 
 		System.out.println( ellipse + " " + ellipse.isEllipse() );
@@ -568,10 +574,10 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		TransformUtil.drawCross( o, i[ 0 ], i[ 1 ] );
 
 		final double[] dp = new double[ 2 ];
-		final double dist = new BruteForceShapePointDistance< Ellipse >( ellipse, 0.001 ).minDistanceAt( new Point( p ), dp );
+		final double distBF = new BruteForceShapePointDistanceFactory< Ellipse >( 0.001 ).create( ellipse ).minDistanceAt( new Point( p ), dp );
 
 		TransformUtil.drawCross( o, dp[ 0 ], dp[ 1 ] );
-		System.out.println( "dist (brute force) = " + dist );
+		System.out.println( "dist (brute force) = " + distBF );
 		System.out.println( "dist (ellipse) = " + ellipse.distanceTo( new Point( p ) ) );
 
 		imp.setOverlay( o );

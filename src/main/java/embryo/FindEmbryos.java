@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 
 import fit.PointFunctionMatch;
+import fit.circular.BruteForceShapePointDistanceFactory;
 import fit.circular.Ellipse;
+import fit.circular.EllipsePointDistanceFactory;
+import fit.circular.ShapePointDistanceFactory;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
@@ -131,9 +134,11 @@ public class FindEmbryos
 	
 			final double minArea = 40000;
 			final double maxArea = 80000;
-	
+
+			final ShapePointDistanceFactory< Ellipse, ?, ? > factory = new EllipsePointDistanceFactory();//BruteForceShapePointDistanceFactory< Ellipse >();
+
 			final ArrayList< Pair< Ellipse, ArrayList< PointFunctionMatch > > > functions =
-					Util.findAllFunctions( mts, new Ellipse(), 15, 300, minArea, maxArea );
+					Util.findAllFunctions( mts, new Ellipse( factory ), 15, 300, minArea, maxArea );
 	
 			final Overlay o = new Overlay();
 	
