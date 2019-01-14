@@ -24,7 +24,6 @@ public class EmbryoGUI
 	JFrame frame;
 
 	String frameTitle = "Verify Embryo Shapes";
-
 	Color orginalBackground, originalForeground;
 
 	public EmbryoGUI()

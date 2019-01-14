@@ -2,15 +2,25 @@ package embryo.gui;
 
 public class LoadedEmbryo
 {
+	public enum Status { NOT_ASSIGNED, GOOD, INCOMPLETE, BAD };
+	
 	// -1 means not assigned
 	// 0 means good
 	// 1 means incomplete
 	// 2 means bad
-	int status;
+	Status status;
 
-	public LoadedEmbryo( final int status )
+	public LoadedEmbryo( final Status status )
 	{
 		this.status = status;
+	}
+
+	public void updateStatus( final Status newStatus, final EmbryoGUI gui )
+	{
+		this.status = newStatus;
+
+		if ( gui != null )
+			updateGUI( gui );
 	}
 
 	public void updateGUI( final EmbryoGUI gui )
@@ -24,17 +34,17 @@ public class LoadedEmbryo
 		gui.bad.setBackground( gui.orginalBackground );
 		gui.bad.setForeground( gui.originalForeground );
 
-		if ( status == 0 )
+		if ( status == Status.GOOD )
 		{
 			gui.good.setBackground( EmbryoGUI.goodColor );
 			gui.good.setForeground( EmbryoGUI.goodColorFG );
 		}
-		else if ( status == 1 )
+		else if ( status == Status.INCOMPLETE )
 		{
 			gui.incomplete.setBackground( EmbryoGUI.incompleteColor  );
 			gui.incomplete.setForeground( EmbryoGUI.incompleteColorFG );
 		}
-		else if ( status == 2 )
+		else if ( status == Status.BAD )
 		{
 			gui.bad.setBackground( EmbryoGUI.badColor );
 			gui.bad.setForeground( EmbryoGUI.badColorFG );

@@ -1,10 +1,14 @@
 package embryo.gui;
 
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 
+import embryo.gui.LoadedEmbryo.Status;
 import ij.ImageJ;
 
 public class EmbryoVerification
@@ -43,6 +47,57 @@ public class EmbryoVerification
 				assignCurrentEmbryo( --embryoIndex );
 			}
 		} );
+
+		gui.good.addActionListener(  new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				currentEmbryo.updateStatus( Status.GOOD, gui );
+			}
+		} );
+
+		gui.incomplete.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				currentEmbryo.updateStatus( Status.INCOMPLETE, gui );
+			}
+		} );
+
+		gui.bad.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				currentEmbryo.updateStatus( Status.BAD, gui );
+			}
+		} );
+
+		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		manager.addKeyEventDispatcher( new KeyEventDispatcher()
+		{
+			
+			@Override
+			public boolean dispatchKeyEvent( KeyEvent e )
+			{
+				if (e.getID() == KeyEvent.KEY_PRESSED)
+				{
+					if ( e.getKeyChar() == '1' )
+						gui.good.doClick();
+					else if ( e.getKeyChar() == '2' )
+						gui.incomplete.doClick();
+					else if ( e.getKeyChar() == '3' )
+						gui.bad.doClick();
+					else if ( e.getKeyChar() == '.' )
+						gui.forward.doClick();
+					else if ( e.getKeyChar() == ',' )
+						gui.back.doClick();
+				}
+				return false;
+			}
+		});
 	}
 
 	protected void assignCurrentEmbryo( final int newIndex )
@@ -74,10 +129,10 @@ public class EmbryoVerification
 	{
 		final ArrayList< LoadedEmbryo > embryoList = new ArrayList< LoadedEmbryo >();
 
-		final LoadedEmbryo embyro0 = new LoadedEmbryo( 0 );
-		final LoadedEmbryo embyro1 = new LoadedEmbryo( 2 );
-		final LoadedEmbryo embyro2 = new LoadedEmbryo( 1 );
-		final LoadedEmbryo embyro3 = new LoadedEmbryo( -1 );
+		final LoadedEmbryo embyro0 = new LoadedEmbryo( Status.GOOD );
+		final LoadedEmbryo embyro1 = new LoadedEmbryo( Status.BAD );
+		final LoadedEmbryo embyro2 = new LoadedEmbryo( Status.INCOMPLETE );
+		final LoadedEmbryo embyro3 = new LoadedEmbryo( Status.NOT_ASSIGNED );
 
 		embryoList.add( embyro0 );
 		embryoList.add( embyro1 );
