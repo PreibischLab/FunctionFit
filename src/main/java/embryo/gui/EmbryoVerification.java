@@ -128,6 +128,8 @@ public class EmbryoVerification
 	public static void main( String[] args )
 	{
 		new ImageJ();
-		new EmbryoVerification( new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table3.csv" ) );
+		//new EmbryoVerification( new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table3.csv" ) );
+		new EmbryoVerification( new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_annotated.csv") );
+
 	}
 }
