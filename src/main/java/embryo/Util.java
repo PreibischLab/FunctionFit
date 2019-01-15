@@ -82,6 +82,20 @@ public class Util
 	
 				System.out.println( inliers.size() + "/" + candidates.size() );
 				System.out.println( function );
+
+				double avgDist = 0;
+				double maxDist = 0;
+
+				for ( final PointFunctionMatch p : inliers )
+				{
+					final double d = function.distanceTo( p.getP1() );;
+					avgDist += d;
+					maxDist = Math.max( maxDist, d );
+				}
+
+				System.out.println( "avg dist: " + ( avgDist / (double)inliers.size() ) );
+				System.out.println( "max dist: " + maxDist );
+				
 			}
 			else
 			{

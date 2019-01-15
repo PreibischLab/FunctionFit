@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import embryo.gui.LoadedEmbryo.Status;
 import fit.circular.Ellipse;
+import fit.circular.EllipsePointDistanceFactory;
 import ij.IJ;
 import ij.ImageJ;
 
@@ -54,6 +56,22 @@ public class LoadedEmbryo
 			updateGUI( gui );
 	}
 
+	public int getChannelFor( final String label )
+	{
+		if ( c0.equalsIgnoreCase( label ) )
+			return 0;
+		else  if ( c1.equalsIgnoreCase( label ) )
+			return 1;
+		else  if ( c2.equalsIgnoreCase( label ) )
+			return 2;
+		else  if ( c3.equalsIgnoreCase( label ) )
+			return 3;
+		else  if ( c4.equalsIgnoreCase( label ) )
+			return 4;
+		else
+			return -1;
+	}
+
 	public void updateGUI( final EmbryoGUI gui )
 	{
 		gui.good.setBackground( gui.orginalBackground );
@@ -79,6 +97,44 @@ public class LoadedEmbryo
 		{
 			gui.bad.setBackground( EmbryoGUI.badColor );
 			gui.bad.setForeground( EmbryoGUI.badColorFG );
+		}
+
+		gui.text0.setText( " Filename: " + this.filename );
+		gui.text1.setText( " cy5: " + getChannelFor( "cy5" ) + ", dapi: " + getChannelFor( "dapi" ) + ", gfp: " + getChannelFor( "gfp" ) );
+		gui.text2.setText( " c0: " + this.c0 + " (" + this.c0_type + ")" + ", c1: " + this.c1 + " (" + this.c1_type + ")" + ", c2: " + this.c2 + " (" + this.c2_type + ")"  );
+	}
+
+	public static String ellipseToString( final Ellipse e )
+	{
+		if ( e == null )
+			return "null";
+		else
+			return e.getA() + "_" + e.getB() + "_" + e.getC() + "_" + e.getD() + "_" + e.getE() + "_" + e.getF();
+	}
+
+	public static Ellipse stringToEllipse( final String s )
+	{
+		final String[] entries = s.trim().split( "_" );
+
+		if ( entries.length != 6 )
+		{
+			System.out.println( "ellipse is null." );
+			return null;
+		}
+		else
+		{
+			final double a = Double.parseDouble( entries[ 0 ] );
+			final double b = Double.parseDouble( entries[ 1 ] );
+			final double c = Double.parseDouble( entries[ 2 ] );
+			final double d = Double.parseDouble( entries[ 3 ] );
+			final double e = Double.parseDouble( entries[ 4 ] );
+			final double f = Double.parseDouble( entries[ 5 ] );
+
+			final Ellipse ellipse = new Ellipse( a, b, c, d, e, f, new EllipsePointDistanceFactory() );
+
+			System.out.println( "ellipse is: " + ellipse );
+
+			return ellipse;
 		}
 	}
 
@@ -141,7 +197,7 @@ public class LoadedEmbryo
 			e.status = Status.NOT_ASSIGNED;
 
 		if ( lookup[25] > 0 )
-			e.ellipse = null; //TODO: import ellipse (can be "null" or "f(x)=")
+			e.ellipse = stringToEllipse( line[ lookup[25] ] );
 		else
 			e.ellipse = null;
 
@@ -312,6 +368,23 @@ public class LoadedEmbryo
 		out.close();
 
 		return true;
+	}
+
+	public static ArrayList< LoadedEmbryo > simulateCSV()
+	{
+		final ArrayList< LoadedEmbryo > embryoList = new ArrayList< LoadedEmbryo >();
+
+		final LoadedEmbryo embyro0 = new LoadedEmbryo( Status.GOOD );
+		final LoadedEmbryo embyro1 = new LoadedEmbryo( Status.BAD );
+		final LoadedEmbryo embyro2 = new LoadedEmbryo( Status.INCOMPLETE );
+		final LoadedEmbryo embyro3 = new LoadedEmbryo( Status.NOT_ASSIGNED );
+
+		embryoList.add( embyro0 );
+		embryoList.add( embyro1 );
+		embryoList.add( embyro2 );
+		embryoList.add( embyro3 );
+
+		return embryoList;
 	}
 
 	public static ArrayList< LoadedEmbryo > loadCSV( final File file )

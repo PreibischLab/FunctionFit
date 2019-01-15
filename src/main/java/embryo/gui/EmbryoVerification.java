@@ -24,7 +24,7 @@ public class EmbryoVerification
 	public EmbryoVerification( final File file )
 	{
 		this.file = file;
-		this.embryoList = loadCSV( file );
+		this.embryoList = LoadedEmbryo.loadCSV( file );
 
 		this.gui = new EmbryoGUI();
 
@@ -125,26 +125,9 @@ public class EmbryoVerification
 		embryo.updateGUI( this.gui );
 	}
 
-	protected ArrayList< LoadedEmbryo > loadCSV( final File file )
-	{
-		final ArrayList< LoadedEmbryo > embryoList = new ArrayList< LoadedEmbryo >();
-
-		final LoadedEmbryo embyro0 = new LoadedEmbryo( Status.GOOD );
-		final LoadedEmbryo embyro1 = new LoadedEmbryo( Status.BAD );
-		final LoadedEmbryo embyro2 = new LoadedEmbryo( Status.INCOMPLETE );
-		final LoadedEmbryo embyro3 = new LoadedEmbryo( Status.NOT_ASSIGNED );
-
-		embryoList.add( embyro0 );
-		embryoList.add( embyro1 );
-		embryoList.add( embyro2 );
-		embryoList.add( embyro3 );
-
-		return embryoList;
-	}
-	
 	public static void main( String[] args )
 	{
 		new ImageJ();
-		new EmbryoVerification( null );
+		new EmbryoVerification( new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table3.csv" ) );
 	}
 }

@@ -34,7 +34,6 @@ public class EmbryoGUI
 	public void displayGUI()
 	{
 		frame = new JFrame( frameTitle );
-		frame.setSize( 400, 200 );
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		/* Instantiation */
@@ -103,6 +102,7 @@ public class EmbryoGUI
 		this.originalForeground = good.getForeground();
 
 		frame.pack();
+		frame.setSize( 550, frame.getHeight() );
 		frame.setVisible( true );
 	}
 
