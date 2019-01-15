@@ -248,4 +248,9 @@ public class Circle extends AbstractShape2D< Circle >
 		imp.setOverlay( o );
 		imp.updateAndDraw();
 	}
+	@Override
+	public double ratio()
+	{
+		return 1.0;
+	}
 }

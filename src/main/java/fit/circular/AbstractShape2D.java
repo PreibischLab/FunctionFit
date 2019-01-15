@@ -53,7 +53,9 @@ public abstract class AbstractShape2D< M extends AbstractShape2D< M > > extends 
 			final double minInlierRatio,
 			final int minNumInliers,
 			final double minArea,
-			final double maxArea )
+			final double maxArea,
+			final double minRatio, // ratio = large axis / small axis
+			final double maxRatio )
 		throws NotEnoughDataPointsException
 	{
 		if ( candidates.size() < getMinNumMatches() )
@@ -93,7 +95,7 @@ A:		while ( i < iterations )
 			final ArrayList< P > tempInliers = new ArrayList< P >();
 
 			int numInliers = 0;
-			boolean isGood = m.test( candidates, tempInliers, epsilon, minInlierRatio, minNumInliers, minArea, maxArea );
+			boolean isGood = m.test( candidates, tempInliers, epsilon, minInlierRatio, minNumInliers, minArea, maxArea, minRatio, maxRatio );
 			while ( isGood && numInliers < tempInliers.size() )
 			{
 				numInliers = tempInliers.size();
@@ -103,7 +105,7 @@ A:		while ( i < iterations )
 					++i;
 					continue A;
 				}
-				isGood = m.test( candidates, tempInliers, epsilon, minInlierRatio, minNumInliers, minArea, maxArea );
+				isGood = m.test( candidates, tempInliers, epsilon, minInlierRatio, minNumInliers, minArea, maxArea, minRatio, maxRatio  );
 			}
 			if (
 					isGood &&
@@ -148,11 +150,14 @@ A:		while ( i < iterations )
 			final double minInlierRatio,
 			final int minNumInliers,
 			final double minArea,
-			final double maxArea )
+			final double maxArea,
+			final double minRatio, // ratio = large axis / small axis
+			final double maxRatio )
 	{
 		final double a = this.area();
+		final double r = this.ratio();
 
-		if ( a >= minArea && a <= maxArea && this.test( candidates, inliers, epsilon, minInlierRatio, minNumInliers ) )
+		if ( a >= minArea && a <= maxArea && r >= minRatio && r <= maxRatio && this.test( candidates, inliers, epsilon, minInlierRatio, minNumInliers ) )
 			return true;
 		else
 			return false;

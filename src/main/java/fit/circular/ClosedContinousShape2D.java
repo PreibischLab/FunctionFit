@@ -17,6 +17,14 @@ public interface ClosedContinousShape2D
 
 	public double area();
 
+	/**
+	 * computes ratio between large and small main orthogonal axis of the shape
+	 * minimally possible ration is therefore 1
+	 *
+	 * @return ratio between large and small main orthogonal axis of the shape
+	 */
+	public double ratio();
+
 	public void drawCenter( final Overlay overlay );
 
 	public void draw( final Overlay overlay, final double step );

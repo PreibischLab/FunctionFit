@@ -138,7 +138,7 @@ public class FindEmbryos
 			final ShapePointDistanceFactory< Ellipse, ?, ? > factory = new EllipsePointDistanceFactory();//BruteForceShapePointDistanceFactory< Ellipse >();
 
 			final ArrayList< Pair< Ellipse, ArrayList< PointFunctionMatch > > > functions =
-					Util.findAllFunctions( mts, new Ellipse( factory ), 15, 300, minArea, maxArea );
+					Util.findAllFunctions( mts, new Ellipse( factory ), 15, 300, minArea, maxArea, 0.999, 3.0 );
 	
 			final Overlay o = new Overlay();
 	

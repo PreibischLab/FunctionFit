@@ -590,4 +590,10 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		imp.setOverlay( o );
 		imp.updateAndDraw();
 	}
+
+	@Override
+	public double ratio()
+	{
+		return Math.max( rAxis0, rAxis1 ) / Math.min( rAxis0, rAxis1 );
+	}
 }
