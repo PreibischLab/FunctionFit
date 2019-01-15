@@ -37,12 +37,12 @@ public class FindAllEmbryos
 		ImagePlus edgeImp = ImageJFunctions.show( edgeImg );
 		edgeImp.setTitle( e.filename );
 
-		final double minArea = 30000; // minimal size in square-pixels of the ellipse
-		final double maxArea = 90000; // maximal size in square-pixels of the ellipse
+		final double minArea = 35000; // minimal size in square-pixels of the ellipse
+		final double maxArea = 100000; // maximal size in square-pixels of the ellipse
 		final double minRatio = 0.999; // ratio = large axis / small axis
 		final double maxRatio = 3.0;
-		final double maxError = 20.0; // maximal distance of an edge pixel to the ellipse and still belong to it
-		final int minNuminliers = 300; // minimal amount of edge pixels that belong to the ellipse
+		final double maxError = 10.0; // maximal distance of an edge pixel to the ellipse and still belong to it
+		final int minNuminliers = 800; // minimal amount of edge pixels that belong to the ellipse
 
 		final ShapePointDistanceFactory< Ellipse, ?, ? > factory = new EllipsePointDistanceFactory();//BruteForceShapePointDistanceFactory< Ellipse >();
 
@@ -100,10 +100,11 @@ public class FindAllEmbryos
 
 		for ( final LoadedEmbryo e : embryos )
 		{
-			annotatedembryos.addAll( processEmbryoimage( e, csvFile ) );
+			//if ( e.filename.equals( "SEA-12_300" ))
+				annotatedembryos.addAll( processEmbryoimage( e, csvFile ) );
 		}
 
-		LoadedEmbryo.saveCSV( annotatedembryos, new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table3_test.csv") );
+		LoadedEmbryo.saveCSV( annotatedembryos, new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_annotated.csv") );
 
 		/*
 		final ArrayList< LoadedEmbryo > embryosLoaded = LoadedEmbryo.loadCSV( new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table3_test.csv") );
