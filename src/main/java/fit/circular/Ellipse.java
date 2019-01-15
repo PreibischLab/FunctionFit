@@ -112,6 +112,13 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		this.distF = factory.create( this );
 	}
 
+	public double getA() { return a; }
+	public double getB() { return b; }
+	public double getC() { return c; }
+	public double getD() { return d; }
+	public double getE() { return e; }
+	public double getF() { return f; }
+
 	@Override
 	public int getMinNumPoints() { return minNumPoints; }
 
