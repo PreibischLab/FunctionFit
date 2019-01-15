@@ -56,6 +56,46 @@ public class LoadedEmbryo
 			updateGUI( gui );
 	}
 
+	@Override
+	public LoadedEmbryo clone()
+	{
+		final LoadedEmbryo newEmbryo = new LoadedEmbryo();
+
+		newEmbryo.status = this.status;
+
+		if ( this.ellipse != null )
+			newEmbryo.ellipse = this.ellipse.copy();
+		else
+			newEmbryo.ellipse = null;
+
+		newEmbryo.id = id;
+		newEmbryo.numChannels = numChannels;
+		newEmbryo.dapiChannelIndex = dapiChannelIndex;
+		newEmbryo.gfpChannelIndex = gfpChannelIndex;
+		newEmbryo.c0 = c0;
+		newEmbryo.c1 = c1;
+		newEmbryo.c2 = c2;
+		newEmbryo.c3 = c3;
+		newEmbryo.c4 = c4;
+		newEmbryo.c0_lambda = c0_lambda;
+		newEmbryo.c1_lambda = c1_lambda;
+		newEmbryo.c2_lambda = c2_lambda;
+		newEmbryo.c3_lambda = c3_lambda;
+		newEmbryo.c4_lambda = c4_lambda;
+		newEmbryo.originalFN = originalFN;
+		newEmbryo.manualMaskMaker = manualMaskMaker;
+		newEmbryo.c0_type = c0_type;
+		newEmbryo.c1_type = c1_type;
+		newEmbryo.c2_type = c2_type;
+		newEmbryo.comments = comments;
+		newEmbryo.stage = stage;
+		newEmbryo.filename = filename;
+		newEmbryo.signal = signal;
+		newEmbryo.integrity = integrity;
+
+		return newEmbryo;
+	}
+
 	public int getChannelFor( final String label )
 	{
 		if ( c0.equalsIgnoreCase( label ) )
@@ -118,7 +158,6 @@ public class LoadedEmbryo
 
 		if ( entries.length != 6 )
 		{
-			System.out.println( "ellipse is null." );
 			return null;
 		}
 		else
@@ -130,11 +169,7 @@ public class LoadedEmbryo
 			final double e = Double.parseDouble( entries[ 4 ] );
 			final double f = Double.parseDouble( entries[ 5 ] );
 
-			final Ellipse ellipse = new Ellipse( a, b, c, d, e, f, new EllipsePointDistanceFactory() );
-
-			System.out.println( "ellipse is: " + ellipse );
-
-			return ellipse;
+			return new Ellipse( a, b, c, d, e, f, new EllipsePointDistanceFactory() );
 		}
 	}
 
@@ -255,7 +290,7 @@ public class LoadedEmbryo
 		s += Integer.toString( e.status.ordinal() ) + ",";
 
 		if ( e.ellipse != null )
-			s += "f(x)=ellipse equation"; //TODO: export ellipse
+			s += ellipseToString( e.ellipse );
 		else
 			s += "null";
 
