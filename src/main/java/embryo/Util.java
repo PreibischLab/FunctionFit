@@ -78,7 +78,7 @@ public class Util
 
 		try
 		{
-			function.ransac( candidates, inliers, 500, maxError, 0.01, minNumInliers, minArea, maxArea, minRatio, maxRatio );
+			function.ransac( candidates, inliers, 500, maxError, 0.001, minNumInliers, minArea, maxArea, minRatio, maxRatio );
 
 			if ( inliers.size() >= function.getMinNumPoints() )
 			{
