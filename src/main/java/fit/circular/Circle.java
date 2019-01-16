@@ -1,5 +1,6 @@
 package fit.circular;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -63,15 +64,15 @@ public class Circle extends AbstractShape2D< Circle >
 	}
 
 	@Override
-	public void drawCenter( final Overlay overlay )
+	public void drawCenter( final Overlay overlay, final Color color )
 	{
-		TransformUtil.drawDiamond( overlay, u, v );
+		TransformUtil.drawDiamond( overlay, u, v, color );
 	}
 
 	@Override
-	public void draw( final Overlay overlay, final double step )
+	public void draw( final Overlay overlay, final double step, final Color color )
 	{
-		TransformUtil.drawOutline( overlay, this, step );
+		TransformUtil.drawOutline( overlay, this, step, color );
 	}
 
 	/**
@@ -228,20 +229,20 @@ public class Circle extends AbstractShape2D< Circle >
 		if ( o == null )
 			o = new Overlay();
 
-		circ.drawCenter( o );
-		circ.draw( o, 0.01 );
+		circ.drawCenter( o, Color.YELLOW );
+		circ.draw( o, 0.01, Color.YELLOW );
 
 		final double[] p = new double[] { 650, 430 };
 		final double[] i = new double[ 2 ];
 		circ.intersectsAt( p, i );
 
-		TransformUtil.drawCross( o, p[ 0 ], p[ 1 ] );
-		TransformUtil.drawCross( o, i[ 0 ], i[ 1 ] );
+		TransformUtil.drawCross( o, p[ 0 ], p[ 1 ], Color.YELLOW );
+		TransformUtil.drawCross( o, i[ 0 ], i[ 1 ], Color.YELLOW );
 
 		final double[] dp = new double[ 2 ];
 		final double dist = new BruteForceShapePointDistanceFactory< Circle >().create( circ ).minDistanceAt( new Point( p ), dp );
 
-		TransformUtil.drawCross( o, dp[ 0 ], dp[ 1 ] );
+		TransformUtil.drawCross( o, dp[ 0 ], dp[ 1 ], Color.YELLOW );
 		System.out.println( "dist (brute force) = " + dist );
 		System.out.println( "dist (circle) = " + circ.distanceTo( new Point( p ) ) );
 

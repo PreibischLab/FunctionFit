@@ -1,5 +1,6 @@
 package fit.circular;
 
+import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Line;
 import ij.gui.Overlay;
+import ij.gui.Roi;
 import mpicbg.models.AffineModel2D;
 import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.NoninvertibleModelException;
@@ -468,36 +470,47 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 	}
 
 	@Override
-	public void drawCenter( final Overlay overlay )
+	public void drawCenter( final Overlay overlay, final Color color )
 	{
-		TransformUtil.drawDiamond( overlay, xc, yc );
+		TransformUtil.drawDiamond( overlay, xc, yc, color );
 	}
 
 	@Override
-	public void draw( final Overlay overlay, final double step )
+	public void draw( final Overlay overlay, final double step, final Color color )
 	{
-		TransformUtil.drawOutline( overlay, this, step );
+		TransformUtil.drawOutline( overlay, this, step, color );
 	}
 
-	public void drawAxes( final Overlay overlay )
+	public void drawAxes( final Overlay overlay, final Color color )
 	{
 		double x0, y0;
 
+		Roi roi;
+
 		x0 = getPointXAt( axis0 );//rAxis0 * Math.cos( axis0 );
 		y0 = getPointYAt( axis0 );//rAxis0 * Math.sin( axis0 );
-		overlay.add( new Line( x0, y0, xc, yc ) );
+
+		roi = new Line( x0, y0, xc, yc );
+		roi.setStrokeColor( color );
+		overlay.add( roi );
 
 		x0 = getPointXAt( axis0 + Math.PI );//rAxis0 * Math.cos( axis0 );
 		y0 = getPointYAt( axis0 + Math.PI );//rAxis0 * Math.sin( axis0 );
-		overlay.add( new Line( x0, y0, xc, yc ) );
+		roi = new Line( x0, y0, xc, yc );
+		roi.setStrokeColor( color );
+		overlay.add( roi );
 
 		x0 = getPointXAt( axis1 );//rAxis1 * Math.cos( axis1 );
 		y0 = getPointYAt( axis1 );//rAxis1 * Math.sin( axis1 );
-		overlay.add( new Line( x0, y0, xc, yc ) );
+		roi = new Line( x0, y0, xc, yc );
+		roi.setStrokeColor( color );
+		overlay.add( roi );
 
 		x0 = getPointXAt( axis1 + Math.PI );//rAxis1 * Math.cos( axis1 );
 		y0 = getPointYAt( axis1 + Math.PI );//rAxis1 * Math.sin( axis1 );
-		overlay.add( new Line( x0, y0, xc, yc ) );
+		roi = new Line( x0, y0, xc, yc );
+		roi.setStrokeColor( color );
+		overlay.add( roi );
 	}
 
 	@Override
@@ -569,21 +582,21 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		if ( o == null )
 			o = new Overlay();
 
-		ellipse.drawCenter( o );
-		ellipse.drawAxes( o );
-		ellipse.draw( o, 0.01 );
+		ellipse.drawCenter( o, Color.YELLOW );
+		ellipse.drawAxes( o, Color.YELLOW );
+		ellipse.draw( o, 0.01, Color.YELLOW );
 
 		final double[] p = new double[] { 650, 430 };
 		final double[] i = new double[ 2 ];
 		ellipse.intersectsAt( p, i );
 
-		TransformUtil.drawCross( o, p[ 0 ], p[ 1 ] );
-		TransformUtil.drawCross( o, i[ 0 ], i[ 1 ] );
+		TransformUtil.drawCross( o, p[ 0 ], p[ 1 ], Color.YELLOW );
+		TransformUtil.drawCross( o, i[ 0 ], i[ 1 ], Color.YELLOW );
 
 		final double[] dp = new double[ 2 ];
 		final double distBF = new BruteForceShapePointDistanceFactory< Ellipse >( 0.001 ).create( ellipse ).minDistanceAt( new Point( p ), dp );
 
-		TransformUtil.drawCross( o, dp[ 0 ], dp[ 1 ] );
+		TransformUtil.drawCross( o, dp[ 0 ], dp[ 1 ], Color.YELLOW );
 		System.out.println( "dist (brute force) = " + distBF );
 		System.out.println( "dist (ellipse) = " + ellipse.distanceTo( new Point( p ) ) );
 

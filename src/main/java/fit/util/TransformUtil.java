@@ -1,10 +1,10 @@
 package fit.util;
 
+import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import fit.AbstractFunction;
-import fit.AbstractFunction2D;
 import fit.circular.ClosedContinousShape2D;
 import ij.IJ;
 import ij.gui.Line;
@@ -88,7 +88,7 @@ public class TransformUtil
 		return x*x + y*y;
 	}
 
-	public static void drawOutline( final Overlay o, final ClosedContinousShape2D shape, final double step )
+	public static void drawOutline( final Overlay o, final ClosedContinousShape2D shape, final double step, final Color color )
 	{
 		final ArrayList< Double > xPoints = new ArrayList< Double >();
 		final ArrayList< Double > yPoints = new ArrayList< Double >();
@@ -108,36 +108,62 @@ public class TransformUtil
 			yP[ i ] = yPoints.get( i ).floatValue();
 		}
 
-		o.add( new PolygonRoi( xP, yP, Roi.POLYGON ) );
+		Roi roi = new PolygonRoi( xP, yP, Roi.POLYGON );
+		roi.setStrokeColor( color );
+		o.add( roi );
 	}
 
-	public static void drawDiamond( final Overlay o, final double x, final double y )
+	public static void drawDiamond( final Overlay o, final double x, final double y, final Color color )
 	{
-		drawDiamond( o, x, y, 5, 5 );
+		drawDiamond( o, x, y, 5, 5, color );
 	}
 
-	public static void drawDiamond( final Overlay o, final double x, final double y, final double rx, final double ry )
+	public static void drawDiamond( final Overlay o, final double x, final double y, final double rx, final double ry, final Color color )
 	{
-		o.add( new Line( x, y - ry, x, y + ry ) );
-		o.add( new Line( x - rx, y, x + rx, y ) );
+		Roi roi;
 
-		o.add( new Line( x, y - ry, x + rx, y ) );
-		o.add( new Line( x + rx, y, x, y + ry ) );
-		o.add( new Line( x, y + ry, x - rx, y ) );
-		o.add( new Line( x - rx, y, x, y - ry ) );
+		roi = new Line( x, y - ry, x, y + ry );
+		roi.setStrokeColor( color );
+		o.add( roi );
+		roi = new Line( x - rx, y, x + rx, y );
+		roi.setStrokeColor( color );
+		o.add( roi );
+
+		roi = new Line( x, y - ry, x + rx, y );
+		roi.setStrokeColor( color );
+		o.add( roi );
+		roi = new Line( x + rx, y, x, y + ry );
+		roi.setStrokeColor( color );
+		o.add( roi );
+		roi = new Line( x, y + ry, x - rx, y );
+		roi.setStrokeColor( color );
+		o.add( roi );
+		roi = new Line( x - rx, y, x, y - ry );
+		roi.setStrokeColor( color );
+		o.add( roi );
 	}
 
-	public static void drawCross( final Overlay o, final double x, final double y )
+	public static void drawCross( final Overlay o, final double x, final double y, final Color color )
 	{
-		drawCross( o, x, y, 1, 1 );
+		drawCross( o, x, y, 1, 1, color );
 	}
 
-	public static void drawCross( final Overlay o, final double x, final double y, final double rx, final double ry )
+	public static void drawCross( final Overlay o, final double x, final double y, final double rx, final double ry, final Color color )
 	{
-		o.add( new Line( x - rx, y, x + rx, y ) );
-		o.add( new Line( x, y - ry, x, y + ry ) );
-		
-		o.add( new Line( x - rx, y, x + rx, y ) );
-		o.add( new Line( x, y - ry, x, y + ry ) );
+		Roi roi;
+
+		roi = new Line( x - rx, y, x + rx, y );
+		roi.setStrokeColor( color );
+		o.add( roi );
+		roi = new Line( x, y - ry, x, y + ry );
+		roi.setStrokeColor( color );
+		o.add( roi );
+
+		roi = new Line( x - rx, y, x + rx, y );
+		roi.setStrokeColor( color );
+		o.add( roi );
+		roi = new Line( x, y - ry, x, y + ry );
+		roi.setStrokeColor( color );
+		o.add( roi );
 	}
 }

@@ -1,5 +1,7 @@
 package fit.circular;
 
+import java.awt.Color;
+
 import ij.gui.Overlay;
 
 public interface ClosedContinousShape2D
@@ -25,9 +27,9 @@ public interface ClosedContinousShape2D
 	 */
 	public double ratio();
 
-	public void drawCenter( final Overlay overlay );
+	public void drawCenter( final Overlay overlay, final Color color );
 
-	public void draw( final Overlay overlay, final double step );
+	public void draw( final Overlay overlay, final double step, final Color color );
 
 	/**
 	 * computes the radius of the ellipse at a certain position in polar coordinates
