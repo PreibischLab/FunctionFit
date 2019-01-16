@@ -1,5 +1,6 @@
 package embryo.gui;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import fit.circular.Ellipse;
 import fit.circular.EllipsePointDistanceFactory;
 import ij.IJ;
 import ij.ImageJ;
+import ij.ImagePlus;
+import ij.gui.Overlay;
 
 public class LoadedEmbryo
 {
@@ -54,6 +57,77 @@ public class LoadedEmbryo
 
 		if ( gui != null )
 			updateGUI( gui );
+	}
+
+
+	public void updateGUI( final EmbryoGUI gui )
+	{
+		gui.good.setBackground( gui.orginalBackground );
+		gui.good.setForeground( gui.originalForeground );
+
+		gui.incomplete.setBackground( gui.orginalBackground );
+		gui.incomplete.setForeground( gui.originalForeground );
+
+		gui.bad.setBackground( gui.orginalBackground );
+		gui.bad.setForeground( gui.originalForeground );
+
+		if ( status == Status.GOOD )
+		{
+			gui.good.setBackground( EmbryoGUI.goodColor );
+			gui.good.setForeground( EmbryoGUI.goodColorFG );
+		}
+		else if ( status == Status.INCOMPLETE )
+		{
+			gui.incomplete.setBackground( EmbryoGUI.incompleteColor  );
+			gui.incomplete.setForeground( EmbryoGUI.incompleteColorFG );
+		}
+		else if ( status == Status.BAD )
+		{
+			gui.bad.setBackground( EmbryoGUI.badColor );
+			gui.bad.setForeground( EmbryoGUI.badColorFG );
+		}
+
+		gui.text0.setText( " Filename: " + this.filename );
+		gui.text1.setText( " cy5: " + getChannelFor( "cy5" ) + ", dapi: " + getChannelFor( "dapi" ) + ", gfp: " + getChannelFor( "gfp" ) );
+		gui.text2.setText( " c0: " + this.c0 + " (" + this.c0_type + ")" + ", c1: " + this.c1 + " (" + this.c1_type + ")" + ", c2: " + this.c2 + " (" + this.c2_type + ")"  );
+
+		// TODO: change GUI and say that there is nothing
+	}
+
+	public void drawEllipse( final Overlay o, final boolean active )
+	{
+		if ( ellipse == null )
+			return;
+
+		System.out.println( "drawing: " + status );
+		Color c;
+
+		if ( active )
+		{
+			if ( status == Status.GOOD )
+				c = EmbryoGUI.goodColor;
+			else if ( status == Status.INCOMPLETE )
+				c = EmbryoGUI.incompleteColor;
+			else if ( status == Status.BAD )
+				c = EmbryoGUI.badColor;
+			else
+				c = EmbryoGUI.notAssignedColor;
+		}
+		else
+		{
+			if ( status == Status.GOOD )
+				c = EmbryoGUI.goodColorBG;
+			else if ( status == Status.INCOMPLETE )
+				c = EmbryoGUI.incompleteColorBG;
+			else if ( status == Status.BAD )
+				c = EmbryoGUI.badColorBG;
+			else
+				c = EmbryoGUI.notAssignedColorBG;
+		}
+
+		ellipse.drawCenter( o, c );
+		ellipse.drawAxes( o, c );
+		ellipse.draw( o, 0.01, c );
 	}
 
 	@Override
@@ -110,38 +184,6 @@ public class LoadedEmbryo
 			return 4;
 		else
 			return -1;
-	}
-
-	public void updateGUI( final EmbryoGUI gui )
-	{
-		gui.good.setBackground( gui.orginalBackground );
-		gui.good.setForeground( gui.originalForeground );
-
-		gui.incomplete.setBackground( gui.orginalBackground );
-		gui.incomplete.setForeground( gui.originalForeground );
-
-		gui.bad.setBackground( gui.orginalBackground );
-		gui.bad.setForeground( gui.originalForeground );
-
-		if ( status == Status.GOOD )
-		{
-			gui.good.setBackground( EmbryoGUI.goodColor );
-			gui.good.setForeground( EmbryoGUI.goodColorFG );
-		}
-		else if ( status == Status.INCOMPLETE )
-		{
-			gui.incomplete.setBackground( EmbryoGUI.incompleteColor  );
-			gui.incomplete.setForeground( EmbryoGUI.incompleteColorFG );
-		}
-		else if ( status == Status.BAD )
-		{
-			gui.bad.setBackground( EmbryoGUI.badColor );
-			gui.bad.setForeground( EmbryoGUI.badColorFG );
-		}
-
-		gui.text0.setText( " Filename: " + this.filename );
-		gui.text1.setText( " cy5: " + getChannelFor( "cy5" ) + ", dapi: " + getChannelFor( "dapi" ) + ", gfp: " + getChannelFor( "gfp" ) );
-		gui.text2.setText( " c0: " + this.c0 + " (" + this.c0_type + ")" + ", c1: " + this.c1 + " (" + this.c1_type + ")" + ", c2: " + this.c2 + " (" + this.c2_type + ")"  );
 	}
 
 	public static String ellipseToString( final Ellipse e )
@@ -468,29 +510,5 @@ public class LoadedEmbryo
 		}
 
 		return embryos;
-	}
-
-	public static void main( String[] args )
-	{
-		String line = "a,b,,,d";
-		String[] split = line.split( "," );
-		
-		for ( final String s : split )
-			System.out.println( "'" + s + "'" );
-
-		String a = "";
-		String b = "";
-
-		System.out.println( a.equals( b ) );
-
-		new ImageJ();
-
-		final File file = new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table3.csv");
-
-		final ArrayList< LoadedEmbryo > embryos = loadCSV( file );
-
-		saveCSV( embryos, file );
-
-		IJ.log( "done" );
 	}
 }

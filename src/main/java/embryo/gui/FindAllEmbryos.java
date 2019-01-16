@@ -1,5 +1,6 @@
 package embryo.gui;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -72,9 +73,9 @@ public class FindAllEmbryos
 				System.out.println( "isEllipse: " + ellipse.isEllipse() );
 				System.out.println( "area: " + ellipse.area() );
 	
-				ellipse.drawCenter( o );
-				ellipse.drawAxes( o );
-				ellipse.draw( o, 0.01 );
+				ellipse.drawCenter( o, Color.YELLOW );
+				ellipse.drawAxes( o, Color.YELLOW );
+				ellipse.draw( o, 0.01, Color.YELLOW );
 
 				final LoadedEmbryo newEmbryo = e.clone();
 				newEmbryo.ellipse = ellipse;
@@ -97,9 +98,9 @@ public class FindAllEmbryos
 		if ( !dir.exists() )
 			dir.mkdir();
 
-		final File gfpFile = new File( csv.getParentFile() + "/preview", e.filename + ".gfpmax.jpg" );
-		final File dapiFile = new File( csv.getParentFile() + "/preview", e.filename + ".dapimax.jpg" );
-		final File cy5File = new File( csv.getParentFile() + "/preview", e.filename + ".cy5mid.jpg" );
+		final File gfpFile = new File( csv.getParentFile() + "/preview", e.filename + EmbryoGUI.gfpExt );
+		final File dapiFile = new File( csv.getParentFile() + "/preview", e.filename + EmbryoGUI.dapiExt );
+		final File cy5File = new File( csv.getParentFile() + "/preview", e.filename + EmbryoGUI.cy5Ext );
 
 		if ( gfpFile.exists() && dapiFile.exists() && cy5File.exists() )
 			return;
