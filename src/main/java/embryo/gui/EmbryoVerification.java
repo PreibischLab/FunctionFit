@@ -143,11 +143,20 @@ public class EmbryoVerification
 				if (e.getID() == KeyEvent.KEY_PRESSED)
 				{
 					if ( e.getKeyChar() == '7' )
-						gui.good.doClick();
+					{
+						if ( gui.good.isEnabled() )
+							gui.good.doClick();
+					}
 					else if ( e.getKeyChar() == '8' )
-						gui.incomplete.doClick();
+					{
+						if ( gui.incomplete.isEnabled() )
+							gui.incomplete.doClick();
+					}
 					else if ( e.getKeyChar() == '9' )
-						gui.bad.doClick();
+					{
+						if ( gui.bad.isEnabled() )
+							gui.bad.doClick();
+					}
 					else if ( e.getKeyChar() == '.' )
 						gui.forward.doClick();
 					else if ( e.getKeyChar() == ',' )

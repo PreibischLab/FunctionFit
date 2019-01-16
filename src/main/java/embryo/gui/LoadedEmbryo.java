@@ -71,6 +71,19 @@ public class LoadedEmbryo
 		gui.bad.setBackground( gui.orginalBackground );
 		gui.bad.setForeground( gui.originalForeground );
 
+		if ( ellipse == null )
+		{
+			gui.good.setEnabled( false );
+			gui.incomplete.setEnabled( false );
+			gui.bad.setEnabled( false );
+		}
+		else
+		{
+			gui.good.setEnabled( true );
+			gui.incomplete.setEnabled( true );
+			gui.bad.setEnabled( true );
+		}
+
 		if ( status == Status.GOOD )
 		{
 			gui.good.setBackground( EmbryoGUI.goodColor );
@@ -90,8 +103,6 @@ public class LoadedEmbryo
 		gui.text0.setText( " Filename: " + this.filename );
 		gui.text1.setText( " cy5: " + getChannelFor( "cy5" ) + ", dapi: " + getChannelFor( "dapi" ) + ", gfp: " + getChannelFor( "gfp" ) );
 		gui.text2.setText( " c0: " + this.c0 + " (" + this.c0_type + ")" + ", c1: " + this.c1 + " (" + this.c1_type + ")" + ", c2: " + this.c2 + " (" + this.c2_type + ")"  );
-
-		// TODO: change GUI and say that there is nothing
 	}
 
 	public void drawEllipse( final Overlay o, final boolean active )
