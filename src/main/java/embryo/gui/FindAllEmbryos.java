@@ -26,7 +26,7 @@ import net.imglib2.util.Pair;
 
 public class FindAllEmbryos
 {
-	public static ArrayList< LoadedEmbryo > processEmbryoimage( final LoadedEmbryo e, final File csv )
+	public static ArrayList< LoadedEmbryo > processEmbryoimage( final LoadedEmbryo e, final File csv, final boolean showImages )
 	{
 		final File file = new File( csv.getParentFile() + "/masks", e.filename + ".tif" );
 
@@ -39,8 +39,12 @@ public class FindAllEmbryos
 
 		System.out.println( "Found " + mts.size() + " edge pixels." );
 
-		ImagePlus edgeImp = ImageJFunctions.show( edgeImg );
-		edgeImp.setTitle( e.filename );
+		ImagePlus edgeImp = null;
+		if ( showImages )
+		{
+			edgeImp = ImageJFunctions.show( edgeImg );
+			edgeImp.setTitle( e.filename );	
+		}
 
 		final double minArea = 35000; // minimal size in square-pixels of the ellipse
 		final double maxArea = 100000; // maximal size in square-pixels of the ellipse
@@ -86,8 +90,11 @@ public class FindAllEmbryos
 			}
 		}
 
-		edgeImp.setOverlay( o );
-		edgeImp.updateAndDraw();
+		if ( showImages )
+		{
+			edgeImp.setOverlay( o );
+			edgeImp.updateAndDraw();			
+		}
 
 		return embryos;
 	}
@@ -188,7 +195,7 @@ public class FindAllEmbryos
 		for ( final LoadedEmbryo e : embryos )
 		{
 			//if ( e.filename.equals( "SEA-12_300" ))
-			annotatedembryos.addAll( processEmbryoimage( e, csvFile ) );
+			annotatedembryos.addAll( processEmbryoimage( e, csvFile, false ) );
 			
 			//if ( e.filename.equals( "MK4_1" ))
 			prepareImages( e, csvFile, false );
