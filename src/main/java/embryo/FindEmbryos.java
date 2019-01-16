@@ -1,5 +1,6 @@
 package embryo;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -149,9 +150,9 @@ public class FindEmbryos
 				System.out.println( "isEllipse: " + e.isEllipse() );
 				System.out.println( "area: " + e.area() );
 	
-				e.drawCenter( o );
-				e.drawAxes( o );
-				e.draw( o, 0.01 );
+				e.drawCenter( o, Color.YELLOW );
+				e.drawAxes( o, Color.YELLOW );
+				e.draw( o, 0.01, Color.YELLOW );
 	
 			}
 	

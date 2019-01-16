@@ -14,10 +14,20 @@ public class EmbryoGUI
 	public static Color goodColor = Color.GREEN;
 	public static Color incompleteColor = Color.YELLOW;
 	public static Color badColor = Color.RED;
+	public static Color notAssignedColor = Color.WHITE;
 
 	public static Color goodColorFG = goodColor.darker().darker().darker();
 	public static Color incompleteColorFG = incompleteColor.darker().darker().darker();
 	public static Color badColorFG = badColor.darker().darker().darker();
+
+	public static Color goodColorBG = goodColor.darker().darker();
+	public static Color incompleteColorBG = incompleteColor.darker().darker();
+	public static Color badColorBG = badColor.darker().darker();
+	public static Color notAssignedColorBG = Color.GRAY;
+
+	public static String dapiExt = ".dapimax.jpg";
+	public static String gfpExt = ".gfpmax.jpg";
+	public static String cy5Ext = ".cy5mid.jpg";
 
 	JButton good, incomplete, bad, forward, back;
 	JLabel text0, text1, text2;
