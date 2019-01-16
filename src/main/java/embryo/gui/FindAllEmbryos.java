@@ -16,6 +16,7 @@ import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.io.FileSaver;
 import ij.io.Opener;
+import ij.plugin.StackCombiner;
 import ij.plugin.ZProjector;
 import mpicbg.models.Point;
 import net.imglib2.img.Img;
@@ -91,18 +92,16 @@ public class FindAllEmbryos
 		return embryos;
 	}
 
-	public static void prepareImages( final LoadedEmbryo e, final File csv )
+	public static void prepareImages( final LoadedEmbryo e, final File csv, final boolean onlyDAPI )
 	{
 		final File dir = new File( csv.getParentFile() + "/preview" );
 
 		if ( !dir.exists() )
 			dir.mkdir();
 
-		final File gfpFile = new File( csv.getParentFile() + "/preview", e.filename + EmbryoGUI.gfpExt );
 		final File dapiFile = new File( csv.getParentFile() + "/preview", e.filename + EmbryoGUI.dapiExt );
-		final File cy5File = new File( csv.getParentFile() + "/preview", e.filename + EmbryoGUI.cy5Ext );
 
-		if ( gfpFile.exists() && dapiFile.exists() && cy5File.exists() )
+		if ( dapiFile.exists() )
 			return;
 
 		final File image = new File( csv.getParentFile() + "/tifs", e.filename + ".tif" );
@@ -117,34 +116,64 @@ public class FindAllEmbryos
 
 		final int size = imp.getNSlices();
 
-		final ImagePlus cy5 = new ImagePlus( "cy5", imp.getStack().getProcessor( imp.getStackIndex( e.getChannelFor( "cy5" ) + 1, size / 2 + 1, 1 ) ) );
+		final ImagePlus cy5;
+
+		if ( onlyDAPI )
+			cy5 = null;
+		else
+			cy5 = new ImagePlus( "cy5", imp.getStack().getProcessor( imp.getStackIndex( e.getChannelFor( "cy5" ) + 1, size / 2 + 1, 1 ) ) );
+
 		final ImagePlus proj = ZProjector.run(imp,"max");
 		imp.close();
 
 		final ImagePlus dapiMax = new ImagePlus( "dapi", proj.getStack().getProcessor( imp.getStackIndex( e.getChannelFor( "dapi" ) + 1, 1, 1 ) ) );
-
-		final int gfpChannel = e.getChannelFor( "gfp" );
-
 		final ImagePlus gfpMax;
-		if ( gfpChannel >= 0 )
-			gfpMax = new ImagePlus( "gfp", proj.getStack().getProcessor( imp.getStackIndex( e.getChannelFor( "gfp" ) + 1, 1, 1 ) ) );
+
+		if ( onlyDAPI )
+		{
+			gfpMax = null;
+		}
 		else
-			gfpMax = IJ.createImage( "gfp", dapiMax.getWidth(), dapiMax.getHeight(), 1, 16 );
+		{
+			final int gfpChannel = e.getChannelFor( "gfp" );
+
+			if ( gfpChannel >= 0 )
+				gfpMax = new ImagePlus( "gfp", proj.getStack().getProcessor( imp.getStackIndex( e.getChannelFor( "gfp" ) + 1, 1, 1 ) ) );
+			else
+				gfpMax = IJ.createImage( "gfp", dapiMax.getWidth(), dapiMax.getHeight(), 1, 16 );
+		}
 
 		dapiMax.resetDisplayRange();
-		gfpMax.resetDisplayRange();
-		cy5.resetDisplayRange();
+		if ( !onlyDAPI )
+		{
+			gfpMax.resetDisplayRange();
+			cy5.resetDisplayRange();
+		}
 
-		new FileSaver( dapiMax ).saveAsJpeg( dapiFile.getAbsolutePath() );
-		new FileSaver( gfpMax ).saveAsJpeg( gfpFile.getAbsolutePath() );
-		new FileSaver( cy5 ).saveAsJpeg( cy5File.getAbsolutePath() );
-		//cy5.show();
-		//dapiMax.show();
-		//gfpMax.show();
+		if ( onlyDAPI )
+		{
+			new FileSaver( dapiMax ).saveAsJpeg( dapiFile.getAbsolutePath() );
+			dapiMax.close();
+		}
+		else
+		{
+			// assemble montage
+			IJ.run(dapiMax, "8-bit", "");
+			IJ.run(gfpMax, "8-bit", "");
+			IJ.run(cy5, "8-bit", "");
 
-		cy5.close();
-		dapiMax.close();
-		gfpMax.close();
+			IJ.run(gfpMax, "Canvas Size...", "width=" + gfpMax.getWidth()*2 + " height=" + gfpMax.getHeight()  + " position=Top-Left zero");
+			ImagePlus combined = new ImagePlus( "combined", new StackCombiner().combineHorizontally( dapiMax.getStack(), cy5.getStack() ) );
+			ImagePlus finalImg = new ImagePlus( "final", new StackCombiner().combineVertically( combined.getStack(), gfpMax.getStack() ) );
+
+			new FileSaver( finalImg ).saveAsJpeg( dapiFile.getAbsolutePath() );
+	
+			finalImg.close();
+			combined.close();
+			dapiMax.close();
+			cy5.close();
+			gfpMax.close();
+		}
 	}
 
 	public static void main( String[] args )
@@ -159,13 +188,13 @@ public class FindAllEmbryos
 		for ( final LoadedEmbryo e : embryos )
 		{
 			//if ( e.filename.equals( "SEA-12_300" ))
-			annotatedembryos.addAll( processEmbryoimage( e, csvFile ) );
+			//annotatedembryos.addAll( processEmbryoimage( e, csvFile ) );
 			
 			//if ( e.filename.equals( "MK4_1" ))
-			prepareImages( e, csvFile );
+			prepareImages( e, csvFile, false );
 		}
 
-		LoadedEmbryo.saveCSV( annotatedembryos, new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_annotated.csv") );
+		//LoadedEmbryo.saveCSV( annotatedembryos, new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_annotated.csv") );
 
 		IJ.log( "done" );
 
