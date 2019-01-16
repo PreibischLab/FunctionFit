@@ -180,7 +180,7 @@ public class FindAllEmbryos
 	{
 		new ImageJ();
 
-		final File csvFile = new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table3.csv");
+		final File csvFile = TextFileAccess.loadPath();
 
 		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFile );
 		final ArrayList< LoadedEmbryo > annotatedembryos = new ArrayList< LoadedEmbryo >();
@@ -188,13 +188,13 @@ public class FindAllEmbryos
 		for ( final LoadedEmbryo e : embryos )
 		{
 			//if ( e.filename.equals( "SEA-12_300" ))
-			//annotatedembryos.addAll( processEmbryoimage( e, csvFile ) );
+			annotatedembryos.addAll( processEmbryoimage( e, csvFile ) );
 			
 			//if ( e.filename.equals( "MK4_1" ))
 			prepareImages( e, csvFile, false );
 		}
 
-		//LoadedEmbryo.saveCSV( annotatedembryos, new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_annotated.csv") );
+		LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
 
 		IJ.log( "done" );
 

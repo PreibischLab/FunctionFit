@@ -14,6 +14,37 @@ import java.io.PrintWriter;
 
 public class TextFileAccess 
 {
+	public static File loadPath()
+	{
+		final File file = new File( "path.txt" );
+		
+		if ( !file.exists() )
+		{
+			System.out.println("Cannot find path file: " + file.getAbsolutePath() );
+			System.exit( 0 );
+		} 
+			
+		final BufferedReader in = openFileRead( file );
+
+		File csvFile;
+		try
+		{
+			csvFile = new File( in.readLine().trim() );
+
+			if ( !file.exists() )
+			{
+				System.out.println("Cannot find csv file: " + csvFile.getAbsolutePath() );
+				System.exit( 0 );
+			} 
+	
+			return csvFile;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			System.exit( 0 );
+			return null;
+		}
+	}
 	public static void copyFile( final File inputFile, final File outputFile ) throws IOException
 	{
 		InputStream input = null;
