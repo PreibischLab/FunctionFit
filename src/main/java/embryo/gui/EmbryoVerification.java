@@ -1,11 +1,12 @@
 package embryo.gui;
 
-import java.awt.Color;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,13 +15,11 @@ import embryo.gui.LoadedEmbryo.Status;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import ij.gui.GenericDialog;
 import ij.gui.ImageCanvas;
 import ij.gui.ImageWindow;
-import ij.gui.Line;
 import ij.gui.Overlay;
-import ij.gui.Roi;
 import ij.io.Opener;
-import net.imglib2.img.imageplus.ImagePlusImgs;
 
 public class EmbryoVerification
 {
@@ -69,12 +68,32 @@ public class EmbryoVerification
 
 		assignCurrentEmbryo( 0 );
 
+		gui.frame.addWindowListener( new WindowListener()
+		{
+			public void windowClosing(WindowEvent arg0){ save(); }
+			public void windowOpened(WindowEvent arg0) {}
+			public void windowClosed(WindowEvent arg0) {}
+			public void windowIconified(WindowEvent arg0) {}
+			public void windowDeiconified(WindowEvent arg0) {}
+			public void windowActivated(WindowEvent arg0) {}
+			public void windowDeactivated(WindowEvent arg0) {}
+		} );
+
 		gui.forward.addActionListener( new ActionListener()
 		{
 			@Override
 			public void actionPerformed( ActionEvent e )
 			{
 				assignCurrentEmbryo( embryoIndex + 1 );
+			}
+		} );
+
+		gui.save.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				save();
 			}
 		} );
 
@@ -168,7 +187,7 @@ public class EmbryoVerification
 		{
 			double mag = 1.0;
 	
-			if ( dapiImp != null && dapiImp.getWindow() != null && ( dapiImp.getWindow().running || dapiImp.getWindow().running2 ) )
+			if ( dapiImp != null && dapiImp.getWindow() != null )
 			{
 				final ImageWindow window = dapiImp.getWindow();
 				ImageWindow.setNextLocation( window.getLocationOnScreen() );
@@ -208,6 +227,39 @@ public class EmbryoVerification
 
 		dapiImp.setOverlay( dapiImpOverlay );
 		dapiImp.updateAndDraw();
+	}
+
+	public void save()
+	{
+		final GenericDialog gd = new GenericDialog( "Saving ..." );
+		gd.addCheckbox( "Save", true );
+		gd.addCheckbox( "Mark unassigned as bad up to current embryo", false );
+		gd.addCheckbox( "Mark ALL unassigned as bad", false );
+
+		gd.showDialog();
+
+		if ( gd.wasCanceled() )
+			return;
+
+		final boolean save = gd.getNextBoolean();
+		final boolean replaceBefore = gd.getNextBoolean();
+		final boolean replaceAll = gd.getNextBoolean();
+
+		if ( replaceBefore )
+			for ( int i = 0; i <= embryoIndex; ++i )
+				if ( embryoList.get( i ).status == Status.NOT_ASSIGNED )
+					embryoList.get( i ).status = Status.BAD;
+
+		if ( replaceAll )
+			for ( final LoadedEmbryo e : embryoList )
+				if ( e.status == Status.NOT_ASSIGNED )
+					e.status = Status.BAD;
+
+		if ( save )
+		{
+			LoadedEmbryo.saveCSV( embryoList, file );
+			IJ.log( "Saved " + file.getAbsolutePath() );
+		}
 	}
 
 	public static void main( String[] args )
