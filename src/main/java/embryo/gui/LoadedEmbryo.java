@@ -7,12 +7,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import embryo.gui.LoadedEmbryo.Status;
 import fit.circular.Ellipse;
 import fit.circular.EllipsePointDistanceFactory;
 import ij.IJ;
-import ij.ImageJ;
-import ij.ImagePlus;
 import ij.gui.Overlay;
 
 public class LoadedEmbryo
