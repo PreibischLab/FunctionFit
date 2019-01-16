@@ -50,9 +50,9 @@ public class EmbryoGUI
 		final GridBagLayout layout = new GridBagLayout();
 		final GridBagConstraints c = new GridBagConstraints();
 
-		this.good = new JButton( "Good [1]" );
-		this.incomplete = new JButton( "Needs correction [2]" );
-		this.bad = new JButton( "Bad [3]" );
+		this.good = new JButton( "Good [7]" );
+		this.incomplete = new JButton( "Needs correction [8]" );
+		this.bad = new JButton( "Bad [9]" );
 
 		this.forward = new JButton( ">> [.]" );
 		this.back = new JButton( "<< [,]" );

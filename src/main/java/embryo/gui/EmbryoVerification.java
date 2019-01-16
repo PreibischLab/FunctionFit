@@ -123,11 +123,11 @@ public class EmbryoVerification
 			{
 				if (e.getID() == KeyEvent.KEY_PRESSED)
 				{
-					if ( e.getKeyChar() == '1' )
+					if ( e.getKeyChar() == '7' )
 						gui.good.doClick();
-					else if ( e.getKeyChar() == '2' )
+					else if ( e.getKeyChar() == '8' )
 						gui.incomplete.doClick();
-					else if ( e.getKeyChar() == '3' )
+					else if ( e.getKeyChar() == '9' )
 						gui.bad.doClick();
 					else if ( e.getKeyChar() == '.' )
 						gui.forward.doClick();
@@ -168,7 +168,7 @@ public class EmbryoVerification
 		{
 			double mag = 1.0;
 	
-			if ( dapiImp != null )
+			if ( dapiImp != null && dapiImp.getWindow() != null && ( dapiImp.getWindow().running || dapiImp.getWindow().running2 ) )
 			{
 				final ImageWindow window = dapiImp.getWindow();
 				ImageWindow.setNextLocation( window.getLocationOnScreen() );
