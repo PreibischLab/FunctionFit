@@ -183,8 +183,17 @@ public class FindAllEmbryos
 		}
 	}
 
+	// Laura: you need a "public static void main([] args )" method to start
 	public static void main( String[] args )
 	{
+		/*String s = "5,4,3,,1,435,,, ";
+		
+		String[] t = s.split(",");
+		
+		for ( int i = 0; i < t.length; ++i )
+			System.out.println( i + ": '" + t[ i ].trim() + "'");
+		
+		System.exit(0);*/
 		new ImageJ();
 
 		final File csvFile = TextFileAccess.loadPath();
