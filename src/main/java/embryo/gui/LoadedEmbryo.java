@@ -222,11 +222,27 @@ public class LoadedEmbryo
 		}
 	}
 
+	public static int count = 0;
 	/*
 	 * make an Embryo instance from a line of parameters read from a CSV file
 	 */
 	public static LoadedEmbryo fromString( final String[] line, final int[] lookup ) throws NumberFormatException
 	{
+		System.out.println( ++count );
+		
+		/*
+		if ( count ==  1543 )
+		{
+			System.out.println();
+			
+			for ( int i = 0; i <= 23; ++i )
+			{
+				System.out.println( i + ": " + " " + lookup[i] + ": " + line[ lookup[i] ] );
+			}
+		//	System.exit( 0);
+		}
+		*/
+
 		for ( int i = 0; i < line.length; ++i )
 			line[ i ] = line[ i ].trim();
 
@@ -248,6 +264,8 @@ public class LoadedEmbryo
 		e.c4_lambda = line[ lookup[11] ];
 
 		e.originalFN = line[ lookup[12] ];
+		if ( line[ lookup[13] ].length() == 0 )
+			return null;
 		e.dapiChannelIndex = (int)Math.round( Double.parseDouble( line[ lookup[13] ] ) );
 		e.manualMaskMaker = line[ lookup[14] ];
 
@@ -263,6 +281,7 @@ public class LoadedEmbryo
 		e.comments = line[ lookup[19] ];
 		e.stage = line[ lookup[20] ];
 
+		
 		if ( line[ lookup[21] ].length() > 0 )
 			e.integrity = (int)Math.round( Double.parseDouble( line[ lookup[21] ] ) );
 		else
@@ -497,9 +516,28 @@ public class LoadedEmbryo
 			{
 				lineNo++;
 				currentLine = in.readLine().trim();
-				final String[] line = currentLine.split( "," );
+				String[] line = currentLine.split( "," );
 
-				embryos.add( fromString( line, lookUp ) );
+				// add empty entries at the end if necessary
+				if ( line.length < splitHeader.length )
+				{
+					final String[] lineNew = new String[ splitHeader.length ];
+
+					for ( int i = 0; i < lineNew.length; ++i )
+						lineNew[ i ] = "";
+
+					for ( int i = 0; i < line.length; ++i )
+						lineNew[ i ] = line[ i ];
+
+					line = lineNew;
+				}
+				
+				final LoadedEmbryo e = fromString( line, lookUp );
+
+				if ( e == null )
+					System.out.println( lineNo + " has no DAPI channel." );
+				else
+					embryos.add( e );
 			}
 		}
 		catch (NumberFormatException e)
