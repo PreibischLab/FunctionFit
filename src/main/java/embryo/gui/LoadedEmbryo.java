@@ -24,7 +24,7 @@ public class LoadedEmbryo
 			"signal", "filename" };
 
 	final static String[] optionalColumns = new String[]{
-			"status", "ellipse" };
+			"status", "ellipse", "valid" };
 
 	public enum Status { NOT_ASSIGNED, GOOD, INCOMPLETE, BAD };
 
@@ -293,7 +293,7 @@ public class LoadedEmbryo
 			e.signal = -1;
 
 		e.filename = line[ lookup[23] ];
-
+		
 		if ( lookup[24] > 0 )
 			e.status = Status.values()[ (int)Math.round( Double.parseDouble( line[ lookup[24] ] ) ) ];
 		else
@@ -303,6 +303,9 @@ public class LoadedEmbryo
 			e.ellipse = stringToEllipse( line[ lookup[25] ] );
 		else
 			e.ellipse = null;
+
+		if ( lookup[26] > 0 && line[ lookup[26] ].equalsIgnoreCase( "x" ) )
+			return null;
 
 		return e;
 	}
