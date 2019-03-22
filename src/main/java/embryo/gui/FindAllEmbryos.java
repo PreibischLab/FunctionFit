@@ -2,6 +2,7 @@ package embryo.gui;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import embryo.FindEmbryos;
@@ -215,6 +216,20 @@ public class FindAllEmbryos
 			prepareImages( e, csvFile, false );
 		}
 
+		final File copyFile = new File( csvFile.getAbsolutePath() + ".orig.csv" );
+		System.out.println( "copying original csv to '" + copyFile.getAbsolutePath() + "'" );
+		
+		try
+		{
+			TextFileAccess.copyFile( csvFile, copyFile );
+		}
+		catch ( IOException e1 )
+		{
+			System.out.println( "Copying failed: " + e1.getMessage() );
+			e1.printStackTrace();
+		}
+
+		System.out.println( "saving csv to '" + csvFile.getAbsolutePath() + "'" );
 		LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
 
 		System.out.println( "done" );
