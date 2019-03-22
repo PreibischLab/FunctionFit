@@ -28,7 +28,8 @@ public class Util
 			final double minArea,
 			final double maxArea,
 			final double minRatio, // ratio = large axis / small axis
-			final double maxRatio )
+			final double maxRatio,
+			final int numIterations )
 	{
 		boolean fitted;
 
@@ -41,7 +42,7 @@ public class Util
 		{
 			fitted = false;
 
-			final Pair< P, ArrayList< PointFunctionMatch > > f = findFunction( remainingPoints, function.copy(), maxError, minNumInliers, minArea, maxArea, minRatio, maxRatio );
+			final Pair< P, ArrayList< PointFunctionMatch > > f = findFunction( remainingPoints, function.copy(), maxError, minNumInliers, minArea, maxArea, minRatio, maxRatio, numIterations );
 
 			if ( f != null && f.getB().size() > 0 )
 			{
@@ -68,7 +69,8 @@ public class Util
 			final double minArea,
 			final double maxArea,
 			final double minRatio, // ratio = large axis / small axis
-			final double maxRatio )
+			final double maxRatio,
+			final int numIterations )
 	{
 		final ArrayList< PointFunctionMatch > candidates = new ArrayList<PointFunctionMatch>();
 		final ArrayList< PointFunctionMatch > inliers = new ArrayList<PointFunctionMatch>();
@@ -78,7 +80,7 @@ public class Util
 
 		try
 		{
-			function.ransac( candidates, inliers, 500, maxError, 0.001, minNumInliers, minArea, maxArea, minRatio, maxRatio );
+			function.ransac( candidates, inliers, numIterations, maxError, 0.001, minNumInliers, minArea, maxArea, minRatio, maxRatio );
 
 			if ( inliers.size() >= function.getMinNumPoints() )
 			{

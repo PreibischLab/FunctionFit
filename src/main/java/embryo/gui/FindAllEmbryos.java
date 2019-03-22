@@ -52,11 +52,12 @@ public class FindAllEmbryos
 		final double maxRatio = 3.0;
 		final double maxError = 10.0; // maximal distance of an edge pixel to the ellipse and still belong to it
 		final int minNuminliers = 800; // minimal amount of edge pixels that belong to the ellipse
+		final int numIterations = 500; // how often RANSAC tries
 
 		final ShapePointDistanceFactory< Ellipse, ?, ? > factory = new EllipsePointDistanceFactory();//BruteForceShapePointDistanceFactory< Ellipse >();
 
 		final ArrayList< Pair< Ellipse, ArrayList< PointFunctionMatch > > > functions =
-				Util.findAllFunctions( mts, new Ellipse( factory ), maxError, minNuminliers, minArea, maxArea, minRatio, maxRatio );
+				Util.findAllFunctions( mts, new Ellipse( factory ), maxError, minNuminliers, minArea, maxArea, minRatio, maxRatio, numIterations );
 
 		final Overlay o = new Overlay();
 

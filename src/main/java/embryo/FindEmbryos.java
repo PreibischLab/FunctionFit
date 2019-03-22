@@ -135,11 +135,12 @@ public class FindEmbryos
 	
 			final double minArea = 40000;
 			final double maxArea = 80000;
+			final int numIterations = 500;
 
 			final ShapePointDistanceFactory< Ellipse, ?, ? > factory = new EllipsePointDistanceFactory();//BruteForceShapePointDistanceFactory< Ellipse >();
 
 			final ArrayList< Pair< Ellipse, ArrayList< PointFunctionMatch > > > functions =
-					Util.findAllFunctions( mts, new Ellipse( factory ), 15, 300, minArea, maxArea, 0.999, 3.0 );
+					Util.findAllFunctions( mts, new Ellipse( factory ), 15, 300, minArea, maxArea, 0.999, 3.0, numIterations );
 	
 			final Overlay o = new Overlay();
 	
