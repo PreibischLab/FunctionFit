@@ -228,7 +228,7 @@ public class LoadedEmbryo
 	 */
 	public static LoadedEmbryo fromString( final String[] line, final int[] lookup ) throws NumberFormatException
 	{
-		System.out.println( ++count );
+		//System.out.println( ++count );
 		
 		/*
 		if ( count ==  1543 )
