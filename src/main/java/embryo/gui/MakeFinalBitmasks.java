@@ -1,0 +1,185 @@
+package embryo.gui;
+
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.io.File;
+import java.util.ArrayList;
+
+import embryo.gui.LoadedEmbryo.Status;
+import fit.circular.Ellipse;
+import ij.CompositeImage;
+import ij.IJ;
+import ij.ImageJ;
+import ij.ImagePlus;
+import ij.gui.Overlay;
+import ij.io.FileSaver;
+import ij.io.Opener;
+import ij.plugin.Duplicator;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import net.imglib2.FinalInterval;
+import net.imglib2.Interval;
+
+public class MakeFinalBitmasks
+{
+	public static Interval findBoundingBox( final Ellipse e, final ImagePlus imp, final int boundary )
+	{
+		return findBoundingBox( e, imp, boundary, boundary );
+	}
+
+	public static Interval findBoundingBox( final Ellipse e, final ImagePlus imp, final int boundaryX, final int boundaryY )
+	{
+		double xMin = e.getPointXAt( 0 );
+		double xMax = xMin;
+		double yMin = e.getPointYAt( 0 );
+		double yMax = yMin;
+
+		final double step = 0.05;
+
+		for ( double t = step; t < 2*Math.PI; t += step )
+		{
+			final double x = e.getPointXAt( t );
+			final double y = e.getPointYAt( t );
+
+			xMin = Math.min( x, xMin );
+			yMin = Math.min( y, yMin );
+
+			xMax = Math.max( x, xMax );
+			yMax = Math.max( y, yMax );
+		}
+
+		long x0 = Math.round( Math.floor( xMin ) ) - boundaryX;
+		long x1 = Math.round( Math.ceil( xMax ) ) + boundaryX;
+
+		long y0 = Math.round( Math.floor( yMin ) ) - boundaryY;
+		long y1 = Math.round( Math.ceil( yMax ) ) + boundaryY;
+
+		return new FinalInterval(
+				new long[] {
+					Math.max( 0, x0 ),
+					Math.max( 0, y0 )
+				},
+				new long[] {
+						Math.min( imp.getWidth() - 1, x1 ),
+						Math.min( imp.getHeight() - 1, y1 )
+				} );
+	}
+
+	public static void main( String[] args )
+	{
+		new ImageJ();
+
+		/*
+		final ImagePlus i = new Opener().openImage( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/tifs/MK4_1.tif" );
+
+		i.show();
+
+		Duplicator dup = new Duplicator();
+		i.setRoi( new Rectangle( 10, 10, 500, 300 ) );
+		ImagePlus cropped = dup.run( i, 1, i.getStackSize() );
+		CompositeImage c = new CompositeImage( cropped );
+		c.setDimensions( i.getNChannels(), i.getNSlices(), i.getNFrames() );
+		c.show();
+		
+
+		i.setRoi( new Rectangle( 500, 500, 500, 500 ) );
+		cropped = dup.run( i, 1, i.getStackSize() );
+		c = new CompositeImage( cropped );
+		c.setDimensions( i.getNChannels(), i.getNSlices(), i.getNFrames() );
+		c.show();
+		*/
+
+		// boundary around the ellipse for cropping (can be smaller if image is not big enough to support that)
+		final int boundary = 40;
+
+		final File csv = TextFileAccess.loadPath();
+
+		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csv );
+
+		final String parentDir = "/finaldata";
+		final String tifDir = parentDir + "/tifs";
+		final String maskDir = parentDir + "/masks";
+
+		File dir = new File( csv.getParentFile() + parentDir );
+		if ( !dir.exists() )
+			dir.mkdir();
+
+		dir = new File( csv.getParentFile() + tifDir );
+		if ( !dir.exists() )
+			dir.mkdir();
+
+		dir = new File( csv.getParentFile() + maskDir );
+		if ( !dir.exists() )
+			dir.mkdir();
+
+		int i = 1;
+
+		for ( final LoadedEmbryo e : embryos )
+		{
+			System.out.println( "Processing: '" + e.filename + "' (" + i++ + "/" + embryos.size() + "), status=" + e.status );
+
+			if ( e.status == Status.GOOD )
+			{
+				final File image = new File( csv.getParentFile() + "/tifs", e.filename + ".tif" );
+
+				if ( !image.exists())
+					throw new RuntimeException( "Couldn't find image file: " + image.getAbsolutePath() );
+
+				final ImagePlus imp = new Opener().openImage( image.getAbsolutePath() );
+
+				if ( imp == null )
+					throw new RuntimeException( "Couldn't open image: " + image.getAbsolutePath() );
+
+				// find bounding box
+				final Interval cropArea = findBoundingBox( e.ellipse, imp, boundary );
+
+				// cropped imp (all channels, z-slices)
+				final Duplicator dup = new Duplicator();
+				imp.setRoi( new Rectangle( (int)cropArea.min( 0 ), (int)cropArea.min( 1 ), (int)cropArea.dimension( 0 ), (int)cropArea.dimension( 1 ) ) );
+				final CompositeImage cropped = new CompositeImage( dup.run( imp, 1, imp.getStackSize() ) );
+				cropped.setDimensions( imp.getNChannels(), imp.getNSlices(), imp.getNFrames() );
+
+				// make mask
+				final ImagePlus mask = IJ.createImage( "ellipseMask", (int)cropArea.dimension( 0 ), (int)cropArea.dimension( 1 ), 1, 8 );
+				final ImageProcessor ip = mask.getProcessor();
+		
+				for ( int x = 0; x < mask.getWidth(); ++x )
+					for ( int y = 0; y < mask.getHeight(); ++y )
+					{
+						final double value = e.ellipse.eval( x + (int)cropArea.min( 0 ), y + (int)cropArea.min( 1 ) );
+						if ( value <= 0 )
+							ip.set( x, y, 255 );
+						else
+							ip.set( x,y, 0 );
+					}
+
+				// save cropped image and mask
+				final String newFileName = e.filename + "_cropped_" + i;
+
+				final File maskFile = new File( csv.getParentFile() + maskDir, newFileName + ".mask.tif" );
+				new FileSaver( mask ).saveAsTiff( maskFile.getAbsolutePath() );
+
+				final File cropFile = new File( csv.getParentFile() + tifDir, newFileName + ".tif" );
+				new FileSaver( cropped ).saveAsTiffStack( cropFile.getAbsolutePath() );
+
+				/*
+				// DEBUG: Show output images
+				final Overlay o = new Overlay();
+				e.ellipse.draw( o, 0.01, Color.yellow );
+				mask.setOverlay( o );
+				imp.setOverlay( o );
+				imp.show();
+				mask.show();
+				cropped.show();
+				while ( imp != null ) {}
+				*/
+
+				imp.close();
+				cropped.close();
+				mask.close();
+			}
+		}
+
+		// save new csv to finaldata
+	}
+}
