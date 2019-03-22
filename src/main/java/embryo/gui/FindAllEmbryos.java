@@ -202,11 +202,15 @@ public class FindAllEmbryos
 		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFile );
 		final ArrayList< LoadedEmbryo > annotatedembryos = new ArrayList< LoadedEmbryo >();
 
+		int i = 1;
+
 		for ( final LoadedEmbryo e : embryos )
 		{
+			System.out.println( "Processing: '" + e.filename + "' (" + i++ + "/" + embryos.size() + ")" );
+
 			//if ( e.filename.equals( "SEA-12_300" ))
 			annotatedembryos.addAll( processEmbryoimage( e, csvFile, false ) );
-			
+
 			//if ( e.filename.equals( "MK4_1" ))
 			prepareImages( e, csvFile, false );
 		}
