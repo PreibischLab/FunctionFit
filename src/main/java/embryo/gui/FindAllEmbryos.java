@@ -217,6 +217,7 @@ public class FindAllEmbryos
 
 		LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
 
+		System.out.println( "done" );
 		IJ.log( "done" );
 
 		/*
