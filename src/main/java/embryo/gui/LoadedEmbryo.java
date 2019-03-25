@@ -24,7 +24,7 @@ public class LoadedEmbryo
 			"signal", "filename" };
 
 	final static String[] optionalColumns = new String[]{
-			"status", "ellipse", "valid" };
+			"status", "ellipse", "valid", "cropped_mask_file", "cropped_image_file", "crop_offset_x", "crop_offset_y" };
 
 	public enum Status { NOT_ASSIGNED, GOOD, INCOMPLETE, BAD };
 
@@ -37,6 +37,9 @@ public class LoadedEmbryo
 	String c0_type, c1_type, c2_type;
 	String comments, stage, filename;
 	int signal, integrity;
+
+	int cropOffsetX = -1, cropOffsetY = -1;
+	String croppedImgFile = null, croppedMaskFile = null;
 
 	public LoadedEmbryo()
 	{
@@ -174,6 +177,11 @@ public class LoadedEmbryo
 		newEmbryo.signal = signal;
 		newEmbryo.integrity = integrity;
 
+		newEmbryo.cropOffsetX = cropOffsetX;
+		newEmbryo.cropOffsetY = cropOffsetY;
+		newEmbryo.croppedMaskFile = croppedMaskFile;
+		newEmbryo.croppedImgFile = croppedImgFile;
+
 		return newEmbryo;
 	}
 
@@ -307,6 +315,28 @@ public class LoadedEmbryo
 		if ( lookup[26] > 0 && line[ lookup[26] ].equalsIgnoreCase( "x" ) )
 			return null;
 
+		if ( lookup[27] > 0 )
+		{
+			if ( line[ lookup[ 27 ] ].equals( "null" ) )
+				e.croppedMaskFile = null;
+			else
+				e.croppedMaskFile = line[ lookup[ 27 ] ];
+		}
+
+		if ( lookup[28] > 0 )
+		{
+			if ( line[ lookup[ 28 ] ].equals( "null" ) )
+				e.croppedImgFile = null;
+			else
+				e.croppedImgFile = line[ lookup[ 28 ] ];
+		}
+
+		if ( lookup[29] > 0 )
+			e.cropOffsetX = Integer.parseInt( line[ lookup[ 29 ] ] );
+
+		if ( lookup[30] > 0 )
+			e.cropOffsetX = Integer.parseInt( line[ lookup[ 30 ] ] );
+
 		return e;
 	}
 
@@ -361,9 +391,24 @@ public class LoadedEmbryo
 		s += Integer.toString( e.status.ordinal() ) + ",";
 
 		if ( e.ellipse != null )
-			s += ellipseToString( e.ellipse );
+			s += ellipseToString( e.ellipse ) + ",";
 		else
-			s += "null";
+			s += "null" + ",";
+
+		s += "V,";
+
+		if ( e.croppedMaskFile != null )
+			s += e.croppedMaskFile + ",";
+		else
+			s += "null" + ",";
+
+		if ( e.croppedImgFile != null )
+			s += e.croppedImgFile + ",";
+		else
+			s += "null" + ",";
+
+		s += e.cropOffsetX + ",";
+		s += e.cropOffsetY;
 
 		return s;
 	}
