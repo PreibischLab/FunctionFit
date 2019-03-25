@@ -100,7 +100,7 @@ public class MakeFinalBitmasks
 		{
 			System.out.println( "CSV files not defined in path.txt" );
 			System.out.println( "csvFileIn (ORIGINAL)= " + csvFileIn );
-			System.out.println( "csvFileOut (ANNOTATED)= " + csvFileOut );
+			System.out.println( "csvFileOut (CROPPED)= " + csvFileOut );
 			System.exit( 0 );
 		}
 
@@ -191,9 +191,23 @@ public class MakeFinalBitmasks
 				mask.close();
 
 				// update the Embryo information
+				// we need to add:
+				// - mask file
+				// - cropped tiff file
+				// - offset
+				e.croppedMaskFile = newFileNameMask;
+				e.croppedImgFile = newFileNameTIF;
+				e.cropOffsetX = (int)cropArea.min( 0 );
+				e.cropOffsetY = (int)cropArea.min( 1 );
 			}
 		}
 
 		// save new csv to finaldata
+		System.out.println( "saving csv to '" + csvFileOut.getAbsolutePath() + "'" );
+		LoadedEmbryo.saveCSV( embryos, csvFileOut );
+
+		System.out.println( "done" );
+		IJ.log( "done" );
+
 	}
 }
