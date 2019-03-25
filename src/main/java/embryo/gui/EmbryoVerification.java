@@ -17,7 +17,6 @@ import embryo.gui.TextFileAccess.CSV_TYPE;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import ij.gui.FreehandRoi;
 import ij.gui.GenericDialog;
 import ij.gui.ImageCanvas;
 import ij.gui.ImageWindow;
@@ -300,7 +299,12 @@ public class EmbryoVerification
 			yp[ i ] = Math.max( 0, ypTmp[ i ] + y - (shiftY ? dapiImp.getHeight() / 2 : 0 ) );
 		}
 
-		dapiImp.setRoi( new PolygonRoi( xp, yp, xp.length, Roi.FREEROI ) );
+		final PolygonRoi newRoi = new PolygonRoi( xp, yp, xp.length, Roi.FREEROI );
+		//dapiImp.setRoi( new PolygonRoi( xp, yp, xp.length, Roi.FREEROI ) );
+
+		roi.setStrokeColor( EmbryoGUI.incompleteColor );
+		dapiImpOverlay.add( newRoi );
+		dapiImp.setOverlay( dapiImpOverlay );
 		dapiImp.updateAndDraw();
 	}
 
