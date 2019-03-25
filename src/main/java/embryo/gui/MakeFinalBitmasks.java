@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import embryo.gui.LoadedEmbryo.Status;
+import embryo.gui.TextFileAccess.CSV_TYPE;
 import fit.circular.Ellipse;
 import ij.CompositeImage;
 import ij.IJ;
@@ -92,23 +93,32 @@ public class MakeFinalBitmasks
 		// boundary around the ellipse for cropping (can be smaller if image is not big enough to support that)
 		final int boundary = 40;
 
-		final File csv = TextFileAccess.loadPath();
+		final File csvFileIn = TextFileAccess.loadPath( CSV_TYPE.ANNOTATED );
+		final File csvFileOut = TextFileAccess.loadPath( CSV_TYPE.CROPPED );
 
-		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csv );
+		if ( csvFileIn == null || csvFileOut == null )
+		{
+			System.out.println( "CSV files not defined in path.txt" );
+			System.out.println( "csvFileIn (ORIGINAL)= " + csvFileIn );
+			System.out.println( "csvFileOut (ANNOTATED)= " + csvFileOut );
+			System.exit( 0 );
+		}
+
+		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFileIn );
 
 		final String parentDir = "/finaldata";
 		final String tifDir = parentDir + "/tifs";
 		final String maskDir = parentDir + "/masks";
 
-		File dir = new File( csv.getParentFile() + parentDir );
+		File dir = new File( csvFileIn.getParentFile() + parentDir );
 		if ( !dir.exists() )
 			dir.mkdir();
 
-		dir = new File( csv.getParentFile() + tifDir );
+		dir = new File( csvFileIn.getParentFile() + tifDir );
 		if ( !dir.exists() )
 			dir.mkdir();
 
-		dir = new File( csv.getParentFile() + maskDir );
+		dir = new File( csvFileIn.getParentFile() + maskDir );
 		if ( !dir.exists() )
 			dir.mkdir();
 
@@ -120,7 +130,7 @@ public class MakeFinalBitmasks
 
 			if ( e.status == Status.GOOD )
 			{
-				final File image = new File( csv.getParentFile() + "/tifs", e.filename + ".tif" );
+				final File image = new File( csvFileIn.getParentFile() + "/tifs", e.filename + ".tif" );
 
 				if ( !image.exists())
 					throw new RuntimeException( "Couldn't find image file: " + image.getAbsolutePath() );
@@ -155,11 +165,13 @@ public class MakeFinalBitmasks
 
 				// save cropped image and mask
 				final String newFileName = e.filename + "_cropped_" + i;
+				final String newFileNameMask = newFileName + ".mask.tif";
+				final String newFileNameTIF = newFileName + ".tif";
 
-				final File maskFile = new File( csv.getParentFile() + maskDir, newFileName + ".mask.tif" );
+				final File maskFile = new File( csvFileIn.getParentFile() + maskDir, newFileNameMask );
 				new FileSaver( mask ).saveAsTiff( maskFile.getAbsolutePath() );
 
-				final File cropFile = new File( csv.getParentFile() + tifDir, newFileName + ".tif" );
+				final File cropFile = new File( csvFileIn.getParentFile() + tifDir, newFileNameTIF );
 				new FileSaver( cropped ).saveAsTiffStack( cropFile.getAbsolutePath() );
 
 				/*
@@ -177,6 +189,8 @@ public class MakeFinalBitmasks
 				imp.close();
 				cropped.close();
 				mask.close();
+
+				// update the Embryo information
 			}
 		}
 

@@ -2,11 +2,11 @@ package embryo.gui;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import embryo.FindEmbryos;
 import embryo.Util;
+import embryo.gui.TextFileAccess.CSV_TYPE;
 import fit.PointFunctionMatch;
 import fit.circular.Ellipse;
 import fit.circular.EllipsePointDistanceFactory;
@@ -188,19 +188,26 @@ public class FindAllEmbryos
 	// Laura: you need a "public static void main([] args )" method to start
 	public static void main( String[] args )
 	{
-		/*String s = "5,4,3,,1,435,,, ";
-		
-		String[] t = s.split(",");
-		
-		for ( int i = 0; i < t.length; ++i )
-			System.out.println( i + ": '" + t[ i ].trim() + "'");
-		
-		System.exit(0);*/
 		new ImageJ();
 
-		final File csvFile = TextFileAccess.loadPath();
+		/*
+			path.txt:
+			ORIGINAL	/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table.csv
+			ANNOTATED	/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_annotated.csv
+			CROPPED	/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_cropped.csv
+		 */
+		final File csvFileIn = TextFileAccess.loadPath( CSV_TYPE.ORIGINAL );
+		final File csvFileOut = TextFileAccess.loadPath( CSV_TYPE.ANNOTATED );
 
-		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFile );
+		if ( csvFileIn == null || csvFileOut == null )
+		{
+			System.out.println( "CSV files not defined in path.txt" );
+			System.out.println( "csvFileIn (ORIGINAL)= " + csvFileIn );
+			System.out.println( "csvFileOut (ANNOTATED)= " + csvFileOut );
+			System.exit( 0 );
+		}
+
+		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFileIn  );
 		final ArrayList< LoadedEmbryo > annotatedembryos = new ArrayList< LoadedEmbryo >();
 
 		int i = 1;
@@ -210,27 +217,14 @@ public class FindAllEmbryos
 			System.out.println( "Processing: '" + e.filename + "' (" + i++ + "/" + embryos.size() + ")" );
 
 			//if ( e.filename.equals( "SEA-12_300" ))
-			annotatedembryos.addAll( processEmbryoimage( e, csvFile, false ) );
+			annotatedembryos.addAll( processEmbryoimage( e, csvFileIn, false ) );
 
 			//if ( e.filename.equals( "MK4_1" ))
-			prepareImages( e, csvFile, false );
+			prepareImages( e, csvFileIn, false );
 		}
 
-		final File copyFile = new File( csvFile.getAbsolutePath() + ".orig.csv" );
-		System.out.println( "copying original csv to '" + copyFile.getAbsolutePath() + "'" );
-		
-		try
-		{
-			TextFileAccess.copyFile( csvFile, copyFile );
-		}
-		catch ( IOException e1 )
-		{
-			System.out.println( "Copying failed: " + e1.getMessage() );
-			e1.printStackTrace();
-		}
-
-		System.out.println( "saving csv to '" + csvFile.getAbsolutePath() + "'" );
-		LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
+		System.out.println( "saving csv to '" + csvFileOut.getAbsolutePath() + "'" );
+		LoadedEmbryo.saveCSV( annotatedembryos, csvFileOut );
 
 		System.out.println( "done" );
 		IJ.log( "done" );

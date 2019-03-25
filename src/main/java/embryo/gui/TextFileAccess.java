@@ -1,6 +1,5 @@
 package embryo.gui;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,30 +13,35 @@ import java.io.PrintWriter;
 
 public class TextFileAccess 
 {
-	public static File loadPath()
+	public static enum CSV_TYPE { ORIGINAL,   ANNOTATED, CROPPED };
+
+	public static File loadPath( final CSV_TYPE csvType )
 	{
 		final File file = new File( "path.txt" );
-		
+
 		if ( !file.exists() )
 		{
 			System.out.println("Cannot find path file: " + file.getAbsolutePath() );
 			System.exit( 0 );
 		} 
-			
+
 		final BufferedReader in = openFileRead( file );
 
-		File csvFile;
 		try
 		{
-			csvFile = new File( in.readLine().trim() );
-
-			if ( !file.exists() )
+			while ( in.ready() )
 			{
-				System.out.println("Cannot find csv file: " + csvFile.getAbsolutePath() );
-				System.exit( 0 );
-			} 
-	
-			return csvFile;
+				final String[] line = in.readLine().trim().split( "\t" );
+				if ( line[ 0 ].equalsIgnoreCase( csvType.name() ) )
+				{
+					in.close();
+					System.out.println( line[ 0 ] + ": '" + line[1].trim() + "'" );
+					return new File( line[ 1 ].trim() );
+				}
+			}
+
+			in.close();
+			return null;
 		} catch (IOException e)
 		{
 			e.printStackTrace();

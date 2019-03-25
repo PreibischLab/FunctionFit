@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import embryo.gui.LoadedEmbryo.Status;
+import embryo.gui.TextFileAccess.CSV_TYPE;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -296,7 +297,17 @@ public class EmbryoVerification
 		m.setOverlay( l );
 		m.updateAndDraw();
 		 */
-		new EmbryoVerification( TextFileAccess.loadPath() );
 
+		// This one overwrites the original annotation file, making backups
+		final File csvFile = TextFileAccess.loadPath( CSV_TYPE.ANNOTATED );
+
+		if ( csvFile == null )
+		{
+			System.out.println( "CSV file not defined in path.txt" );
+			System.out.println( "csvFileOut (ANNOTATED)= " + csvFile );
+			System.exit( 0 );
+		}
+
+		new EmbryoVerification( csvFile );
 	}
 }
