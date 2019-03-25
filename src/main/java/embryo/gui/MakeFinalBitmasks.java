@@ -152,12 +152,20 @@ public class MakeFinalBitmasks
 				// make mask
 				final ImagePlus mask = IJ.createImage( "ellipseMask", (int)cropArea.dimension( 0 ), (int)cropArea.dimension( 1 ), 1, 8 );
 				final ImageProcessor ip = mask.getProcessor();
-		
+
+				// is inside positive or negative?
+				final double inv;
+				if ( e.ellipse.eval( e.ellipse.getXC(), e.ellipse.getYC() ) < 0 )
+					inv = -1;
+				else
+					inv = 1;
+
+				// for every pixel do ...
 				for ( int x = 0; x < mask.getWidth(); ++x )
 					for ( int y = 0; y < mask.getHeight(); ++y )
 					{
-						final double value = e.ellipse.eval( x + (int)cropArea.min( 0 ), y + (int)cropArea.min( 1 ) );
-						if ( value <= 0 )
+						final double value = e.ellipse.eval( x + (int)cropArea.min( 0 ), y + (int)cropArea.min( 1 ) ) * inv;
+						if ( value >= 0 )
 							ip.set( x, y, 255 );
 						else
 							ip.set( x,y, 0 );
