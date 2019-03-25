@@ -29,7 +29,7 @@ public class EmbryoGUI
 	public static String gfpExt = ".gfpmax.jpg";
 	public static String cy5Ext = ".cy5mid.jpg";
 
-	JButton good, incomplete, bad, forward, back, save;
+	JButton good, incomplete, bad, forward, back, save, addnew;
 	JLabel text0, text1, text2;
 	JFrame frame;
 
@@ -55,6 +55,7 @@ public class EmbryoGUI
 		this.bad = new JButton( "Bad [9]" );
 
 		this.forward = new JButton( ">> [.]" );
+		this.addnew = new JButton( "Add new" );
 		this.save = new JButton( "Save" );
 		this.back = new JButton( "<< [,]" );
 
@@ -73,14 +74,17 @@ public class EmbryoGUI
 		frame.add ( good, c );
 		
 		++c.gridx;
+		c.gridwidth = 2;
 		frame.add( incomplete, c );
 
 		++c.gridx;
+		++c.gridx;
+		c.gridwidth = 1;
 		frame.add( bad, c );
 
 		c.gridx = 0;
 		++c.gridy;
-		c.gridwidth = 3;
+		c.gridwidth = 4;
 		c.insets = new Insets(0,0,0,0 );
 		frame.add ( text0, c );
 
@@ -95,6 +99,9 @@ public class EmbryoGUI
 		++c.gridy;
 		c.gridwidth = 1;
 		frame.add ( back, c );
+
+		++c.gridx;
+		frame.add( addnew, c );
 
 		++c.gridx;
 		frame.add( save, c );
