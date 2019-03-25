@@ -1,1 +1,9 @@
-Make BitMasks from Ellipses
+	- Loaded embryo can be ellipse or ROI
+	- Rerun ellipse detection -> ellipse =null
+	- Jump to next image/null image
+	
+	- 
+	- Klim: if ellipsoids are aligned before prediction -> better results?
+	- Intron detection status
+	- (Learn how to run radial symmetry detection)
+	
