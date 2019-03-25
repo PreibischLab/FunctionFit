@@ -284,19 +284,8 @@ public class EmbryoVerification
 		else
 			shiftY = false;
 
-		if ( x < 0 || y < 0 )
-		{
-			IJ.log( "x: " + x );
-			IJ.log( "y: " + y );
-			IJ.log( "xn: " + (x - dapiImp.getWidth() / 2) );
-			IJ.log( "yn: " + (y - dapiImp.getHeight() / 2) );
-			IJ.log( "sx: " + sx);
-			IJ.log( "sy: " + sy );
+		if ( shiftX && (x - dapiImp.getWidth() / 2) < 0 || shiftY && (y - dapiImp.getHeight() / 2) < 0 )
 			IJ.log( "WARNING: You drew an invalid ROI, which is out of bounds after shifting it to the DAPI channel image (top left one)." );
-			return;
-		}
-
-		IJ.log( "ROI has " + fr.getNCoordinates() + " points " );
 
 		// bounding box of roi needs to be added to those coordinates
 		final int[] xpTmp = fr.getXCoordinates();
