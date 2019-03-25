@@ -120,6 +120,8 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 	public double getD() { return d; }
 	public double getE() { return e; }
 	public double getF() { return f; }
+	public double getXC() { return xc; }
+	public double getYC() { return yc; }
 
 	@Override
 	public int getMinNumPoints() { return minNumPoints; }
