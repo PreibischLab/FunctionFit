@@ -108,7 +108,7 @@ public class MakeFinalBitmasks
 		for ( int x = 0; x < mask.getWidth(); ++x )
 			for ( int y = 0; y < mask.getHeight(); ++y )
 			{
-				if ( roi.contains( x, y ) )
+				if ( roi.contains( x + (int)cropArea.min( 0 ), y + (int)cropArea.min( 1 ) ) )
 					mask.set( x, y, 255 );
 				else
 					mask.set( x,y, 0 );
