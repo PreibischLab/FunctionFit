@@ -11,6 +11,9 @@ import fit.circular.Ellipse;
 import fit.circular.EllipsePointDistanceFactory;
 import ij.IJ;
 import ij.gui.Overlay;
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
+import net.imglib2.util.Pair;
 
 public class LoadedEmbryo
 {
@@ -29,7 +32,7 @@ public class LoadedEmbryo
 	public enum Status { NOT_ASSIGNED, GOOD, INCOMPLETE, BAD };
 
 	Status status;
-	Ellipse ellipse;
+	EllipseOrROI eor;
 
 	int id, numChannels, dapiChannelIndex, gfpChannelIndex;
 	String c0, c1, c2, c3, c4, c0_lambda, c1_lambda, c2_lambda, c3_lambda, c4_lambda;
@@ -71,7 +74,7 @@ public class LoadedEmbryo
 		gui.bad.setBackground( gui.orginalBackground );
 		gui.bad.setForeground( gui.originalForeground );
 
-		if ( ellipse == null )
+		if ( eor == null )
 		{
 			gui.good.setEnabled( false );
 			gui.incomplete.setEnabled( false );
@@ -105,9 +108,9 @@ public class LoadedEmbryo
 		gui.text2.setText( " c0: " + this.c0 + " (" + this.c0_type + ")" + ", c1: " + this.c1 + " (" + this.c1_type + ")" + ", c2: " + this.c2 + " (" + this.c2_type + ")"  );
 	}
 
-	public void drawEllipse( final Overlay o, final boolean active )
+	public void drawEllipseOrROI( final Overlay o, final boolean active )
 	{
-		if ( ellipse == null )
+		if ( eor == null )
 			return;
 
 		Color c;
@@ -135,9 +138,17 @@ public class LoadedEmbryo
 				c = EmbryoGUI.notAssignedColorBG;
 		}
 
-		ellipse.drawCenter( o, c );
-		ellipse.drawAxes( o, c );
-		ellipse.draw( o, 0.01, c );
+		if ( eor.isEllipse() )
+		{
+			eor.getEllipse().drawCenter( o, c );
+			eor.getEllipse().drawAxes( o, c );
+			eor.getEllipse().draw( o, 0.01, c );
+		}
+		else
+		{
+			eor.getROI().setStrokeColor( c );
+			o.add( eor.getROI() );
+		}
 	}
 
 	@Override
@@ -147,10 +158,10 @@ public class LoadedEmbryo
 
 		newEmbryo.status = this.status;
 
-		if ( this.ellipse != null )
-			newEmbryo.ellipse = this.ellipse.copy();
+		if ( this.eor != null )
+			newEmbryo.eor = this.eor.copy();
 		else
-			newEmbryo.ellipse = null;
+			newEmbryo.eor = null;
 
 		newEmbryo.id = id;
 		newEmbryo.numChannels = numChannels;
@@ -201,32 +212,83 @@ public class LoadedEmbryo
 			return -1;
 	}
 
-	public static String ellipseToString( final Ellipse e )
+	public static String ellipseOrROIToString( final EllipseOrROI eor )
 	{
-		if ( e == null )
-			return "null";
-		else
-			return e.getA() + "_" + e.getB() + "_" + e.getC() + "_" + e.getD() + "_" + e.getE() + "_" + e.getF();
-	}
-
-	public static Ellipse stringToEllipse( final String s )
-	{
-		final String[] entries = s.trim().split( "_" );
-
-		if ( entries.length != 6 )
+		if ( eor == null )
 		{
-			return null;
+			return "null";
+		}
+		else if ( eor.isEllipse())
+		{
+			final Ellipse e = eor.getEllipse();
+			return "E_" + e.getA() + "_" + e.getB() + "_" + e.getC() + "_" + e.getD() + "_" + e.getE() + "_" + e.getF();
 		}
 		else
 		{
-			final double a = Double.parseDouble( entries[ 0 ] );
-			final double b = Double.parseDouble( entries[ 1 ] );
-			final double c = Double.parseDouble( entries[ 2 ] );
-			final double d = Double.parseDouble( entries[ 3 ] );
-			final double e = Double.parseDouble( entries[ 4 ] );
-			final double f = Double.parseDouble( entries[ 5 ] );
+			final Pair< int[], int[] > roiCoord = EllipseOrROI.getROIPoints( eor.getROI() );
 
-			return new Ellipse( a, b, c, d, e, f, new EllipsePointDistanceFactory() );
+			String out = "R";
+
+			for ( int i = 0; i < roiCoord.getA().length; ++i )
+				out += "_" + roiCoord.getA()[ i ] + "x" + roiCoord.getB()[ i ];
+
+			return out;
+		}
+	}
+
+	public static EllipseOrROI stringToEllipseOrROI( final String s )
+	{
+		final String[] entries = s.trim().split( "_" );
+
+		if ( entries[ 0 ].equals( "R" ) )
+		{
+			final int[] xp = new int[ entries.length - 1 ];
+			final int[] yp = new int[ entries.length - 1 ];
+
+			for ( int i = 1; i < entries.length; ++i )
+			{
+				final String[] coord = entries[ i ].split( "x" );
+				xp[ i - 1 ] = Integer.parseInt( coord[ 0 ] );
+				yp[ i - 1 ] = Integer.parseInt( coord[ 1 ] );
+			}
+
+			return new EllipseOrROI( new PolygonRoi( xp, yp, xp.length, Roi.FREEROI ) );
+		}
+		else if ( entries[ 0 ].equals( "E" ) ) 
+		{
+			if ( entries.length != 7 )
+			{
+				return null;
+			}
+			else
+			{
+				final double a = Double.parseDouble( entries[ 1 ] );
+				final double b = Double.parseDouble( entries[ 2 ] );
+				final double c = Double.parseDouble( entries[ 3 ] );
+				final double d = Double.parseDouble( entries[ 4 ] );
+				final double e = Double.parseDouble( entries[ 5 ] );
+				final double f = Double.parseDouble( entries[ 6 ] );
+	
+				return new EllipseOrROI( new Ellipse( a, b, c, d, e, f, new EllipsePointDistanceFactory() ) );
+			}
+		}
+		else // old files do not start with "E" yet, this can be removed at some point
+		{
+			if ( entries.length != 6 )
+			{
+				return null;
+			}
+			else
+			{
+				final double a = Double.parseDouble( entries[ 0 ] );
+				final double b = Double.parseDouble( entries[ 1 ] );
+				final double c = Double.parseDouble( entries[ 2 ] );
+				final double d = Double.parseDouble( entries[ 3 ] );
+				final double e = Double.parseDouble( entries[ 4 ] );
+				final double f = Double.parseDouble( entries[ 5 ] );
+	
+				return new EllipseOrROI( new Ellipse( a, b, c, d, e, f, new EllipsePointDistanceFactory() ) );
+			}
 		}
 	}
 
@@ -308,9 +370,9 @@ public class LoadedEmbryo
 			e.status = Status.NOT_ASSIGNED;
 
 		if ( lookup[25] > 0 )
-			e.ellipse = stringToEllipse( line[ lookup[25] ] );
+			e.eor = stringToEllipseOrROI( line[ lookup[25] ] );
 		else
-			e.ellipse = null;
+			e.eor = null;
 
 		if ( lookup[26] > 0 && line[ lookup[26] ].equalsIgnoreCase( "x" ) )
 			return null;
@@ -390,8 +452,8 @@ public class LoadedEmbryo
 
 		s += Integer.toString( e.status.ordinal() ) + ",";
 
-		if ( e.ellipse != null )
-			s += ellipseToString( e.ellipse ) + ",";
+		if ( e.eor != null )
+			s += ellipseOrROIToString( e.eor ) + ",";
 		else
 			s += "null" + ",";
 

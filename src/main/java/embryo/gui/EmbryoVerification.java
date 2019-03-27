@@ -2,6 +2,7 @@ package embryo.gui;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,21 +25,25 @@ import ij.gui.Overlay;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.io.Opener;
+import net.imglib2.util.Pair;
 
 public class EmbryoVerification
 {
 	final File file;
 
 	final ArrayList< LoadedEmbryo > embryoList; // never sort this list
-	final HashMap< String, ArrayList< Integer > > fnLookup;
+	HashMap< String, ArrayList< Integer > > fnLookup;
 
-	final EmbryoGUI gui;
+	EmbryoGUI gui;
 
 	LoadedEmbryo currentEmbryo;
 	int embryoIndex = -1;
+	double lastMag = 1.0;
+	Point lastLocation = null;
+	boolean overrideMag = false;
 
-	final File previewDirectory;
-	
+	File previewDirectory;
+
 	ImagePlus dapiImp = null;
 	Overlay dapiImpOverlay = null;
 
@@ -47,6 +52,23 @@ public class EmbryoVerification
 		this.file = file;
 		this.embryoList = LoadedEmbryo.loadCSV( file );
 
+		setUp( 0 );
+	}
+
+	public void destroy()
+	{
+		this.embryoIndex = -1;
+		this.currentEmbryo = null;
+		this.gui.frame.dispose();
+		this.dapiImp.close();
+		this.dapiImp = null;
+		this.dapiImpOverlay = null;
+		// this.lastMag = 1.0; -- keep whatever was there
+		// this.overrideMag = false;
+	}
+
+	public void setUp( final int currentEmbryo )
+	{
 		this.fnLookup = new HashMap< String, ArrayList< Integer > >();
 
 		for ( int i = 0; i < embryoList.size(); ++i )
@@ -70,7 +92,7 @@ public class EmbryoVerification
 
 		this.gui = new EmbryoGUI();
 
-		assignCurrentEmbryo( 0 );
+		assignCurrentEmbryo( currentEmbryo );
 
 		gui.frame.addWindowListener( new WindowListener()
 		{
@@ -183,7 +205,7 @@ public class EmbryoVerification
 	protected void updateStatus( final Status status )
 	{
 		currentEmbryo.updateStatus( status, gui );
-		drawEllipses();
+		drawEllipsesOrROIs();
 	}
 
 	protected void assignCurrentEmbryo( final int newIndex )
@@ -207,12 +229,13 @@ public class EmbryoVerification
 	
 		if ( lastEmbryoIndex < 0 || !currentEmbryo.filename.equals( embryoList.get( lastEmbryoIndex ).filename ) )
 		{
-			double mag = 1.0;
+			double mag = lastMag;
 	
 			if ( dapiImp != null && dapiImp.getWindow() != null )
 			{
 				final ImageWindow window = dapiImp.getWindow();
 				ImageWindow.setNextLocation( window.getLocationOnScreen() );
+				lastLocation = new Point( window.getLocationOnScreen() );
 
 				final ImageCanvas canvas = dapiImp.getCanvas();
 				mag = canvas.getMagnification();
@@ -224,6 +247,16 @@ public class EmbryoVerification
 			dapiImp = new Opener().openImage( new File( previewDirectory, this.currentEmbryo.filename + EmbryoGUI.dapiExt ).getAbsolutePath() );
 			dapiImp.show();
 
+			if ( overrideMag )
+			{
+				mag = lastMag;
+				if ( lastLocation != null )
+					dapiImp.getWindow().setLocation( lastLocation );
+				overrideMag = false;
+			}
+
+			lastMag = mag;
+
 			if ( mag != 1.0 )
 			{
 				dapiImp.getCanvas().setMagnification( mag );
@@ -233,10 +266,10 @@ public class EmbryoVerification
 		}
 
 		currentEmbryo.updateGUI( this.gui );
-		drawEllipses();
+		drawEllipsesOrROIs();
 	}
 
-	protected void drawEllipses()
+	protected void drawEllipsesOrROIs()
 	{
 		dapiImp.setOverlay( new Overlay() );
 
@@ -245,7 +278,7 @@ public class EmbryoVerification
 		final ArrayList< Integer > foundEmbryos = fnLookup.get( currentEmbryo.filename );
 
 		for ( final int i : foundEmbryos )
-			embryoList.get( i ).drawEllipse( dapiImpOverlay, i == embryoIndex );
+			embryoList.get( i ).drawEllipseOrROI( dapiImpOverlay, i == embryoIndex );
 
 		dapiImp.setOverlay( dapiImpOverlay );
 		dapiImp.updateAndDraw();
@@ -266,8 +299,8 @@ public class EmbryoVerification
 
 		final Rectangle bounds = fr.getBounds();
 
-		int x = (int)Math.round( bounds.getMinX() );
-		int y = (int)Math.round( bounds.getMinY() );
+		final int x = (int)Math.round( bounds.getMinX() );
+		final int y = (int)Math.round( bounds.getMinY() );
 		final int sx = (int)Math.round( bounds.getWidth() );
 		final int sy = (int)Math.round( bounds.getHeight() );
 
@@ -287,25 +320,42 @@ public class EmbryoVerification
 			IJ.log( "WARNING: You drew an invalid ROI, which is out of bounds after shifting it to the DAPI channel image (top left one)." );
 
 		// bounding box of roi needs to be added to those coordinates
-		final int[] xpTmp = fr.getXCoordinates();
-		final int[] ypTmp = fr.getYCoordinates();
+		final Pair< int[], int[] > roiCoord = EllipseOrROI.getROIPoints( fr );
 
-		final int[] xp = new int[ fr.getNCoordinates() ];
-		final int[] yp = new int[ fr.getNCoordinates() ];
+		final int[] xp = roiCoord.getA();
+		final int[] yp = roiCoord.getB();
 
 		for ( int i = 0; i < xp.length; ++i )
 		{
-			xp[ i ] = Math.max( 0, xpTmp[ i ] + x - (shiftX ? dapiImp.getWidth() / 2 : 0 ) );
-			yp[ i ] = Math.max( 0, ypTmp[ i ] + y - (shiftY ? dapiImp.getHeight() / 2 : 0 ) );
+			xp[ i ] = Math.max( 0, xp[ i ] - (shiftX ? dapiImp.getWidth() / 2 : 0 ) );
+			yp[ i ] = Math.max( 0, yp[ i ] - (shiftY ? dapiImp.getHeight() / 2 : 0 ) );
 		}
 
-		final PolygonRoi newRoi = new PolygonRoi( xp, yp, xp.length, Roi.FREEROI );
-		//dapiImp.setRoi( new PolygonRoi( xp, yp, xp.length, Roi.FREEROI ) );
+		final int oldIndex;
 
-		roi.setStrokeColor( EmbryoGUI.incompleteColor );
-		dapiImpOverlay.add( newRoi );
-		dapiImp.setOverlay( dapiImpOverlay );
-		dapiImp.updateAndDraw();
+		if ( currentEmbryo.eor == null )
+		{
+			final LoadedEmbryo newEmbryo = currentEmbryo;
+			newEmbryo.status = Status.GOOD;
+			newEmbryo.eor = new EllipseOrROI( new PolygonRoi( xp, yp, xp.length, Roi.FREEROI ) );
+	
+			this.embryoList.remove( embryoIndex );
+			this.embryoList.add( embryoIndex, newEmbryo );
+			oldIndex = embryoIndex;
+		}
+		else
+		{
+			final LoadedEmbryo newEmbryo = currentEmbryo.clone();
+			newEmbryo.status = Status.GOOD;
+			newEmbryo.eor = new EllipseOrROI( new PolygonRoi( xp, yp, xp.length, Roi.FREEROI ) );
+	
+			this.embryoList.add( embryoIndex + 1, newEmbryo );
+			oldIndex = embryoIndex + 1;
+		}
+
+		this.overrideMag = true;
+		this.destroy();
+		this.setUp( oldIndex );
 	}
 
 	public void save()

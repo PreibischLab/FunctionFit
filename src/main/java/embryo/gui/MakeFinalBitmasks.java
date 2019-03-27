@@ -1,6 +1,5 @@
 package embryo.gui;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.ArrayList;
@@ -12,20 +11,36 @@ import ij.CompositeImage;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import ij.gui.Overlay;
+import ij.gui.PolygonRoi;
 import ij.io.FileSaver;
 import ij.io.Opener;
 import ij.plugin.Duplicator;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
 
 public class MakeFinalBitmasks
 {
-	public static Interval findBoundingBox( final Ellipse e, final ImagePlus imp, final int boundary )
+	public static Interval findBoundingBox( final EllipseOrROI e, final ImagePlus imp, final int boundary )
 	{
 		return findBoundingBox( e, imp, boundary, boundary );
+	}
+
+	public static Interval findBoundingBox( final EllipseOrROI e, final ImagePlus imp, final int boundaryX, final int boundaryY )
+	{
+		if ( e.isEllipse() )
+			return findBoundingBox( e.getEllipse(), imp, boundaryX, boundaryY );
+		else
+			return findBoundingBox( e.getROI(), imp, boundaryX, boundaryY );
+	}
+
+	public static Interval findBoundingBox( final PolygonRoi r, final ImagePlus imp, final int boundaryX, final int boundaryY )
+	{
+		final Rectangle rect = r.getBounds();
+
+		return new FinalInterval(
+				new long[] { rect.x - boundaryX, rect.y - boundaryY },
+				new long[] { rect.x + rect.width - 1 + boundaryX, rect.y + rect.height - 1 + boundaryY } );
 	}
 
 	public static Interval findBoundingBox( final Ellipse e, final ImagePlus imp, final int boundaryX, final int boundaryY )
@@ -64,6 +79,40 @@ public class MakeFinalBitmasks
 						Math.min( imp.getWidth() - 1, x1 ),
 						Math.min( imp.getHeight() - 1, y1 )
 				} );
+	}
+
+	public static void computeEllipseMask( final Ellipse ellipse, final ImageProcessor mask, final Interval cropArea )
+	{
+		// is inside positive or negative?
+		final double inv;
+		if ( ellipse.eval( ellipse.getXC(), ellipse.getYC() ) < 0 )
+			inv = -1;
+		else
+			inv = 1;
+
+		// for every pixel do ...
+		for ( int x = 0; x < mask.getWidth(); ++x )
+			for ( int y = 0; y < mask.getHeight(); ++y )
+			{
+				final double value = ellipse.eval( x + (int)cropArea.min( 0 ), y + (int)cropArea.min( 1 ) ) * inv;
+				if ( value >= 0 )
+					mask.set( x, y, 255 );
+				else
+					mask.set( x,y, 0 );
+			}
+	}
+
+	public static void computeROIMask( final PolygonRoi roi, final ImageProcessor mask, final Interval cropArea )
+	{
+		// for every pixel do ...
+		for ( int x = 0; x < mask.getWidth(); ++x )
+			for ( int y = 0; y < mask.getHeight(); ++y )
+			{
+				if ( roi.contains( x, y ) )
+					mask.set( x, y, 255 );
+				else
+					mask.set( x,y, 0 );
+			}
 	}
 
 	public static void main( String[] args )
@@ -141,7 +190,7 @@ public class MakeFinalBitmasks
 					throw new RuntimeException( "Couldn't open image: " + image.getAbsolutePath() );
 
 				// find bounding box
-				final Interval cropArea = findBoundingBox( e.ellipse, imp, boundary );
+				final Interval cropArea = findBoundingBox( e.eor, imp, boundary );
 
 				// cropped imp (all channels, z-slices)
 				final Duplicator dup = new Duplicator();
@@ -150,26 +199,13 @@ public class MakeFinalBitmasks
 				cropped.setDimensions( imp.getNChannels(), imp.getNSlices(), imp.getNFrames() );
 
 				// make mask
-				final ImagePlus mask = IJ.createImage( "ellipseMask", (int)cropArea.dimension( 0 ), (int)cropArea.dimension( 1 ), 1, 8 );
+				final ImagePlus mask = IJ.createImage( "mask", (int)cropArea.dimension( 0 ), (int)cropArea.dimension( 1 ), 1, 8 );
 				final ImageProcessor ip = mask.getProcessor();
 
-				// is inside positive or negative?
-				final double inv;
-				if ( e.ellipse.eval( e.ellipse.getXC(), e.ellipse.getYC() ) < 0 )
-					inv = -1;
+				if ( e.eor.isEllipse() )
+					computeEllipseMask( e.eor.getEllipse(), ip, cropArea );
 				else
-					inv = 1;
-
-				// for every pixel do ...
-				for ( int x = 0; x < mask.getWidth(); ++x )
-					for ( int y = 0; y < mask.getHeight(); ++y )
-					{
-						final double value = e.ellipse.eval( x + (int)cropArea.min( 0 ), y + (int)cropArea.min( 1 ) ) * inv;
-						if ( value >= 0 )
-							ip.set( x, y, 255 );
-						else
-							ip.set( x,y, 0 );
-					}
+					computeROIMask( e.eor.getROI(), ip, cropArea );
 
 				// save cropped image and mask
 				final String newFileName = e.filename + "_cropped_" + i;

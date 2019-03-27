@@ -67,7 +67,7 @@ public class FindAllEmbryos
 		if ( functions.size() == 0 )
 		{
 			final LoadedEmbryo newEmbryo = e.clone();
-			newEmbryo.ellipse = null;
+			newEmbryo.eor = null;
 
 			embryos.add( newEmbryo );
 		}
@@ -85,7 +85,7 @@ public class FindAllEmbryos
 				ellipse.draw( o, 0.01, Color.YELLOW );
 
 				final LoadedEmbryo newEmbryo = e.clone();
-				newEmbryo.ellipse = ellipse;
+				newEmbryo.eor = new EllipseOrROI( ellipse );
 
 				embryos.add( newEmbryo );
 
