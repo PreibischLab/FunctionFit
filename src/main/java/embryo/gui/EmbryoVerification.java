@@ -47,6 +47,24 @@ public class EmbryoVerification
 	ImagePlus dapiImp = null;
 	Overlay dapiImpOverlay = null;
 
+	final String[] jumpChoices = new String[] {
+			"to next image",
+			"to previous image",
+			"to next image without any annotations",
+			"to previous image without any annotations",
+			"to next unassigned annotation",
+			"to previous unassigned annotation",
+			"to next good annotation",
+			"to previous good annotation",
+			"to next incomplete annotation",
+			"to previous incomplete annotation",
+			"to next bad annotation",
+			"to previous bad annotation",
+			"to specific annotation ..." };
+
+	public static int defaultJumpChoice = 0;
+	public static int defaultJumpToAnnotation = 0;
+
 	public EmbryoVerification( final File file )
 	{
 		this.file = file;
@@ -123,12 +141,30 @@ public class EmbryoVerification
 			}
 		} );
 
-		gui.addnew.addActionListener( new ActionListener()
+		gui.addNew.addActionListener( new ActionListener()
 		{
 			@Override
 			public void actionPerformed( ActionEvent e )
 			{
 				addnew();
+			}
+		} );
+
+		gui.jumpTo.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				jumpTo();
+			}
+		} );
+
+		gui.jump.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent e )
+			{
+				jumpAgain();
 			}
 		} );
 
@@ -282,6 +318,118 @@ public class EmbryoVerification
 
 		dapiImp.setOverlay( dapiImpOverlay );
 		dapiImp.updateAndDraw();
+	}
+
+	public void jumpTo()
+	{
+		final GenericDialog gd = new GenericDialog( "Jump to ..." );
+
+		gd.addChoice( "Jump", jumpChoices, jumpChoices[ defaultJumpChoice ] );
+		gd.addSlider( "Jump to annotation (if selected above)", 1, embryoList.size(), defaultJumpToAnnotation );
+
+		gd.showDialog();
+
+		if ( gd.wasCanceled() )
+			return;
+
+		defaultJumpChoice = gd.getNextChoiceIndex();
+		defaultJumpToAnnotation = (int)Math.round(gd.getNextNumber()) - 1;
+
+		if ( defaultJumpToAnnotation < 0 )
+			defaultJumpToAnnotation = 0;
+
+		if ( defaultJumpToAnnotation >= embryoList.size() )
+			defaultJumpToAnnotation = embryoList.size() - 1;
+
+		jumpAgain();
+	}
+
+	public void jumpAgain()
+	{
+		int target = embryoIndex;
+
+		if ( defaultJumpChoice == 0 ) // "to next image"
+		{
+			for ( int i = embryoIndex + 1; i < embryoList.size() && target == embryoIndex; ++i )
+				if ( !embryoList.get( i ).filename.equals( currentEmbryo.filename ) )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 1 ) // "to previous image"
+		{
+			for ( int i = embryoIndex - 1; i >= 0 && target == embryoIndex; --i )
+				if ( !embryoList.get( i ).filename.equals( currentEmbryo.filename ) )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 2 ) // "to next image without annotation"
+		{
+			for ( int i = embryoIndex + 1; i < embryoList.size() && target == embryoIndex; ++i )
+				if ( embryoList.get( i ).eor == null )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 3 ) // "to previous image without annotation"
+		{
+			for ( int i = embryoIndex - 1; i >= 0 && target == embryoIndex; --i )
+				if ( embryoList.get( i ).eor == null )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 4 ) // "to next unassigned annotation",
+		{
+			for ( int i = embryoIndex + 1; i < embryoList.size() && target == embryoIndex; ++i )
+				if ( embryoList.get( i ).status == Status.NOT_ASSIGNED )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 5 ) // "to previous unassigned annotation"
+		{
+			for ( int i = embryoIndex - 1; i >= 0 && target == embryoIndex; --i )
+				if ( embryoList.get( i ).status == Status.NOT_ASSIGNED )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 6 ) // "to next good annotation"
+		{
+			for ( int i = embryoIndex + 1; i < embryoList.size() && target == embryoIndex; ++i )
+				if ( embryoList.get( i ).status == Status.GOOD )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 7 ) // "to previous good annotation"
+		{
+			for ( int i = embryoIndex - 1; i >= 0 && target == embryoIndex; --i )
+				if ( embryoList.get( i ).status == Status.GOOD )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 8 ) // "to next incomplete annotation"
+		{
+			for ( int i = embryoIndex + 1; i < embryoList.size() && target == embryoIndex; ++i )
+				if ( embryoList.get( i ).status == Status.INCOMPLETE )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 9 ) // "to previous incomplete annotation"
+		{
+			for ( int i = embryoIndex - 1; i >= 0 && target == embryoIndex; --i )
+				if ( embryoList.get( i ).status == Status.INCOMPLETE )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 10 ) // "to next bad annotation"
+		{
+			for ( int i = embryoIndex + 1; i < embryoList.size() && target == embryoIndex; ++i )
+				if ( embryoList.get( i ).status == Status.BAD )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 11 ) // "to previous bad annotation"
+		{
+			for ( int i = embryoIndex - 1; i >= 0 && target == embryoIndex; --i )
+				if ( embryoList.get( i ).status == Status.BAD )
+					target = i;
+		}
+		else // "to specific annotation ..."
+		{
+			target = defaultJumpToAnnotation;
+		}
+
+		if ( target != embryoIndex )
+		{
+			// jump ...
+			assignCurrentEmbryo( target );
+		}
 	}
 
 	public void addnew()

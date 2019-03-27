@@ -29,7 +29,7 @@ public class EmbryoGUI
 	public static String gfpExt = ".gfpmax.jpg";
 	public static String cy5Ext = ".cy5mid.jpg";
 
-	JButton good, incomplete, bad, forward, back, save, addnew;
+	JButton good, incomplete, bad, forward, back, save, addNew, jumpTo, jump;
 	JLabel text0, text1, text2;
 	JFrame frame;
 
@@ -55,7 +55,9 @@ public class EmbryoGUI
 		this.bad = new JButton( "Bad [9]" );
 
 		this.forward = new JButton( ">> [.]" );
-		this.addnew = new JButton( "Add new" );
+		this.addNew = new JButton( "Add new" );
+		this.jumpTo = new JButton( "Jump to ..." );
+		this.jump = new JButton( "Jump again" );
 		this.save = new JButton( "Save" );
 		this.back = new JButton( "<< [,]" );
 
@@ -72,7 +74,7 @@ public class EmbryoGUI
 		c.weightx = 1;
 		c.insets = new Insets(20,0,20,0 );
 		frame.add ( good, c );
-		
+
 		++c.gridx;
 		c.gridwidth = 2;
 		frame.add( incomplete, c );
@@ -101,13 +103,20 @@ public class EmbryoGUI
 		frame.add ( back, c );
 
 		++c.gridx;
-		frame.add( addnew, c );
+		frame.add( jumpTo, c );
 
 		++c.gridx;
-		frame.add( save, c );
+		frame.add( jump, c );
 
 		++c.gridx;
 		frame.add( forward, c );
+
+		c.gridx = 0;
+		++c.gridy;
+		frame.add( addNew, c );
+
+		c.gridx = 3;
+		frame.add( save, c );
 
 		this.good.setOpaque(true);
 		this.good.setBorderPainted( true );
