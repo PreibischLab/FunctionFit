@@ -1,9 +1,21 @@
-	- Loaded embryo can be ellipse or ROI
+To do:
+	
 	- Rerun ellipse detection -> ellipse =null
 	- Jump to next image/null image
 	
-	- 
 	- Klim: if ellipsoids are aligned before prediction -> better results?
 	- Intron detection status
 	- (Learn how to run radial symmetry detection)
 	
+
+	
+	
+Done:
+	
+- just the output to terminal while the script runs - can you add the filename (from the csv "filename") before the rest of the output of the ellipsoid fitting
+	○ and just print which file is currently being processed
+- Make BitMasks from Ellipses
+- Crop pictures with extra space around embryo
+	- Give cropped name
+- Delete bad ellipsoid in csv?
+- Loaded embryo can be ellipse or ROI
