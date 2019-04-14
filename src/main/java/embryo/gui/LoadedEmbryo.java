@@ -586,6 +586,17 @@ public class LoadedEmbryo
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			IJ.error( "Couldn't save file '" + file.getAbsolutePath() + "': " + e1 );
+
+			final File fileNew = new File( "backup.csv" );
+			IJ.error( "Trying to save it to the directory where the java code lies '" + fileNew.getAbsolutePath() + "': " + e1 );
+			final PrintWriter out1 = TextFileAccess.openFileWrite( file );
+
+			out1.println( createHeader() );
+	
+			for ( final LoadedEmbryo e : embryos )
+				out1.println( toString( e ) );
+
+			out1.close();
 			return false;
 		}
 	}
