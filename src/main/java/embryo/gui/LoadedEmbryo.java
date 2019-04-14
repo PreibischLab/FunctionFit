@@ -568,19 +568,26 @@ public class LoadedEmbryo
 			}
 		}
 
-		final PrintWriter out = TextFileAccess.openFileWrite( file );
+		try
+		{
+			final PrintWriter out = TextFileAccess.openFileWriteEx( file );
 
-		if ( out == null )
+			out.println( createHeader() );
+	
+			for ( final LoadedEmbryo e : embryos )
+				out.println( toString( e ) );
+
+			out.close();
+
+			return true;
+		}
+		catch ( Exception e1 )
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			IJ.error( "Couldn't save file '" + file.getAbsolutePath() + "': " + e1 );
 			return false;
-
-		out.println( createHeader() );
-
-		for ( final LoadedEmbryo e : embryos )
-			out.println( toString( e ) );
-
-		out.close();
-
-		return true;
+		}
 	}
 
 	public static ArrayList< LoadedEmbryo > simulateCSV()
