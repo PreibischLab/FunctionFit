@@ -534,8 +534,10 @@ public class EmbryoVerification
 
 		if ( save )
 		{
-			LoadedEmbryo.saveCSV( embryoList, file );
-			IJ.log( "Saved " + file.getAbsolutePath() );
+			if ( LoadedEmbryo.saveCSV( embryoList, file ) )
+				IJ.log( "Saved " + file.getAbsolutePath() );
+			else
+				IJ.log( "FAILED to save (maybe there is a rescue file in the java dir) " + file.getAbsolutePath() );
 		}
 	}
 

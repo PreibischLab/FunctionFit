@@ -588,7 +588,7 @@ public class LoadedEmbryo
 			IJ.error( "Couldn't save file '" + file.getAbsolutePath() + "': " + e1 );
 
 			final File fileNew = new File( "backup.csv" );
-			IJ.error( "Trying to save it to the directory where the java code lies '" + fileNew.getAbsolutePath() + "': " + e1 );
+			IJ.log( "Trying to save it to the directory where the java code lies '" + fileNew.getAbsolutePath() + "': " + e1 );
 			final PrintWriter out1 = TextFileAccess.openFileWrite( file );
 
 			out1.println( createHeader() );
