@@ -207,6 +207,13 @@ public class FindAllEmbryos
 			System.exit( 0 );
 		}
 
+		// TODO
+		// if annotated.exists() // >> this is an additional run
+		// annotated.load()
+		// process only those e.filename from original that are NOT present in annotated
+		// add all to annotated
+		// save annotated
+
 		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFileIn  );
 		final ArrayList< LoadedEmbryo > annotatedembryos = new ArrayList< LoadedEmbryo >();
 
