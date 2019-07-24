@@ -38,9 +38,13 @@ public class MakeFinalBitmasks
 	{
 		final Rectangle rect = r.getBounds();
 
-		return new FinalInterval(
-				new long[] { rect.x - boundaryX, rect.y - boundaryY },
-				new long[] { rect.x + rect.width - 1 + boundaryX, rect.y + rect.height - 1 + boundaryY } );
+		long x0 = rect.x - boundaryX;
+		long x1 = rect.x + rect.width - 1 + boundaryX;
+
+		long y0 = rect.y - boundaryY;
+		long y1 = rect.y + rect.height - 1 + boundaryY;
+
+		return imageSizeAdjustedInterval(x0, x1, y0, y1, imp.getWidth(), imp.getHeight() );
 	}
 
 	public static Interval findBoundingBox( final Ellipse e, final ImagePlus imp, final int boundaryX, final int boundaryY )
@@ -70,15 +74,20 @@ public class MakeFinalBitmasks
 		long y0 = Math.round( Math.floor( yMin ) ) - boundaryY;
 		long y1 = Math.round( Math.ceil( yMax ) ) + boundaryY;
 
+		return imageSizeAdjustedInterval(x0, x1, y0, y1, imp.getWidth(), imp.getHeight() );
+	}
+
+	public static FinalInterval imageSizeAdjustedInterval( final long x0, final long x1, final long y0, final long y1, final long imgWidth, final long imgHeight )
+	{
 		return new FinalInterval(
 				new long[] {
 					Math.max( 0, x0 ),
 					Math.max( 0, y0 )
 				},
 				new long[] {
-						Math.min( imp.getWidth() - 1, x1 ),
-						Math.min( imp.getHeight() - 1, y1 )
-				} );
+						Math.min( imgWidth - 1, x1 ),
+						Math.min( imgHeight - 1, y1 )
+				} );		
 	}
 
 	public static void computeEllipseMask( final Ellipse ellipse, final ImageProcessor mask, final Interval cropArea )
