@@ -18,7 +18,7 @@ import java.util.Comparator;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.util.ShapeUtilities;
+import org.jfree.chart.util.ShapeUtils;
 
 import fit.AbstractFunction2D;
 import fit.PointFunctionMatch;
@@ -458,7 +458,7 @@ public class InteractiveRANSAC
 
 									Tracking.setColor( chart, i, new Color( 0, 0, 255 ) );
 									Tracking.setDisplayType( chart, i, false, true );
-									Tracking.setShape( chart, i, ShapeUtilities.createDownTriangle( 4f ) );
+									Tracking.setShape( chart, i, ShapeUtils.createDownTriangle( 4f ) );
 
 									++i;
 								}
