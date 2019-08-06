@@ -618,7 +618,7 @@ public class LoadedEmbryo
 		return embryoList;
 	}
 
-	public static ArrayList< LoadedEmbryo > loadCSV( final File file )
+	public static ArrayList< LoadedEmbryo > readCSV( final File file )
 	{
 		final ArrayList< LoadedEmbryo > embryos = new ArrayList< LoadedEmbryo >();
 		int lineNo = 1;
