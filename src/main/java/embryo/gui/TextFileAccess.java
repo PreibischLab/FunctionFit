@@ -13,9 +13,7 @@ import java.io.PrintWriter;
 
 public class TextFileAccess 
 {
-	public static enum CSV_TYPE { ORIGINAL,   ANNOTATED, CROPPED };
-
-	public static File loadPath( final CSV_TYPE csvType )
+	public static File loadPath()
 	{
 		final File file = new File( "path.txt" );
 
@@ -29,20 +27,19 @@ public class TextFileAccess
 
 		try
 		{
-			while ( in.ready() )
-			{
-				final String[] line = in.readLine().trim().split( "\t" );
-				if ( line[ 0 ].equalsIgnoreCase( csvType.name() ) )
-				{
-					in.close();
-					System.out.println( line[ 0 ] + ": '" + line[1].trim() + "'" );
-					return new File( line[ 1 ].trim() );
-				}
-			}
+			final String line = in.readLine().trim();
 
 			in.close();
-			return null;
-		} catch (IOException e)
+
+			final File csvfile = new File( line );
+			System.out.println( "path: '" + line + "'" );
+
+			if ( !csvfile.exists() )
+				throw new RuntimeException( csvfile.getAbsolutePath() + " does not exist." );
+
+			return csvfile;
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 			System.exit( 0 );
