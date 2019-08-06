@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import embryo.gui.LoadedEmbryo.Status;
-import embryo.gui.TextFileAccess.CSV_TYPE;
 import fit.circular.Ellipse;
 import ij.CompositeImage;
 import ij.IJ;

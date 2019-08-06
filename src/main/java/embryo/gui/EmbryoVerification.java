@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import embryo.gui.LoadedEmbryo.Status;
-import embryo.gui.TextFileAccess.CSV_TYPE;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;

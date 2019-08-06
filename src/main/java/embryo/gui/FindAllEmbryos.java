@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import embryo.FindEmbryos;
 import embryo.Util;
-import embryo.gui.TextFileAccess.CSV_TYPE;
 import fit.PointFunctionMatch;
 import fit.circular.Ellipse;
 import fit.circular.EllipsePointDistanceFactory;
@@ -192,18 +191,19 @@ public class FindAllEmbryos
 
 		/*
 			path.txt:
-			ORIGINAL	/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table.csv
+			/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid2/test-embryo.csv
+
+			path.txt (OLD):
+			ORIGINAL		/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table.csv
 			ANNOTATED	/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_annotated.csv
 			CROPPED	/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table_cropped.csv
 		 */
-		final File csvFileIn = TextFileAccess.loadPath( CSV_TYPE.ORIGINAL );
-		final File csvFileOut = TextFileAccess.loadPath( CSV_TYPE.ANNOTATED );
+		final File csvFile = TextFileAccess.loadPath();
 
-		if ( csvFileIn == null || csvFileOut == null )
+		if ( csvFile == null || !csvFile.exists() )
 		{
-			System.out.println( "CSV files not defined in path.txt" );
-			System.out.println( "csvFileIn (ORIGINAL)= " + csvFileIn );
-			System.out.println( "csvFileOut (ANNOTATED)= " + csvFileOut );
+			System.out.println( "CSV file not defined in path.txt" );
+			System.out.println( "csvFile= " + csvFile );
 			System.exit( 0 );
 		}
 
@@ -214,7 +214,7 @@ public class FindAllEmbryos
 		// add all to annotated
 		// save annotated
 
-		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFileIn  );
+		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFile );
 		final ArrayList< LoadedEmbryo > annotatedembryos = new ArrayList< LoadedEmbryo >();
 
 		int i = 1;

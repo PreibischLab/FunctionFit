@@ -35,7 +35,7 @@ public class TextFileAccess
 			System.out.println( "path: '" + line + "'" );
 
 			if ( !csvfile.exists() )
-				throw new RuntimeException( csvfile.getAbsolutePath() + " does not exist." );
+				System.err.println( "WARNING: " + csvfile.getAbsolutePath() + " does not exist." );
 
 			return csvfile;
 		}
