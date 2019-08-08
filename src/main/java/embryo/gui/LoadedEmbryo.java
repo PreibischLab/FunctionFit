@@ -19,30 +19,42 @@ public class LoadedEmbryo
 {
 	public static int numBackups = 5;
 
-	final static String[] requiredColumns = new String[]{
-			"", "#channels", "c0", "c1", "c2", "c3", "c4",
-			"c0_lambda", "c1_lambda", "c2_lambda", "c3_lambda", "c4_lambda", 
-			"original filename", "DAPI channel", "mask maker", "GFP channel",
-			"c0_type", "c1_type", "c2_type", "comments", "stage", "integrity",
-			"signal", "filename" };
+	//REMOVED: "",  "mask maker","comments", "stage", "integrity", "valid"
+	
+	final static String[] columns = new String[]{
+			"c0", "c1", "c2", "c3", "c4",
+			"c0_lambda", "c1_lambda", "c2_lambda", "c3_lambda", "c4_lambda",
+			"c0_type", "c1_type", "c2_type",
+			"#c0_smfish", "#c1_smfish", "#c2_smfish",
+			"#nuclei", "#nucs_predicted",
+			"DAPI channel", "GFP channel", "#channels",
+			"original filename", "signal", "filename",
+			"status", "ellipse",
+			"cropped_image_file", "cropped_mask_file", "crop_offset_x", "crop_offset_y",
+			"is_dapi_stack", "is_valid_final", "unique_id", 
+			"#c0_smfish_adj", "#c1_smfish_adj", "#c2_smfish_adj",
+			"is_male_batch", "is_male", "is_z_cropped", "is_too_bleached",
+			"num_z_planes", "tx", "tx_desc" };
 
-	final static String[] optionalColumns = new String[]{
-			"status", "ellipse", "valid", "cropped_mask_file", "cropped_image_file", "crop_offset_x", "crop_offset_y" };
+	public enum Status { NOT_ASSIGNED, GOOD, INCOMPLETE, BAD, NOT_RUN_YET, NO_ELLIPSE_FOUND };
 
-	public enum Status { NOT_ASSIGNED, GOOD, INCOMPLETE, BAD };
-
+	// reading everything as String that is not required for processing
+	String c0, c1, c2, c3, c4;
+	String c0_lambda, c1_lambda, c2_lambda, c3_lambda, c4_lambda;
+	String c0_type, c1_type, c2_type;
+	String c0_smfish, c1_smfish, c2_smfish;
+	String numNuclei, nucsPredicted;
+	int dapiChannelIndex, gfpChannelIndex, numChannels;
+	String originalFN, signal, filename;
 	Status status;
 	EllipseOrROI eor;
-
-	int id, numChannels, dapiChannelIndex, gfpChannelIndex;
-	String c0, c1, c2, c3, c4, c0_lambda, c1_lambda, c2_lambda, c3_lambda, c4_lambda;
-	String originalFN, manualMaskMaker;
-	String c0_type, c1_type, c2_type;
-	String comments, stage, filename;
-	int signal, integrity;
-
-	int cropOffsetX = -1, cropOffsetY = -1;
-	String croppedImgFile = null, croppedMaskFile = null;
+	String croppedImgFile, croppedMaskFile;
+	int cropOffsetX, cropOffsetY;
+	String is_dapi_stack, is_valid_final;
+	int id;
+	String c0_smfish_adj, c1_smfish_adj, c2_smfish_adj;
+	String is_male_batch, is_male, is_z_cropped, is_too_bleached;
+	String num_z_planes, tx, tx_desc;
 
 	public LoadedEmbryo()
 	{
