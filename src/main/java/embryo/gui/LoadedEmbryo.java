@@ -51,7 +51,7 @@ public class LoadedEmbryo
 	String croppedImgFile, croppedMaskFile;
 	int cropOffsetX, cropOffsetY;
 	String is_dapi_stack, is_valid_final;
-	int id;
+	int uniqueId;
 	String c0_smfish_adj, c1_smfish_adj, c2_smfish_adj;
 	String is_male_batch, is_male, is_z_cropped, is_too_bleached;
 	String num_z_planes, tx, tx_desc;
@@ -168,6 +168,37 @@ public class LoadedEmbryo
 	{
 		final LoadedEmbryo newEmbryo = new LoadedEmbryo();
 
+		newEmbryo.c0 = c0;
+		newEmbryo.c1 = c1;
+		newEmbryo.c2 = c2;
+		newEmbryo.c3 = c3;
+		newEmbryo.c4 = c4;
+
+		newEmbryo.c0_lambda = c0_lambda;
+		newEmbryo.c1_lambda = c1_lambda;
+		newEmbryo.c2_lambda = c2_lambda;
+		newEmbryo.c3_lambda = c3_lambda;
+		newEmbryo.c4_lambda = c4_lambda;
+
+		newEmbryo.c0_type = c0_type;
+		newEmbryo.c1_type = c1_type;
+		newEmbryo.c2_type = c2_type;
+
+		newEmbryo.c0_smfish = c0_smfish;
+		newEmbryo.c1_smfish = c1_smfish;
+		newEmbryo.c2_smfish = c2_smfish;
+
+		newEmbryo.numNuclei = numNuclei;
+		newEmbryo.nucsPredicted = nucsPredicted;
+
+		newEmbryo.dapiChannelIndex = dapiChannelIndex;
+		newEmbryo.gfpChannelIndex = gfpChannelIndex;
+		newEmbryo.numChannels = numChannels;
+
+		newEmbryo.originalFN = originalFN;
+		newEmbryo.signal = signal;
+		newEmbryo.filename = filename;
+
 		newEmbryo.status = this.status;
 
 		if ( this.eor != null )
@@ -175,35 +206,29 @@ public class LoadedEmbryo
 		else
 			newEmbryo.eor = null;
 
-		newEmbryo.id = id;
-		newEmbryo.numChannels = numChannels;
-		newEmbryo.dapiChannelIndex = dapiChannelIndex;
-		newEmbryo.gfpChannelIndex = gfpChannelIndex;
-		newEmbryo.c0 = c0;
-		newEmbryo.c1 = c1;
-		newEmbryo.c2 = c2;
-		newEmbryo.c3 = c3;
-		newEmbryo.c4 = c4;
-		newEmbryo.c0_lambda = c0_lambda;
-		newEmbryo.c1_lambda = c1_lambda;
-		newEmbryo.c2_lambda = c2_lambda;
-		newEmbryo.c3_lambda = c3_lambda;
-		newEmbryo.c4_lambda = c4_lambda;
-		newEmbryo.originalFN = originalFN;
-		newEmbryo.manualMaskMaker = manualMaskMaker;
-		newEmbryo.c0_type = c0_type;
-		newEmbryo.c1_type = c1_type;
-		newEmbryo.c2_type = c2_type;
-		newEmbryo.comments = comments;
-		newEmbryo.stage = stage;
-		newEmbryo.filename = filename;
-		newEmbryo.signal = signal;
-		newEmbryo.integrity = integrity;
+		newEmbryo.croppedImgFile = croppedImgFile;
+		newEmbryo.croppedMaskFile = croppedMaskFile;
 
 		newEmbryo.cropOffsetX = cropOffsetX;
 		newEmbryo.cropOffsetY = cropOffsetY;
-		newEmbryo.croppedMaskFile = croppedMaskFile;
-		newEmbryo.croppedImgFile = croppedImgFile;
+
+		newEmbryo.is_dapi_stack = is_dapi_stack;
+		newEmbryo.is_valid_final = is_valid_final;
+
+		newEmbryo.uniqueId = uniqueId;
+
+		newEmbryo.c0_smfish_adj = c0_smfish_adj;
+		newEmbryo.c1_smfish_adj = c1_smfish_adj;
+		newEmbryo.c2_smfish_adj = c2_smfish_adj;
+
+		newEmbryo.is_male_batch = is_male_batch;
+		newEmbryo.is_male = is_male;
+		newEmbryo.is_z_cropped = is_z_cropped;
+		newEmbryo.is_too_bleached = is_too_bleached;
+
+		newEmbryo.num_z_planes = num_z_planes;
+		newEmbryo.tx = tx;
+		newEmbryo.tx_desc = tx_desc;
 
 		return newEmbryo;
 	}
