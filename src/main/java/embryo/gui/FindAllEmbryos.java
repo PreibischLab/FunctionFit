@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import embryo.FindEmbryos;
 import embryo.Util;
+import embryo.gui.LoadedEmbryo.Status;
 import fit.PointFunctionMatch;
 import fit.circular.Ellipse;
 import fit.circular.EllipsePointDistanceFactory;
@@ -68,6 +69,7 @@ public class FindAllEmbryos
 		{
 			final LoadedEmbryo newEmbryo = e.clone();
 			newEmbryo.eor = null;
+			newEmbryo.status = Status.NO_ELLIPSE_FOUND;
 
 			embryos.add( newEmbryo );
 		}
@@ -86,6 +88,7 @@ public class FindAllEmbryos
 
 				final LoadedEmbryo newEmbryo = e.clone();
 				newEmbryo.eor = new EllipseOrROI( ellipse );
+				newEmbryo.status = Status.NOT_ASSIGNED;
 
 				embryos.add( newEmbryo );
 
@@ -222,21 +225,23 @@ public class FindAllEmbryos
 
 		for ( final LoadedEmbryo e : embryos )
 		{
-			System.out.println( "Processing: '" + e.filename + "' (" + i++ + "/" + embryos.size() + ")" );
+			System.out.println( "Processing: '" + e.filename + "' (" + i++ + "/" + embryos.size() + "), STATUS=" + e.status );
 
-			System.out.println( LoadedEmbryo.toString( e ) );
+			//System.out.println( LoadedEmbryo.toString( e ) );
 
 			//if ( e.filename.equals( "SEA-12_300" ))
-			//annotatedembryos.addAll( processEmbryoimage( e, csvFile, false ) );
+			if ( e.status == Status.NOT_RUN_YET || e.status == Status.NO_ELLIPSE_FOUND )
+				annotatedembryos.addAll( processEmbryoimage( e, csvFile, false ) );
 
 			//if ( e.filename.equals( "MK4_1" ))
-			//prepareImages( e, csvFile, false );
+			if ( e.status == Status.NOT_RUN_YET )
+				prepareImages( e, csvFile, false );
 		}
 
-		annotatedembryos.addAll( embryos );
+		//annotatedembryos.addAll( embryos );
 
-		//System.out.println( "saving csv to '" + csvFile.getAbsolutePath() + "'" );
-		//LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
+		System.out.println( "saving csv to '" + csvFile.getAbsolutePath() + "'" );
+		LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
 
 		System.out.println( "done" );
 		//IJ.log( "done" );
