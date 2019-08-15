@@ -3,9 +3,15 @@ package embryo.gui;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.ArrayList;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 
 import fit.circular.Ellipse;
 import fit.circular.EllipsePointDistanceFactory;
@@ -19,8 +25,6 @@ public class LoadedEmbryo
 {
 	public static int numBackups = 5;
 
-	//REMOVED: "",  "mask maker","comments", "stage", "integrity", "valid"
-	
 	final static String[] columns = new String[]{
 			"c0", "c1", "c2", "c3", "c4",
 			"c0_lambda", "c1_lambda", "c2_lambda", "c3_lambda", "c4_lambda",
@@ -330,113 +334,123 @@ public class LoadedEmbryo
 	}
 
 	public static int count = 0;
+
+	public static ArrayList< LoadedEmbryo > readCSV( final File file ) throws IOException
+	{
+		final ArrayList< LoadedEmbryo > embryos = new ArrayList< LoadedEmbryo >();
+
+		final Reader in = new FileReader( file );
+		final Iterable< CSVRecord > records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse( in );
+
+		int lineNo = 0;
+
+		for ( final CSVRecord record : records )
+		{
+			lineNo++;
+
+			final LoadedEmbryo e = fromCSVRecord( record );
+	
+			// TODO: check that we now keep embrypos that have no dapi channel
+			if ( e.dapiChannelIndex == -1 )
+				System.out.println( "WARNING: line " + lineNo + " has no DAPI channel." );
+		}
+
+		in.close();
+
+		return embryos;
+	}
+
 	/*
 	 * make an Embryo instance from a line of parameters read from a CSV file
 	 */
-	public static LoadedEmbryo fromString( final String[] line, final int[] lookup ) throws NumberFormatException
+	public static LoadedEmbryo fromCSVRecord( final CSVRecord record ) throws NumberFormatException
 	{
-		//System.out.println( ++count );
-		
-		/*
-		if ( count ==  1543 )
-		{
-			System.out.println();
-			
-			for ( int i = 0; i <= 23; ++i )
-			{
-				System.out.println( i + ": " + " " + lookup[i] + ": " + line[ lookup[i] ] );
-			}
-		//	System.exit( 0);
-		}
-		*/
-
-		for ( int i = 0; i < line.length; ++i )
-			line[ i ] = line[ i ].trim();
-
 		final LoadedEmbryo e = new LoadedEmbryo();
 
-		e.id = (int)Math.round( Double.parseDouble( line[ lookup[0] ] ) );
-		e.numChannels = (int)Math.round( Double.parseDouble( line[ lookup[1] ] ) );
+		e.c0 = record.get( columns[ 0 ] ); // "c0" );
+		e.c1 = record.get( columns[ 1 ] ); // "c1" );
+		e.c2 = record.get( columns[ 2 ] ); // "c2" );
+		e.c3 = record.get( columns[ 3 ] ); // "c3" );
+		e.c4 = record.get( columns[ 4 ] ); // "c4" );
 
-		e.c0 = line[ lookup[2] ];
-		e.c1 = line[ lookup[3] ];
-		e.c2 = line[ lookup[4] ];
-		e.c3 = line[ lookup[5] ];
-		e.c4 = line[ lookup[6] ];
+		e.c0_lambda = record.get( columns[ 5 ] ); // "c0_lambda" );
+		e.c1_lambda = record.get( columns[ 6 ] ); // "c1_lambda" );
+		e.c2_lambda = record.get( columns[ 7 ] ); // "c2_lambda" );
+		e.c3_lambda = record.get( columns[ 8 ] ); // "c3_lambda" );
+		e.c4_lambda = record.get( columns[ 9 ] ); // "c4_lambda" );
 
-		e.c0_lambda = line[ lookup[7] ];
-		e.c1_lambda = line[ lookup[8] ];
-		e.c2_lambda = line[ lookup[9] ];
-		e.c3_lambda = line[ lookup[10] ];
-		e.c4_lambda = line[ lookup[11] ];
+		e.c0_type = record.get( columns[ 10 ] ); // "c0_type" );
+		e.c1_type = record.get( columns[ 11 ] ); // "c1_type" );
+		e.c2_type = record.get( columns[ 12 ] ); // "c2_type" );
 
-		e.originalFN = line[ lookup[12] ];
-		if ( line[ lookup[13] ].length() == 0 )
-			return null;
-		e.dapiChannelIndex = (int)Math.round( Double.parseDouble( line[ lookup[13] ] ) );
-		e.manualMaskMaker = line[ lookup[14] ];
+		e.c0_smfish = record.get( columns[ 13 ] ); // "#c0_smfish" );
+		e.c1_smfish = record.get( columns[ 14 ] ); // "#c1_smfish" );
+		e.c2_smfish = record.get( columns[ 15 ] ); // "#c2_smfish" );
 
-		if ( line[ lookup[15] ].length() > 0 )
-			e.gfpChannelIndex = (int)Math.round( Double.parseDouble( line[ lookup[15] ] ) );
-		else
-			e.gfpChannelIndex = -1;
+		e.numNuclei = record.get( columns[ 16 ] ); // "#nuclei" );
+		e.nucsPredicted = record.get( columns[ 17 ] ); // "#nucs_predicted" );
 
-		e.c0_type = line[ lookup[16] ];
-		e.c1_type = line[ lookup[17] ];
-		e.c2_type = line[ lookup[18] ];
+		e.dapiChannelIndex = (int)Math.round( Double.parseDouble( record.get( columns[ 18 ] ) ) ); // "dapiChannelIndex" ) ) );
+		e.gfpChannelIndex = (int)Math.round( Double.parseDouble( record.get( columns[ 19 ] ) ) ); // "gfpChannelIndex" ) ) );
+		e.numChannels = (int)Math.round( Double.parseDouble( record.get( columns[ 20 ] ) ) ); // "#channels" ) ) );
 
-		e.comments = line[ lookup[19] ];
-		e.stage = line[ lookup[20] ];
+		e.originalFN = record.get( columns[ 21 ] ); // "original filename" );
+		e.signal = record.get( columns[ 22 ] ); // "signal" );
+		e.filename = record.get( columns[ 23 ] ); // "filename" );
 
-		
-		if ( line[ lookup[21] ].length() > 0 )
-			e.integrity = (int)Math.round( Double.parseDouble( line[ lookup[21] ] ) );
-		else
-			e.integrity = -1;
+		final int status = (int)Math.round( Double.parseDouble( record.get( columns[ 24 ] ) ) ); // "status" ) ) );
 
-		if ( line[ lookup[22] ].length() > 0 )
-			e.signal = (int)Math.round( Double.parseDouble( line[ lookup[22] ] ) );
-		else
-			e.signal = -1;
+		if ( status >= 0 )
+			e.status = Status.values()[ status ];
+		else if ( status == -1 )
+			e.status = Status.NOT_RUN_YET;
+		else // status == -2
+			e.status = Status.NO_ELLIPSE_FOUND;
 
-		e.filename = line[ lookup[23] ];
-		
-		if ( lookup[24] > 0 )
-			e.status = Status.values()[ (int)Math.round( Double.parseDouble( line[ lookup[24] ] ) ) ];
-		else
-			e.status = Status.NOT_ASSIGNED;
+		final String eor = record.get( columns[ 25 ] ).trim(); // "ellipse" );
 
-		if ( lookup[25] > 0 )
-			e.eor = stringToEllipseOrROI( line[ lookup[25] ] );
+		if ( eor.length() > 0 )
+			e.eor = stringToEllipseOrROI( eor );
 		else
 			e.eor = null;
 
-		if ( lookup[26] > 0 && line[ lookup[26] ].equalsIgnoreCase( "x" ) )
-			return null;
+		e.croppedImgFile = record.get( columns[ 26 ] ); // "cropped_image_file" );
+		e.croppedMaskFile = record.get( columns[ 27 ] ); // "cropped_mask_file" );
 
-		if ( lookup[27] > 0 )
-		{
-			if ( line[ lookup[ 27 ] ].equals( "null" ) )
-				e.croppedMaskFile = null;
-			else
-				e.croppedMaskFile = line[ lookup[ 27 ] ];
-		}
+		e.cropOffsetX = (int)Math.round( Double.parseDouble( record.get( columns[ 28 ] ) ) ); // "crop_offset_x" ) ) );
+		e.cropOffsetY = (int)Math.round( Double.parseDouble( record.get( columns[ 29 ] ) ) ); // "crop_offset_y" ) ) );
 
-		if ( lookup[28] > 0 )
-		{
-			if ( line[ lookup[ 28 ] ].equals( "null" ) )
-				e.croppedImgFile = null;
-			else
-				e.croppedImgFile = line[ lookup[ 28 ] ];
-		}
+		e.is_dapi_stack = record.get( columns[ 30 ] ); // "is_dapi_stack" );
+		e.is_valid_final = record.get( columns[ 31 ] ); // "is_valid_final" );
 
-		if ( lookup[29] > 0 )
-			e.cropOffsetX = Integer.parseInt( line[ lookup[ 29 ] ] );
+		e.uniqueId = (int)Math.round( Double.parseDouble( record.get( columns[ 32 ] ) ) ); // "unique_id" ) ) );
 
-		if ( lookup[30] > 0 )
-			e.cropOffsetX = Integer.parseInt( line[ lookup[ 30 ] ] );
+		e.c0_smfish_adj = record.get( columns[ 33 ] ); // "#c0_smfish_adj" );
+		e.c1_smfish_adj = record.get( columns[ 34 ] ); // "#c1_smfish_adj" );
+		e.c2_smfish_adj = record.get( columns[ 35 ] ); // "#c2_smfish_adj" );
+
+		e.is_male_batch = record.get( columns[ 36 ] ); // "is_male_batch" );
+		e.is_male = record.get( columns[ 37 ] ); // "is_male" );
+		e.is_z_cropped = record.get( columns[ 38 ] ); // "is_z_cropped" );
+		e.is_too_bleached = record.get( columns[ 39 ] ); // "is_too_bleached" );
+
+		e.num_z_planes = record.get( columns[ 40 ] ); // "num_z_planes" );
+		e.tx = record.get( columns[ 41 ] ); // "tx" );
+		e.tx_desc = record.get( columns[ 42 ] ); // "tx_desc" );
 
 		return e;
+	}
+
+	public static String createHeader()
+	{
+		String header = "";
+
+		for ( int i = 0; i < columns.length - 1; ++i )
+			header += columns[ i ] + ",";
+
+		header += columns[ columns.length - 1 ];
+
+		return header;
 	}
 
 	/*
@@ -510,70 +524,6 @@ public class LoadedEmbryo
 		s += e.cropOffsetY;
 
 		return s;
-	}
-
-	public static String createHeader()
-	{
-		String header = "";
-
-		for ( int i = 0; i < requiredColumns.length - 1; ++i )
-			header += requiredColumns[ i ] + ",";
-
-		header += requiredColumns[ requiredColumns.length - 1 ];
-
-		if ( optionalColumns.length > 0 )
-			header += ",";
-
-		for ( int i = 0; i < optionalColumns.length - 1; ++i )
-			header += optionalColumns[ i ] + ",";
-
-		header += optionalColumns[ optionalColumns.length - 1 ];
-
-		return header;
-	}
-
-	public static int[] createHeaderLookup( final String[] splitHeader )
-	{
-		final int[] lookUp = new int[ requiredColumns.length + optionalColumns.length ];
-
-		for ( int c = 0; c < requiredColumns.length; ++c )
-		{
-			lookUp[ c ] = -1;
-
-			for ( int h = 0; h < splitHeader.length; ++h )
-				if ( splitHeader[ h ].toLowerCase().equals( requiredColumns[ c ].toLowerCase() ) )
-					lookUp[ c ] = h;
-
-			if ( lookUp[ c ] == -1 )
-			{
-				IJ.log( "Column '" + requiredColumns[ c ] + "' missing, stopping." );
-				return null;
-			}
-			else
-			{
-				IJ.log( "Column '" + requiredColumns[ c ] + "' found in column #" + lookUp[ c ] );
-			}
-		}
-
-		for ( int c = 0; c < optionalColumns.length; ++c )
-		{
-			lookUp[ c + requiredColumns.length ] = -1;
-
-			for ( int h = 0; h < splitHeader.length; ++h )
-				if ( splitHeader[ h ].toLowerCase().equals( optionalColumns[ c ].toLowerCase() ) )
-					lookUp[ c + requiredColumns.length ] = h;
-
-			if ( lookUp[ c + requiredColumns.length ] == -1 )
-			{
-				IJ.log( "Column '" + optionalColumns[ c ] + "' missing, ignoring." );
-			}
-			else
-			{
-				IJ.log( "Column '" + optionalColumns[ c ] + "' found in column #" + lookUp[ c + requiredColumns.length ] );
-			}
-		}
-
-		return lookUp;
 	}
 
 	public static boolean saveCSV( final ArrayList< LoadedEmbryo > embryos, final File file )
@@ -653,72 +603,5 @@ public class LoadedEmbryo
 		embryoList.add( embyro3 );
 
 		return embryoList;
-	}
-
-	public static ArrayList< LoadedEmbryo > readCSV( final File file )
-	{
-		final ArrayList< LoadedEmbryo > embryos = new ArrayList< LoadedEmbryo >();
-		int lineNo = 1;
-		String currentLine = null;
-
-		try
-		{
-			final BufferedReader in = TextFileAccess.openFileRead( file );
-
-			// header
-			final String header = in.readLine();
-			final String[] splitHeader = header.split( "," );
-
-			for ( int i = 0; i < splitHeader.length; ++i )
-				splitHeader[ i ] = splitHeader[ i ].trim();
-
-			final int[] lookUp = createHeaderLookup( splitHeader );
-
-			if ( lookUp == null )
-				return null;
-
-			while ( in.ready() )
-			{
-				lineNo++;
-				currentLine = in.readLine().trim();
-				String[] line = currentLine.split( "," );
-
-				// add empty entries at the end if necessary
-				if ( line.length < splitHeader.length )
-				{
-					final String[] lineNew = new String[ splitHeader.length ];
-
-					for ( int i = 0; i < lineNew.length; ++i )
-						lineNew[ i ] = "";
-
-					for ( int i = 0; i < line.length; ++i )
-						lineNew[ i ] = line[ i ];
-
-					line = lineNew;
-				}
-				
-				final LoadedEmbryo e = fromString( line, lookUp );
-
-				if ( e == null )
-					System.out.println( lineNo + " has no DAPI channel." );
-				else
-					embryos.add( e );
-			}
-		}
-		catch (NumberFormatException e)
-		{
-			e.printStackTrace();
-			IJ.log( "Could not parse file '': Numberformat exception in line " + lineNo );
-			IJ.log( currentLine );
-			return null;
-		}
-		catch ( IOException e )
-		{
-			e.printStackTrace();
-			IJ.log( "Could not parse file '': IOException exception, line " + lineNo );
-			return null;
-		}
-
-		return embryos;
 	}
 }
