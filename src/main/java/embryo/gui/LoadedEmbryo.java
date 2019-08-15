@@ -1,9 +1,7 @@
 package embryo.gui;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -458,8 +456,7 @@ public class LoadedEmbryo
 	 */
 	public static String toString( final LoadedEmbryo e )
 	{
-		String s = Integer.toString( e.id ) + ",";
-		s += Integer.toString( e.numChannels ) + ",";
+		String s = "";
 
 		s += e.c0 + ",";
 		s += e.c1 + ",";
@@ -473,55 +470,60 @@ public class LoadedEmbryo
 		s += e.c3_lambda + ",";
 		s += e.c4_lambda + ",";
 
-		s += e.originalFN + ",";
-		s += Integer.toString( e.dapiChannelIndex ) + ",";
-		s += e.manualMaskMaker + ",";
-
-		if ( e.gfpChannelIndex >= 0 )
-			s += Integer.toString( e.gfpChannelIndex ) + ",";
-		else
-			s += ",";
-
 		s += e.c0_type + ",";
 		s += e.c1_type + ",";
 		s += e.c2_type + ",";
 
-		s += e.comments + ",";
-		s += e.stage + ",";
+		s += e.c0_smfish + ",";
+		s += e.c1_smfish + ",";
+		s += e.c2_smfish + ",";
 
-		if ( e.integrity >= 0 )
-			s += Integer.toString( e.integrity ) + ",";
-		else
-			s += ",";
+		s += e.numNuclei + ",";
+		s += e.nucsPredicted + ",";
+		
+		s += e.dapiChannelIndex + ",";
+		s += e.gfpChannelIndex + ",";
+		s += e.numChannels + ",";
 
-		if ( e.signal >= 0 )
-			s += Integer.toString( e.signal ) + ",";
-		else
-			s += ",";
-
+		s += e.originalFN + ",";
+		s += e.signal + ",";
 		s += e.filename + ",";
 
-		s += Integer.toString( e.status.ordinal() ) + ",";
+		if ( e.status.ordinal() <= 4 )
+			s += e.status.ordinal() + ",";
+		else if ( e.status == Status.NOT_RUN_YET)
+			s += "-1" + ",";
+		else
+			s += "-2" + ",";
 
 		if ( e.eor != null )
 			s += ellipseOrROIToString( e.eor ) + ",";
 		else
-			s += "null" + ",";
+			s += "" + ",";
 
-		s += "V,";
-
-		if ( e.croppedMaskFile != null )
-			s += e.croppedMaskFile + ",";
-		else
-			s += "null" + ",";
-
-		if ( e.croppedImgFile != null )
-			s += e.croppedImgFile + ",";
-		else
-			s += "null" + ",";
+		s += e.croppedImgFile + ",";
+		s += e.croppedMaskFile + ",";
 
 		s += e.cropOffsetX + ",";
-		s += e.cropOffsetY;
+		s += e.cropOffsetY + ",";
+
+		s += e.is_dapi_stack + ",";
+		s += e.is_valid_final + ",";
+
+		s += e.uniqueId + ",";
+
+		s += e.c0_smfish_adj + ",";
+		s += e.c1_smfish_adj + ",";
+		s += e.c2_smfish_adj + ",";
+
+		s += e.is_male_batch + ",";
+		s += e.is_male + ",";
+		s += e.is_z_cropped + ",";
+		s += e.is_too_bleached + ",";
+
+		s += e.num_z_planes + ",";
+		s += e.tx + ",";
+		s += e.tx_desc + ",";
 
 		return s;
 	}
