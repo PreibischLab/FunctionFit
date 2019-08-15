@@ -2,6 +2,7 @@ package embryo.gui;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import embryo.FindEmbryos;
@@ -185,7 +186,7 @@ public class FindAllEmbryos
 	}
 
 	// Laura: you need a "public static void main([] args )" method to start
-	public static void main( String[] args )
+	public static void main( String[] args ) throws IOException
 	{
 		new ImageJ();
 
@@ -214,7 +215,7 @@ public class FindAllEmbryos
 		// add all to annotated
 		// save annotated
 
-		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.loadCSV( csvFile );
+		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.readCSV( csvFile );
 		final ArrayList< LoadedEmbryo > annotatedembryos = new ArrayList< LoadedEmbryo >();
 
 		int i = 1;
@@ -223,18 +224,22 @@ public class FindAllEmbryos
 		{
 			System.out.println( "Processing: '" + e.filename + "' (" + i++ + "/" + embryos.size() + ")" );
 
+			System.out.println( LoadedEmbryo.toString( e ) );
+
 			//if ( e.filename.equals( "SEA-12_300" ))
-			annotatedembryos.addAll( processEmbryoimage( e, csvFileIn, false ) );
+			//annotatedembryos.addAll( processEmbryoimage( e, csvFile, false ) );
 
 			//if ( e.filename.equals( "MK4_1" ))
-			prepareImages( e, csvFileIn, false );
+			//prepareImages( e, csvFile, false );
 		}
 
-		System.out.println( "saving csv to '" + csvFileOut.getAbsolutePath() + "'" );
-		LoadedEmbryo.saveCSV( annotatedembryos, csvFileOut );
+		annotatedembryos.addAll( embryos );
+
+		//System.out.println( "saving csv to '" + csvFile.getAbsolutePath() + "'" );
+		//LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
 
 		System.out.println( "done" );
-		IJ.log( "done" );
+		//IJ.log( "done" );
 
 		/*
 		final ArrayList< LoadedEmbryo > embryosLoaded = LoadedEmbryo.loadCSV( new File( "/Users/spreibi/Documents/BIMSB/Projects/Dosage Compensation/stephan_ellipsoid/stephan_embryo_table3_test.csv") );

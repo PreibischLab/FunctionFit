@@ -351,7 +351,11 @@ public class LoadedEmbryo
 			// TODO: check that we now keep embrypos that have no dapi channel
 			if ( e.dapiChannelIndex == -1 )
 				System.out.println( "WARNING: line " + lineNo + " has no DAPI channel." );
+
+			embryos.add( e );
 		}
+
+		System.out.println( "Loaded " + lineNo + " embryos." );
 
 		in.close();
 
