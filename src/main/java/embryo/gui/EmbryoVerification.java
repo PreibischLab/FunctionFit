@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -64,10 +65,19 @@ public class EmbryoVerification
 	public static int defaultJumpChoice = 0;
 	public static int defaultJumpToAnnotation = 0;
 
-	public EmbryoVerification( final File file )
+	public EmbryoVerification( final File file ) throws Exception
 	{
 		this.file = file;
-		this.embryoList = LoadedEmbryo.loadCSV( file );
+		this.embryoList = LoadedEmbryo.readCSV( file );
+
+		int count = 0;
+
+		for ( final LoadedEmbryo e : this.embryoList )
+			if ( e.status == Status.NOT_RUN_YET )
+				++count;
+
+		if ( count > 0 )
+			throw new Exception( "For " + count + " embryo(s) ellipse detection has not been run. Run FindAllEmbryos first." );
 
 		setUp( 0 );
 	}
@@ -540,7 +550,7 @@ public class EmbryoVerification
 		}
 	}
 
-	public static void main( String[] args )
+	public static void main( String[] args ) throws Exception
 	{
 		new ImageJ();
 
@@ -567,7 +577,7 @@ public class EmbryoVerification
 		 */
 
 		// This one overwrites the original annotation file, making backups
-		final File csvFile = TextFileAccess.loadPath( CSV_TYPE.ANNOTATED );
+		final File csvFile = TextFileAccess.loadPath();
 
 		if ( csvFile == null )
 		{
