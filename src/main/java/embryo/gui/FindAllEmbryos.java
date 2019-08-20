@@ -227,6 +227,11 @@ public class FindAllEmbryos
 		{
 			System.out.println( "Processing: '" + e.filename + "' (" + i++ + "/" + embryos.size() + "), STATUS=" + e.status );
 
+			if ( e.gfpChannelIndex == -1 || e.dapiChannelIndex == -1 )
+			{
+				System.out.println( "Warning: No GFP and/or DAPI signal available, removing this image." );
+				continue;
+			}
 			//System.out.println( LoadedEmbryo.toString( e ) );
 
 			//if ( e.filename.equals( "SEA-12_300" ))

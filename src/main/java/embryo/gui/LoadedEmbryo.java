@@ -92,7 +92,7 @@ public class LoadedEmbryo
 		{
 			gui.good.setEnabled( false );
 			gui.incomplete.setEnabled( false );
-			gui.bad.setEnabled( false );
+			gui.bad.setEnabled( true ); // can press bad if you want
 		}
 		else
 		{

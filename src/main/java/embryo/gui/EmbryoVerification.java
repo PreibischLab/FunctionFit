@@ -115,7 +115,7 @@ public class EmbryoVerification
 			}
 		}
 
-		this.previewDirectory = new File( file.getParentFile() + "/preview" );
+		this.previewDirectory = new File( file.getParentFile().getParentFile() + "/preview" );
 
 		this.gui = new EmbryoGUI();
 
