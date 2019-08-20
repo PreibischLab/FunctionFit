@@ -527,7 +527,7 @@ public class LoadedEmbryo
 
 		s += e.num_z_planes + ",";
 		s += e.tx + ",";
-		s += e.tx_desc + ",";
+		s += e.tx_desc;
 
 		return s;
 	}
