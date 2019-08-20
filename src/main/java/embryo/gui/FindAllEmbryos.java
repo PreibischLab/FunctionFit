@@ -30,7 +30,7 @@ public class FindAllEmbryos
 {
 	public static ArrayList< LoadedEmbryo > processEmbryoimage( final LoadedEmbryo e, final File csv, final boolean showImages )
 	{
-		final File file = new File( csv.getParentFile() + "/masks", e.filename + ".tif" );
+		final File file = new File( csv.getParentFile().getParentFile() + "/masks", e.filename + ".tif" );
 
 		IJ.log( "Processing mask: " + file.getAbsolutePath() );
 
@@ -106,17 +106,17 @@ public class FindAllEmbryos
 
 	public static void prepareImages( final LoadedEmbryo e, final File csv, final boolean onlyDAPI )
 	{
-		final File dir = new File( csv.getParentFile() + "/preview" );
+		final File dir = new File( csv.getParentFile().getParentFile() + "/preview" );
 
 		if ( !dir.exists() )
 			dir.mkdir();
 
-		final File dapiFile = new File( csv.getParentFile() + "/preview", e.filename + EmbryoGUI.dapiExt );
+		final File dapiFile = new File( csv.getParentFile().getParentFile() + "/preview", e.filename + EmbryoGUI.dapiExt );
 
 		if ( dapiFile.exists() )
 			return;
 
-		final File image = new File( csv.getParentFile() + "/tifs", e.filename + ".tif" );
+		final File image = new File( csv.getParentFile().getParentFile() + "/tifs", e.filename + ".tif" );
 
 		if ( !image.exists())
 			throw new RuntimeException( "Couldn't find image file: " + image.getAbsolutePath() );
