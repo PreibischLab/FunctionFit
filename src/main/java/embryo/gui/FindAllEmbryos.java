@@ -237,6 +237,8 @@ public class FindAllEmbryos
 			//if ( e.filename.equals( "SEA-12_300" ))
 			if ( e.status == Status.NOT_RUN_YET || e.status == Status.NO_ELLIPSE_FOUND )
 				annotatedembryos.addAll( processEmbryoimage( e, csvFile, false ) );
+			else
+				annotatedembryos.add( e );
 
 			//if ( e.filename.equals( "MK4_1" ))
 			if ( e.status == Status.NOT_RUN_YET )
