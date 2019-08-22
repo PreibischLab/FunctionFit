@@ -1,7 +1,7 @@
 To do:
 	
 	- Rerun ellipse detection -> ellipse =null
-	- Jump to next image/null image
+	
 	
 	- Klim: if ellipsoids are aligned before prediction -> better results?
 	- Intron detection status
@@ -19,3 +19,4 @@ Done:
 	- Give cropped name
 - Delete bad ellipsoid in csv?
 - Loaded embryo can be ellipse or ROI
+- Jump to next image/null image

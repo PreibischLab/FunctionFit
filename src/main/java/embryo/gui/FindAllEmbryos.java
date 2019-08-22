@@ -31,10 +31,10 @@ public class FindAllEmbryos
 	public static class EllipseFindingProperties
 	{
 		double minArea = 35000; // minimal size in square-pixels of the ellipse
-		double maxArea = 100000; // maximal size in square-pixels of the ellipse
+		double maxArea = 150000; // maximal size in square-pixels of the ellipse
 		double minRatio = 0.999; // ratio = large axis / small axis
 		double maxRatio = 3.0;
-		double maxError = 10.0; // maximal distance of an edge pixel to the ellipse and still belong to it
+		double maxError = 20.0; // maximal distance of an edge pixel to the ellipse and still belong to it
 		int minNuminliers = 800; // minimal amount of edge pixels that belong to the ellipse
 		int numIterations = 500; // how often RANSAC tries
 	}
@@ -229,6 +229,8 @@ public class FindAllEmbryos
 		final ArrayList< LoadedEmbryo > annotatedembryos = new ArrayList< LoadedEmbryo >();
 
 		int i = 1;
+		int notfound = 0;
+		int total = 0;
 
 		for ( final LoadedEmbryo e : embryos )
 		{
@@ -241,9 +243,15 @@ public class FindAllEmbryos
 			}
 			//System.out.println( LoadedEmbryo.toString( e ) );
 
-			//if ( e.filename.equals( "SEA-12_300" ))
+			//if ( e.filename.equals( "N2_1672" ))
 			if ( e.status == Status.NOT_RUN_YET || e.status == Status.NO_ELLIPSE_FOUND )
-				annotatedembryos.addAll( processEmbryoimage( e, csvFile, props, false ) );
+			{
+				final ArrayList<LoadedEmbryo> es = processEmbryoimage( e, csvFile, props, false );
+				annotatedembryos.addAll( es );
+				if ( es.get(0).eor == null )
+					notfound++;
+				total++;
+			}
 			else
 				annotatedembryos.add( e );
 
@@ -253,9 +261,9 @@ public class FindAllEmbryos
 		}
 
 		//annotatedembryos.addAll( embryos );
-
+		System.out.println( notfound + " of " + total + " not detected." );
 		System.out.println( "saving csv to '" + csvFile.getAbsolutePath() + "'" );
-		LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
+		//LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
 
 		System.out.println( "done" );
 		//IJ.log( "done" );
