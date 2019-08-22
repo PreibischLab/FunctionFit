@@ -28,7 +28,18 @@ import net.imglib2.util.Pair;
 
 public class FindAllEmbryos
 {
-	public static ArrayList< LoadedEmbryo > processEmbryoimage( final LoadedEmbryo e, final File csv, final boolean showImages )
+	public static class EllipseFindingProperties
+	{
+		double minArea = 35000; // minimal size in square-pixels of the ellipse
+		double maxArea = 100000; // maximal size in square-pixels of the ellipse
+		double minRatio = 0.999; // ratio = large axis / small axis
+		double maxRatio = 3.0;
+		double maxError = 10.0; // maximal distance of an edge pixel to the ellipse and still belong to it
+		int minNuminliers = 800; // minimal amount of edge pixels that belong to the ellipse
+		int numIterations = 500; // how often RANSAC tries
+	}
+
+	public static ArrayList< LoadedEmbryo > processEmbryoimage( final LoadedEmbryo e, final File csv, final EllipseFindingProperties p, final boolean showImages )
 	{
 		final File file = new File( csv.getParentFile().getParentFile() + "/masks", e.filename + ".tif" );
 
@@ -48,18 +59,11 @@ public class FindAllEmbryos
 			edgeImp.setTitle( e.filename );	
 		}
 
-		final double minArea = 35000; // minimal size in square-pixels of the ellipse
-		final double maxArea = 100000; // maximal size in square-pixels of the ellipse
-		final double minRatio = 0.999; // ratio = large axis / small axis
-		final double maxRatio = 3.0;
-		final double maxError = 10.0; // maximal distance of an edge pixel to the ellipse and still belong to it
-		final int minNuminliers = 800; // minimal amount of edge pixels that belong to the ellipse
-		final int numIterations = 500; // how often RANSAC tries
 
 		final ShapePointDistanceFactory< Ellipse, ?, ? > factory = new EllipsePointDistanceFactory();//BruteForceShapePointDistanceFactory< Ellipse >();
 
 		final ArrayList< Pair< Ellipse, ArrayList< PointFunctionMatch > > > functions =
-				Util.findAllFunctions( mts, new Ellipse( factory ), maxError, minNuminliers, minArea, maxArea, minRatio, maxRatio, numIterations );
+				Util.findAllFunctions( mts, new Ellipse( factory ), p.maxError, p.minNuminliers, p.minArea, p.maxArea, p.minRatio, p.maxRatio, p.numIterations );
 
 		final Overlay o = new Overlay();
 
@@ -191,6 +195,9 @@ public class FindAllEmbryos
 	// Laura: you need a "public static void main([] args )" method to start
 	public static void main( String[] args ) throws IOException
 	{
+		final EllipseFindingProperties props = new EllipseFindingProperties();
+		//props.numIterations = 100;
+
 		new ImageJ();
 
 		/*
@@ -236,7 +243,7 @@ public class FindAllEmbryos
 
 			//if ( e.filename.equals( "SEA-12_300" ))
 			if ( e.status == Status.NOT_RUN_YET || e.status == Status.NO_ELLIPSE_FOUND )
-				annotatedembryos.addAll( processEmbryoimage( e, csvFile, false ) );
+				annotatedembryos.addAll( processEmbryoimage( e, csvFile, props, false ) );
 			else
 				annotatedembryos.add( e );
 
