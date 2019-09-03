@@ -30,13 +30,13 @@ public class FindAllEmbryos
 {
 	public static class EllipseFindingProperties
 	{
-		double minArea = 35000; // minimal size in square-pixels of the ellipse
-		double maxArea = 150000; // maximal size in square-pixels of the ellipse
-		double minRatio = 0.999; // ratio = large axis / small axis
-		double maxRatio = 3.0;
-		double maxError = 20.0; // maximal distance of an edge pixel to the ellipse and still belong to it
-		int minNuminliers = 800; // minimal amount of edge pixels that belong to the ellipse
-		int numIterations = 500; // how often RANSAC tries
+		static double minArea = 35000; // minimal size in square-pixels of the ellipse
+		static double maxArea = 150000; // maximal size in square-pixels of the ellipse
+		static double minRatio = 0.999; // ratio = large axis / small axis
+		static double maxRatio = 3.0;
+		static double maxError = 20.0; // maximal distance of an edge pixel to the ellipse and still belong to it
+		static int minNuminliers = 800; // minimal amount of edge pixels that belong to the ellipse
+		static int numIterations = 500; // how often RANSAC tries
 	}
 
 	public static ArrayList< LoadedEmbryo > processEmbryoimage( final LoadedEmbryo e, final File csv, final EllipseFindingProperties p, final boolean showImages )
@@ -263,7 +263,7 @@ public class FindAllEmbryos
 		//annotatedembryos.addAll( embryos );
 		System.out.println( notfound + " of " + total + " not detected." );
 		System.out.println( "saving csv to '" + csvFile.getAbsolutePath() + "'" );
-		//LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
+		LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
 
 		System.out.println( "done" );
 		//IJ.log( "done" );
