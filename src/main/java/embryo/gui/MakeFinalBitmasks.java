@@ -185,7 +185,15 @@ public class MakeFinalBitmasks
 			System.out.println( "Investigating: '" + e.filename + "' (" + i++ + "/" + embryos.size() + "), status=" + e.status );
 
 			// it is marked as good and the crop offset is not set yet, meaning it has not been processed yet
-			if ( e.status == Status.GOOD && e.cropOffsetX == -1 && e.cropOffsetY == -1 )
+			// save cropped image and mask
+			final String newFileName = e.filename + "_cropped_" + i;
+			final String newFileNameMask = newFileName + ".mask.tif";
+			final String newFileNameTIF = newFileName + ".tif";
+
+			final File maskFile = new File( csvFile.getParentFile() + maskDir, newFileNameMask );
+			final File cropFile = new File( csvFile.getParentFile() + tifDir, newFileNameTIF );
+
+			if ( e.status == Status.GOOD && ( !maskFile.exists() || !cropFile.exists() ) )
 			{
 				System.out.println( "Computing final masks for : '" + e.filename + "'" );
 
@@ -217,15 +225,7 @@ public class MakeFinalBitmasks
 				else
 					computeROIMask( e.eor.getROI(), ip, cropArea );
 
-				// save cropped image and mask
-				final String newFileName = e.filename + "_cropped_" + i;
-				final String newFileNameMask = newFileName + ".mask.tif";
-				final String newFileNameTIF = newFileName + ".tif";
-
-				final File maskFile = new File( csvFile.getParentFile() + maskDir, newFileNameMask );
 				new FileSaver( mask ).saveAsTiff( maskFile.getAbsolutePath() );
-
-				final File cropFile = new File( csvFile.getParentFile() + tifDir, newFileNameTIF );
 				new FileSaver( cropped ).saveAsTiffStack( cropFile.getAbsolutePath() );
 
 				/*
