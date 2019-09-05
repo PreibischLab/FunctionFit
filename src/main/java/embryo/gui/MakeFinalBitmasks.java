@@ -184,7 +184,7 @@ public class MakeFinalBitmasks
 		{
 			System.out.println( "Investigating: '" + e.filename + "' (" + i++ + "/" + embryos.size() + "), status=" + e.status );
 
-			// it is marked as good and the crop offset is not set yet, meaning it has not been processed yet
+			// it is marked as good and that the files dont exist, meaning it has not been processed yet
 			// save cropped image and mask
 			final String newFileName = e.filename + "_cropped_" + i;
 			final String newFileNameMask = newFileName + ".mask.tif";
