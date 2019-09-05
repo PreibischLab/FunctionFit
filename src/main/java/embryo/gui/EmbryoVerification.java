@@ -60,6 +60,8 @@ public class EmbryoVerification
 			"to previous incomplete annotation",
 			"to next bad annotation",
 			"to previous bad annotation",
+			"to next image without any annotations that is not BAD",
+			"to previous image without any annotations that is not BAD",
 			"to specific annotation ..." };
 
 	public static int defaultJumpChoice = 0;
@@ -427,6 +429,18 @@ public class EmbryoVerification
 		{
 			for ( int i = embryoIndex - 1; i >= 0 && target == embryoIndex; --i )
 				if ( embryoList.get( i ).status == Status.BAD )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 12 ) // "to next image without any annotations that is not BAD",
+		{
+			for ( int i = embryoIndex + 1; i < embryoList.size() && target == embryoIndex; ++i )
+				if ( embryoList.get( i ).eor == null && embryoList.get( i ).status != Status.BAD )
+					target = i;
+		}
+		else if ( defaultJumpChoice == 13 ) // "to previous image without any annotations that is not BAD",
+		{
+			for ( int i = embryoIndex - 1; i >= 0 && target == embryoIndex; --i )
+				if ( embryoList.get( i ).eor == null && embryoList.get( i ).status != Status.BAD )
 					target = i;
 		}
 		else // "to specific annotation ..."
