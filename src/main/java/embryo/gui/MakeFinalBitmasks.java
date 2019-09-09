@@ -166,15 +166,15 @@ public class MakeFinalBitmasks
 		final String tifDir = parentDir + "/tifs";
 		final String maskDir = parentDir + "/masks";
 
-		File dir = new File( csvFile.getParentFile() + parentDir );
+		File dir = new File( csvFile.getParentFile().getParentFile() + parentDir );
 		if ( !dir.exists() )
 			dir.mkdir();
 
-		dir = new File( csvFile.getParentFile() + tifDir );
+		dir = new File( csvFile.getParentFile().getParentFile() + tifDir );
 		if ( !dir.exists() )
 			dir.mkdir();
 
-		dir = new File( csvFile.getParentFile() + maskDir );
+		dir = new File( csvFile.getParentFile().getParentFile() + maskDir );
 		if ( !dir.exists() )
 			dir.mkdir();
 
@@ -190,14 +190,14 @@ public class MakeFinalBitmasks
 			final String newFileNameMask = newFileName + ".mask.tif";
 			final String newFileNameTIF = newFileName + ".tif";
 
-			final File maskFile = new File( csvFile.getParentFile() + maskDir, newFileNameMask );
-			final File cropFile = new File( csvFile.getParentFile() + tifDir, newFileNameTIF );
+			final File maskFile = new File( csvFile.getParentFile().getParentFile() + maskDir, newFileNameMask );
+			final File cropFile = new File( csvFile.getParentFile().getParentFile() + tifDir, newFileNameTIF );
 
 			if ( e.status == Status.GOOD && ( !maskFile.exists() || !cropFile.exists() ) )
 			{
 				System.out.println( "Computing final masks for : '" + e.filename + "'" );
 
-				final File image = new File( csvFile.getParentFile() + "/tifs", e.filename + ".tif" );
+				final File image = new File( csvFile.getParentFile().getParentFile() + "/tifs", e.filename + ".tif" );
 
 				if ( !image.exists())
 					throw new RuntimeException( "Couldn't find image file: " + image.getAbsolutePath() );
