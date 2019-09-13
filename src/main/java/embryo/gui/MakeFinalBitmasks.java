@@ -184,18 +184,37 @@ public class MakeFinalBitmasks
 		{
 			System.out.println( "Investigating: '" + e.filename + "' (" + i++ + "/" + embryos.size() + "), status=" + e.status );
 
-			// it is marked as good and that the files dont exist, meaning it has not been processed yet
-			// save cropped image and mask
-			final String newFileName = e.filename + "_cropped_" + i;
-			final String newFileNameMask = newFileName + ".mask.tif";
-			final String newFileNameTIF = newFileName + ".tif";
-
-			final File maskFile = new File( csvFile.getParentFile().getParentFile() + maskDir, newFileNameMask );
-			final File cropFile = new File( csvFile.getParentFile().getParentFile() + tifDir, newFileNameTIF );
-
-			if ( e.status == Status.GOOD && ( !maskFile.exists() || !cropFile.exists() ) )
+			// it is marked as good and that the files are not mentioned in the csv, meaning it has not been processed yet
+			if ( e.status == Status.GOOD && ( e.croppedImgFile.trim().length() == 0 || e.croppedMaskFile.trim().length() == 0 || !new File( e.croppedImgFile ).exists() ) || !new File( e.croppedMaskFile ).exists() ) 
 			{
 				System.out.println( "Computing final masks for : '" + e.filename + "'" );
+
+				// save cropped image and mask
+				File maskFile = null, cropFile = null;
+
+				if ( e.croppedImgFile.trim().length() != 0 && e.croppedMaskFile.trim().length() != 0 )
+				{
+					// reuse name from CSV if it's there
+					cropFile = new File( e.croppedImgFile );
+					maskFile = new File( e.croppedMaskFile );
+				}
+				else
+				{
+					// make a new name, make sure it doesnt exist by accident from any previous cropping run
+					do
+					{
+						if ( maskFile != null )
+							++i;
+	
+						String newFileName = e.filename + "_cropped_" + i;
+						String newFileNameMask = newFileName + ".mask.tif";
+						String newFileNameTIF = newFileName + ".tif";
+		
+						maskFile = new File( csvFile.getParentFile().getParentFile() + maskDir, newFileNameMask );
+						cropFile = new File( csvFile.getParentFile().getParentFile() + tifDir, newFileNameTIF );
+					}
+					while ( maskFile.exists() || cropFile.exists() );
+				}
 
 				final File image = new File( csvFile.getParentFile().getParentFile() + "/tifs", e.filename + ".tif" );
 
