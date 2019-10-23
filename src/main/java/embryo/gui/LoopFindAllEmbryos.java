@@ -2,6 +2,7 @@ package embryo.gui;
 
 import java.io.IOException;
 
+import ij.ImageJ;
 import embryo.gui.FindAllEmbryos.EllipseFindingProperties;
 
 public class LoopFindAllEmbryos {
@@ -10,11 +11,13 @@ public class LoopFindAllEmbryos {
     { 
     	//System.out.println("We're starting");
         // Defined like ranges in python - {start,stop,step}
-        final double[] maxAreaRange = {100000, 130000, 5000};
+        final double[] maxAreaRange = {100000, 135000, 2000};
         final double[] maxErrorRange = {10, 20, 1};
         
         //final double[] maxAreaRange = {100000, 100000, 1000};
         //final double[] maxErrorRange = {10, 10, 1};  
+        
+        new ImageJ();
         
         // Exit when x becomes greater than 4 
         for (int i=(int) maxAreaRange[0]; i<=maxAreaRange[1]; i+=maxAreaRange[2]) 

@@ -198,7 +198,9 @@ public class FindAllEmbryos
 		final EllipseFindingProperties props = new EllipseFindingProperties();
 		//props.numIterations = 100;
 
-		new ImageJ();
+		
+		// FIXME: was commented out!!!
+		// new ImageJ();
 
 		/*
 			path.txt:
