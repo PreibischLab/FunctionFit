@@ -47,7 +47,7 @@ public class FindAllEmbryos
 
 		if ( file.exists() )
 		{
-			System.out.println( file.getAbsolutePath() + " does not exist. Skipping." );
+			System.out.println( file.getAbsolutePath() + " (mask) does not exist. Skipping." );
 			return null;
 		}
 
