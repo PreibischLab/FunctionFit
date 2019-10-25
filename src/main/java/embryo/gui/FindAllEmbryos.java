@@ -236,6 +236,8 @@ public class FindAllEmbryos
 		final ArrayList< LoadedEmbryo > embryos = LoadedEmbryo.readCSV( csvFile );
 		final ArrayList< LoadedEmbryo > annotatedembryos = new ArrayList< LoadedEmbryo >();
 
+		final ArrayList< String > masksMissing = new ArrayList<>();
+
 		int i = 1;
 		int notfound = 0;
 		int total = 0;
@@ -261,6 +263,7 @@ public class FindAllEmbryos
 				if ( es == null )
 				{
 					maskNotFound = true;
+					masksMissing.add( e.filename );
 					annotatedembryos.add( e );
 				}
 				else
@@ -284,7 +287,13 @@ public class FindAllEmbryos
 		System.out.println( "saving csv to '" + csvFile.getAbsolutePath() + "'" );
 		LoadedEmbryo.saveCSV( annotatedembryos, csvFile );
 
+		System.out.println( "Masks were missing for the following filenames: " );
+
+		for ( final String f : masksMissing )
+			System.out.println( f );
+
 		System.out.println( "done" );
+
 		//IJ.log( "done" );
 
 		/*
