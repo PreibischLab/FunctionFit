@@ -45,6 +45,12 @@ public class FindAllEmbryos
 
 		IJ.log( "Processing mask: " + file.getAbsolutePath() );
 
+		if ( file.exists() )
+		{
+			System.out.println( file.getAbsolutePath() + " does not exist. Skipping." );
+			return null;
+		}
+
 		final Img< FloatType > img = Util.openAs32Bit( file );
 		final Img< FloatType > edgeImg = img.factory().create( img, img.firstElement() );
 
@@ -245,20 +251,31 @@ public class FindAllEmbryos
 			}
 			//System.out.println( LoadedEmbryo.toString( e ) );
 
+			boolean maskNotFound = false;
+
 			//if ( e.filename.equals( "N2_1672" ))
 			if ( e.status == Status.NOT_RUN_YET || e.status == Status.NO_ELLIPSE_FOUND )
 			{
 				final ArrayList<LoadedEmbryo> es = processEmbryoimage( e, csvFile, props, false );
-				annotatedembryos.addAll( es );
-				if ( es.get(0).eor == null )
-					notfound++;
-				total++;
+
+				if ( es == null )
+				{
+					maskNotFound = true;
+					annotatedembryos.add( e );
+				}
+				else
+				{
+					annotatedembryos.addAll( es );
+					if ( es.get(0).eor == null )
+						notfound++;
+					total++;
+				}
 			}
 			else
 				annotatedembryos.add( e );
 
 			//if ( e.filename.equals( "MK4_1" ))
-			if ( e.status == Status.NOT_RUN_YET )
+			if ( e.status == Status.NOT_RUN_YET && !maskNotFound )
 				prepareImages( e, csvFile, false );
 		}
 
