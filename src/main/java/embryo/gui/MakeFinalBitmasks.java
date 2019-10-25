@@ -191,12 +191,16 @@ public class MakeFinalBitmasks
 
 				// save cropped image and mask
 				File maskFile = null, cropFile = null;
+				String fileNameMask, fileNameTIF;
 
 				if ( e.croppedImgFile.trim().length() != 0 && e.croppedMaskFile.trim().length() != 0 )
 				{
 					// reuse name from CSV if it's there
-					cropFile = new File( e.croppedImgFile );
-					maskFile = new File( e.croppedMaskFile );
+					maskFile = new File( csvFile.getParentFile().getParentFile() + maskDir, e.croppedMaskFile );
+					cropFile = new File( csvFile.getParentFile().getParentFile() + tifDir, e.croppedImgFile );
+
+					fileNameMask = e.croppedMaskFile;
+					fileNameTIF = e.croppedImgFile;
 				}
 				else
 				{
@@ -212,6 +216,9 @@ public class MakeFinalBitmasks
 		
 						maskFile = new File( csvFile.getParentFile().getParentFile() + maskDir, newFileNameMask );
 						cropFile = new File( csvFile.getParentFile().getParentFile() + tifDir, newFileNameTIF );
+
+						fileNameMask = newFileNameMask;
+						fileNameTIF = newFileNameTIF;
 					}
 					while ( maskFile.exists() || cropFile.exists() );
 				}
@@ -268,8 +275,8 @@ public class MakeFinalBitmasks
 				// - mask file
 				// - cropped tiff file
 				// - offset
-				e.croppedMaskFile = newFileNameMask;
-				e.croppedImgFile = newFileNameTIF;
+				e.croppedMaskFile = fileNameMask;
+				e.croppedImgFile = fileNameTIF;
 				e.cropOffsetX = (int)cropArea.min( 0 );
 				e.cropOffsetY = (int)cropArea.min( 1 );
 			}
