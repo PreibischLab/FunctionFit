@@ -183,9 +183,20 @@ public class MakeFinalBitmasks
 		for ( final LoadedEmbryo e : embryos )
 		{
 			System.out.println( "Investigating: '" + e.filename + "' (" + i++ + "/" + embryos.size() + "), status=" + e.status );
+			
+			System.out.println(e.filename + " " + e.croppedImgFile);
+			System.out.println(e.status == Status.GOOD);
+			System.out.println(e.croppedImgFile.trim().length() == 0);
+			System.out.println(e.croppedMaskFile.trim().length() == 0);
+			System.out.println(!new File( e.croppedImgFile ).exists());
+			System.out.println(!new File( e.croppedMaskFile ).exists());
+			
+			
+			
 
 			// it is marked as good and that the files are not mentioned in the csv, meaning it has not been processed yet
-			if ( e.status == Status.GOOD && ( e.croppedImgFile.trim().length() == 0 || e.croppedMaskFile.trim().length() == 0 || !new File( e.croppedImgFile ).exists() ) || !new File( e.croppedMaskFile ).exists() ) 
+			//if ( e.status == Status.GOOD && ( e.croppedImgFile.trim().length() == 0 || e.croppedMaskFile.trim().length() == 0 || !new File( e.croppedImgFile ).exists() ) || !new File( e.croppedMaskFile ).exists() ) 
+			if ( e.status == Status.GOOD && ( e.croppedImgFile.trim().length() == 0 || e.croppedMaskFile.trim().length() == 0 || !new File( csvFile.getParentFile().getParentFile() + tifDir, e.croppedImgFile ).exists()  || !new File( csvFile.getParentFile().getParentFile() + maskDir, e.croppedMaskFile).exists() ))
 			{
 				System.out.println( "Computing final masks for : '" + e.filename + "'" );
 
