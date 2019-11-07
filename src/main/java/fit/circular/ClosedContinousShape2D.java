@@ -4,7 +4,7 @@ import ij.gui.Overlay;
 
 public interface ClosedContinousShape2D
 {
-	/**
+	/*
 	 * Computes the closest intersection point of a vector with the shape
 	 * @param p - point
 	 * @param i - intersection point
@@ -21,7 +21,7 @@ public interface ClosedContinousShape2D
 
 	public void draw( final Overlay overlay, final double step );
 
-	/**
+	/*
 	 * computes the radius of the ellipse at a certain position in polar coordinates
 	 * 
 	 * @param t - polar angle (0 <= t < 2*PI)
@@ -29,7 +29,7 @@ public interface ClosedContinousShape2D
 	 */
 	public double getRadiusAt( final double t );
 
-	/**
+	/*
 	 * Computes the value of the underlying function at x,y.
 	 * This is not an actual distance to the shape!
 	 * 

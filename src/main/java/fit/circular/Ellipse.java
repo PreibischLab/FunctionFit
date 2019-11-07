@@ -115,7 +115,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 	@Override
 	public int getMinNumPoints() { return minNumPoints; }
 
-	/**
+	/*
 	 * computes the radius of the ellipse at a certain position in polar coordinates
 	 * 
 	 * @param t - polar angle (0 <= t < 2*PI)
@@ -131,7 +131,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		return Math.sqrt( g / ( a*cos*cos + 2*b*cos*sin + c*sin*sin ) );
 	}
 
-	/**
+	/*
 	 * computes the point in x on the ellipse at a certain position in polar coordinates
 	 * 
 	 * @param t - polar angle (0 <= t < 2*PI)
@@ -143,7 +143,7 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		return xc + getRadiusAt( t ) * Math.cos( t );
 	}
 
-	/**
+	/*
 	 * computes the point in y on the ellipse at a certain position in polar coordinates
 	 * 
 	 * @param t - polar angle (0 <= t < 2*PI)

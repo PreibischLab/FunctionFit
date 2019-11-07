@@ -23,7 +23,7 @@ public abstract class AbstractShape2D< M extends AbstractShape2D< M > > extends 
 {
 	private static final long serialVersionUID = 9102425001575237374L;
 
-	/**
+	/*
 	 * Find the {@link AbstractModel} of a set of {@link PointMatch} candidates
 	 * containing a high number of outliers using
 	 * {@link #ransac(List, Collection, int, double, double, int) RANSAC}
@@ -123,7 +123,7 @@ A:		while ( i < iterations )
 		return true;
 	}
 
-	/**
+	/*
 	 * Test the {@link AbstractModel} for a set of {@link PointMatch} candidates.
 	 * Return true if the number of inliers / number of candidates is larger
 	 * than or equal to min_inlier_ratio, otherwise false.
