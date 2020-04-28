@@ -4,22 +4,56 @@
   <artifactId>function-fit-mpicbg</artifactId>
   <version>0.0.3-SNAPSHOT</version>
   <name>function fitting with mpi-cbg (extension)</name>
-  <description>code for simulating light propagation in a multi-view acquisition</description>
+  <description>code for function fitting</description>
+	<url>https://github.com/PreibischLab/</url>
+	<inceptionYear>2015</inceptionYear>
+	<organization>
+		<name>Preibisch Lab</name>
+		<url>http://preibischlab.mdc-berlin.de</url>
+	</organization>
 
 	<parent>
-		<groupId>sc.fiji</groupId>
-		<artifactId>pom-bigdataviewer</artifactId>
-		<version>2.1.3</version>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>28.0.0</version>
 		<relativePath />
 	</parent>
 
 	<licenses>
 		<license>
-			<name>GNU Public License v2</name>
+			<name>BSD</name>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
+
+	<contributors>
+		<contributor>
+			<name>Timmothee Lionnet</name>
+			<url>https://med.nyu.edu/faculty/timothee-lionnet</url>
+		</contributor>
+	</contributors>
+
+	<scm>
+		<connection>scm:git:git://github.com/PreibischLab/FunctionFit</connection>
+		<developerConnection>scm:git:git@github.com:PreibischLab/FunctionFit</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/PreibischLab/FunctionFit</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/PreibischLab/FunctionFit/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Travis CI</system>
+		<url></url>
+	</ciManagement>
+
+	<properties>
+		<scijava.jvm.version>1.8</scijava.jvm.version>
+		<license.licenseName>bsd</license.licenseName>
+		<license.copyrightOwners>Developers</license.copyrightOwners>
+	</properties>
+
   <dependencies>
   	<dependency>
   		<groupId>net.imglib2</groupId>
@@ -46,6 +80,30 @@
   		<version>0.25</version>
   	</dependency>
   </dependencies>
+
+	<developers>
+		<developer>
+			<id>StephanPreibisch</id>
+			<name>Stephan Preibisch</name>
+			<url>http://imagej.net/User:StephanP</url>
+			<roles>
+				<role>founder</role>
+				<role>lead</role>
+				<role>developer</role>
+				<role>debugger</role>
+				<role>reviewer</role>
+				<role>support</role>
+				<role>maintainer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<mailingLists>
+		<mailingList>
+			<name>Image.sc Forum</name>
+			<archive>https://forum.image.sc/tags/multiview-reconstruction</archive>
+		</mailingList>
+	</mailingLists>
 
 	<repositories>
 		<!-- NB: for project parent -->

@@ -31,9 +31,9 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.util.ShapeUtilities;
 
 import fit.AbstractFunction2D;
 import fit.PointFunctionMatch;
@@ -176,7 +176,7 @@ public class Tracking
 	{
 		final XYPlot plot = chart.getXYPlot();
 		final XYItemRenderer renderer = plot.getRenderer();
-		renderer.setSeriesShape( seriesIndex, ShapeUtilities.createUpTriangle( 0.5f ) );
+		renderer.setSeriesShape( seriesIndex, ShapeUtils.createUpTriangle( 0.5f ) );
 	}
 
 	public static void setDisplayType( final JFreeChart chart, final int seriesIndex, final boolean line, final boolean shape )
