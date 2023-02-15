@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.imglib2.simulation</groupId>
   <artifactId>function-fit-mpicbg</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.4</version>
   <name>function fitting with mpi-cbg (extension)</name>
   <description>code for function fitting</description>
 	<url>https://github.com/PreibischLab/</url>
@@ -77,7 +77,6 @@
   			com.googlecode.efficient-java-matrix-library
   		</groupId>
   		<artifactId>ejml</artifactId>
-  		<version>0.25</version>
   	</dependency>
   </dependencies>
 
@@ -106,10 +105,9 @@
 	</mailingLists>
 
 	<repositories>
-		<!-- NB: for project parent -->
 		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
+			<id>scijava.public</id>
+			<url>https://maven.scijava.org/content/groups/public</url>
 		</repository>
 	</repositories>
 
