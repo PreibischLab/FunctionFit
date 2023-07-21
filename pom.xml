@@ -52,6 +52,9 @@
 		<scijava.jvm.version>1.8</scijava.jvm.version>
 		<license.licenseName>bsd</license.licenseName>
 		<license.copyrightOwners>Developers</license.copyrightOwners>
+
+		<!-- NB: Deploy releases to the SciJava Maven repository. -->
+		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
 	</properties>
 
   <dependencies>
