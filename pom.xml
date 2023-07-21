@@ -44,7 +44,7 @@
 		<url>https://github.com/PreibischLab/FunctionFit/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Travis CI</system>
+		<system>GitHub Actions</system>
 		<url></url>
 	</ciManagement>
 
