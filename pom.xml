@@ -21,7 +21,7 @@
 
 	<licenses>
 		<license>
-			<name>bsd_3</name>
+			<name>BSD</name>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -50,7 +50,7 @@
 
 	<properties>
 		<scijava.jvm.version>1.8</scijava.jvm.version>
-		<license.licenseName>bsd</license.licenseName>
+		<license.licenseName>bsd_3</license.licenseName>
 		<license.copyrightOwners>Developers</license.copyrightOwners>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
