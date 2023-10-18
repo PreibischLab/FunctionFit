@@ -55,13 +55,22 @@
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
+
+		<ejml.version>0.41</ejml.version>
 	</properties>
 
   <dependencies>
   	<dependency>
   		<groupId>net.imglib2</groupId>
   		<artifactId>imglib2-ij</artifactId>
-  	</dependency>
+		<exclusions>
+			<exclusion>
+				<!-- declare the exclusion here -->
+				<groupId>jitk</groupId>
+				<artifactId>jitk-tps</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
   	<dependency>
   		<groupId>mpicbg</groupId>
   		<artifactId>mpicbg</artifactId>
@@ -76,10 +85,9 @@
   		<version>0.1</version>
   	</dependency>
   	<dependency>
-  		<groupId>
-  			com.googlecode.efficient-java-matrix-library
-  		</groupId>
-  		<artifactId>ejml</artifactId>
+  		<groupId>org.ejml</groupId>
+  		<artifactId>ejml-all</artifactId>
+  		<version>${ejml.version}</version>
   	</dependency>
 
   	<dependency>
