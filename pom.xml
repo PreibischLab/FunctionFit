@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>36.0.0</version>
+		<version>40.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -49,7 +49,7 @@
 	</ciManagement>
 
 	<properties>
-		<scijava.jvm.version>1.8</scijava.jvm.version>
+		<!-- <scijava.jvm.version>1.8</scijava.jvm.version> -->
 		<license.licenseName>bsd_3</license.licenseName>
 		<license.copyrightOwners>Developers</license.copyrightOwners>
 
