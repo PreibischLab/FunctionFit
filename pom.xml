@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.imglib2.simulation</groupId>
   <artifactId>function-fit-mpicbg</artifactId>
-  <version>0.0.7-SNAPSHOT</version>
+  <version>0.0.7</version>
   <name>function fitting with mpi-cbg (extension)</name>
   <description>code for function fitting</description>
 	<url>https://github.com/PreibischLab/</url>
@@ -36,7 +36,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/PreibischLab/FunctionFit</connection>
 		<developerConnection>scm:git:git@github.com:PreibischLab/FunctionFit</developerConnection>
-		<tag>HEAD</tag>
+		<tag>function-fit-mpicbg-0.0.7</tag>
 		<url>https://github.com/PreibischLab/FunctionFit</url>
 	</scm>
 	<issueManagement>
