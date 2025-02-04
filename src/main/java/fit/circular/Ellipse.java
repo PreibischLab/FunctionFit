@@ -36,12 +36,13 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.ejml.data.DenseMatrix64F;
-import org.ejml.factory.DecompositionFactory;
-import org.ejml.factory.LinearSolverFactory;
+import org.ejml.data.DMatrixRMaj;
+import org.ejml.dense.row.factory.DecompositionFactory_DDRM;
+import org.ejml.dense.row.factory.LinearSolverFactory_DDRM;
 import org.ejml.interfaces.decomposition.EigenDecomposition;
 import org.ejml.interfaces.linsol.LinearSolver;
-import org.ejml.ops.CommonOps;
+import org.ejml.interfaces.linsol.LinearSolverDense;
+import org.ejml.dense.row.CommonOps_DDRM;
 
 import fit.util.TransformUtil;
 import ij.ImageJ;
@@ -213,26 +214,26 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		// @author Peter Abeles (released under http://www.apache.org/licenses/LICENSE-2.0)
 
 		// qudratic part of design matrix
-		final DenseMatrix64F D1 = new DenseMatrix64F( 3, 1 );
+		final DMatrixRMaj D1 = new DMatrixRMaj( 3, 1 );
 		// linear part of design matrix
-		final DenseMatrix64F D2 = new DenseMatrix64F( 3, 1 );
+		final DMatrixRMaj D2 = new DMatrixRMaj( 3, 1 );
 
 		// quadratic part of scatter matrix
-		final DenseMatrix64F S1 = new DenseMatrix64F( 3, 3 );
+		final DMatrixRMaj S1 = new DMatrixRMaj( 3, 3 );
 		// combined part of scatter matrix
-		final DenseMatrix64F S2 = new DenseMatrix64F( 3, 3 );
+		final DMatrixRMaj S2 = new DMatrixRMaj( 3, 3 );
 		// linear part of scatter matrix
-		final DenseMatrix64F S3 = new DenseMatrix64F( 3, 3 );
+		final DMatrixRMaj S3 = new DMatrixRMaj( 3, 3 );
 		// Reduced scatter matrix
-		final DenseMatrix64F M = new DenseMatrix64F( 3, 3 );
+		final DMatrixRMaj M = new DMatrixRMaj( 3, 3 );
 
 		// storage for intermediate steps
-		final DenseMatrix64F T = new DenseMatrix64F( 3, 3 );
-		final DenseMatrix64F Ta1 = new DenseMatrix64F( 3, 1 );
-		final DenseMatrix64F S2_tran = new DenseMatrix64F( 3, 3 );
+		final DMatrixRMaj T = new DMatrixRMaj( 3, 3 );
+		final DMatrixRMaj Ta1 = new DMatrixRMaj( 3, 1 );
+		final DMatrixRMaj S2_tran = new DMatrixRMaj( 3, 3 );
 
-		final LinearSolver< DenseMatrix64F > solver = LinearSolverFactory.linear( 3 );
-		final EigenDecomposition< DenseMatrix64F > eigen = DecompositionFactory.eig( 3, true, false );
+		final LinearSolverDense<DMatrixRMaj> solver = LinearSolverFactory_DDRM.linear( 3 );
+		final EigenDecomposition< DMatrixRMaj > eigen = DecompositionFactory_DDRM.eig( 3, true, false );
 
 		final int N = points.size();
 
@@ -256,23 +257,23 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		}
 
 		// Compute scatter matrix
-		CommonOps.multTransA( D1, D1, S1 ); // S1 = D1'*D1
-		CommonOps.multTransA( D1, D2, S2 ); // S2 = D1'*D2
-		CommonOps.multTransA( D2, D2, S3 ); // S3 = D2'*D2
+		CommonOps_DDRM.multTransA( D1, D1, S1 ); // S1 = D1'*D1
+		CommonOps_DDRM.multTransA( D1, D2, S2 ); // S2 = D1'*D2
+		CommonOps_DDRM.multTransA( D2, D2, S3 ); // S3 = D2'*D2
 
 		// for getting a2 from a1
 		// T = -inv(S3)*S2'
 		if ( !solver.setA( S3 ) )
 			throw new IllDefinedDataPointsException( "Could not fit ellipse, failed at T = -inv(S3)*S2'" );
 
-		CommonOps.transpose( S2, S2_tran );
-		CommonOps.changeSign( S2_tran );
+		CommonOps_DDRM.transpose( S2, S2_tran );
+		CommonOps_DDRM.changeSign( S2_tran );
 		solver.solve( S2_tran, T );
 
 		// Compute reduced scatter matrix
 		// M = S1 + S2*T
-		CommonOps.mult( S2, T, M );
-		CommonOps.add( M, S1, M );
+		CommonOps_DDRM.mult( S2, T, M );
+		CommonOps_DDRM.add( M, S1, M );
 
 		// Premultiply by inv(C1). inverse of constraint matrix
 		for (int col = 0; col < 3; col++)
@@ -289,12 +290,12 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		if ( !eigen.decompose( M ) )
 			throw new IllDefinedDataPointsException( "Could not fit ellipse, failed at eigen.decompose( M )" );
 
-		final DenseMatrix64F a1 = selectBestEigenVector( eigen );
+		DMatrixRMaj a1 = selectBestEigenVector( eigen );
 		if ( a1 == null )
 			throw new IllDefinedDataPointsException( "Could not fit ellipse, could not find best eigenvector." );
 
 		// ellipse coefficients
-		CommonOps.mult( T, a1, Ta1 );
+		CommonOps_DDRM.mult( T, a1, Ta1 );
 
 		this.a = a1.data[ 0 ];
 		this.b = a1.data[ 1 ] / 2;
@@ -381,14 +382,14 @@ public class Ellipse extends AbstractShape2D< Ellipse >
 		}
 	}
 	
-	protected DenseMatrix64F selectBestEigenVector( final EigenDecomposition< DenseMatrix64F > eigen )
+	protected DMatrixRMaj selectBestEigenVector( final EigenDecomposition< DMatrixRMaj > eigen )
 	{
 		int bestIndex = -1;
 		double bestCond = Double.MAX_VALUE;
 
 		for (int i = 0; i < eigen.getNumberOfEigenvalues(); i++)
 		{
-			final DenseMatrix64F v = eigen.getEigenVector( i );
+			final DMatrixRMaj v = eigen.getEigenVector( i );
 
 			if ( v == null ) // TODO WTF?!?!
 				continue;
